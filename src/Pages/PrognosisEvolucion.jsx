@@ -159,13 +159,14 @@ function PrognosisEvolucion() {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="relative" style={{ height: '600px' }}>
                    <iframe
-                     src="https://212.128.194.13/gestionfirmes/evolucion/"
+                     src="http://212.128.194.13/gestionfirmes/evolucion/"
                      title="Prognosis de Evolución"
                      className="w-full h-full border-0"
                      style={{
                        backgroundColor: '#f9fafb'
                      }}
                      allowFullScreen
+                     sandbox="allow-scripts allow-same-origin allow-forms"
                    />
           </div>
         </div>
