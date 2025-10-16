@@ -12,9 +12,22 @@ export default async function handler(req, res) {
     }
     
     // Obtener el contenido HTML
-    const html = await response.text();
+    let html = await response.text();
     
-    // Devolver el contenido HTML
+    // Reescribir las rutas relativas para que apunten al servidor original
+    const baseUrl = 'http://212.128.194.13/gestionfirmes/indicadores/';
+    
+    // Reemplazar rutas relativas por absolutas
+    html = html.replace(/src="\.\//g, `src="${baseUrl}`);
+    html = html.replace(/href="\.\//g, `href="${baseUrl}`);
+    html = html.replace(/url\(\.\//g, `url(${baseUrl}`);
+    
+    // También reemplazar rutas que empiecen con / por la URL completa
+    html = html.replace(/src="\//g, `src="http://212.128.194.13/`);
+    html = html.replace(/href="\//g, `href="http://212.128.194.13/`);
+    html = html.replace(/url\(\//g, `url(http://212.128.194.13/`);
+    
+    // Devolver el contenido HTML modificado
     res.status(200).send(html);
     
   } catch (error) {
