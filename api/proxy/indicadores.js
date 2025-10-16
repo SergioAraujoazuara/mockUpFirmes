@@ -1,4 +1,25 @@
 export default async function handler(req, res) {
+  // Si es una petición de recurso (CSS, JS, imagen), hacer proxy directo
+  if (req.query.resource) {
+    try {
+      const resourceUrl = `http://212.128.194.13/gestionfirmes/indicadores/${req.query.resource}`;
+      const response = await fetch(resourceUrl);
+      
+      if (!response.ok) {
+        return res.status(404).send('Resource not found');
+      }
+      
+      const content = await response.text();
+      const contentType = response.headers.get('content-type') || 'text/plain';
+      
+      res.setHeader('Content-Type', contentType);
+      res.status(200).send(content);
+      return;
+    } catch (error) {
+      return res.status(500).send('Error loading resource');
+    }
+  }
+  
   // Configurar headers para permitir iframe
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -14,18 +35,17 @@ export default async function handler(req, res) {
     // Obtener el contenido HTML
     let html = await response.text();
     
-    // Reescribir las rutas relativas para que apunten al servidor original
-    const baseUrl = 'http://212.128.194.13/gestionfirmes/indicadores/';
+    // Reescribir las rutas para que usen nuestro proxy
+    const proxyBase = '/api/proxy/indicadores?resource=';
     
-    // Reemplazar rutas relativas por absolutas
-    html = html.replace(/src="\.\//g, `src="${baseUrl}`);
-    html = html.replace(/href="\.\//g, `href="${baseUrl}`);
-    html = html.replace(/url\(\.\//g, `url(${baseUrl}`);
+    // Reemplazar rutas relativas por nuestro proxy
+    html = html.replace(/src="\.\/([^"]+)"/g, `src="${proxyBase}$1"`);
+    html = html.replace(/href="\.\/([^"]+)"/g, `href="${proxyBase}$1"`);
+    html = html.replace(/url\(\.\/([^)]+)\)/g, `url(${proxyBase}$1)`);
     
-    // También reemplazar rutas que empiecen con / por la URL completa
-    html = html.replace(/src="\//g, `src="http://212.128.194.13/`);
-    html = html.replace(/href="\//g, `href="http://212.128.194.13/`);
-    html = html.replace(/url\(\//g, `url(http://212.128.194.13/`);
+    // También reemplazar rutas absolutas del servidor
+    html = html.replace(/src="http:\/\/212\.128\.194\.13\/gestionfirmes\/indicadores\/([^"]+)"/g, `src="${proxyBase}$1"`);
+    html = html.replace(/href="http:\/\/212\.128\.194\.13\/gestionfirmes\/indicadores\/([^"]+)"/g, `href="${proxyBase}$1"`);
     
     // Devolver el contenido HTML modificado
     res.status(200).send(html);
