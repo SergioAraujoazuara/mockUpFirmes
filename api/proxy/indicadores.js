@@ -1,47 +1,4 @@
 export default async function handler(req, res) {
-  // Si es una petición de recurso (CSS, JS, imagen), hacer proxy directo
-  if (req.query.resource) {
-    try {
-      // Intentar diferentes rutas posibles para el recurso
-      const possiblePaths = [
-        `http://212.128.194.13/gestionfirmes/indicadores/${req.query.resource}`,
-        `http://212.128.194.13/gestionfirmes/indicadores/resources/${req.query.resource}`,
-        `http://212.128.194.13/gestionfirmes/indicadores/css/${req.query.resource}`,
-        `http://212.128.194.13/gestionfirmes/indicadores/js/${req.query.resource}`,
-        `http://212.128.194.13/gestionfirmes/indicadores/images/${req.query.resource}`,
-        `http://212.128.194.13/gestionfirmes/${req.query.resource}`,
-        `http://212.128.194.13/${req.query.resource}`
-      ];
-      
-      let response = null;
-      for (const url of possiblePaths) {
-        try {
-          response = await fetch(url);
-          if (response.ok) {
-            break;
-          }
-        } catch (e) {
-          continue;
-        }
-      }
-      
-      if (!response || !response.ok) {
-        console.log(`Resource not found: ${req.query.resource}`);
-        return res.status(404).send('Resource not found');
-      }
-      
-      const content = await response.text();
-      const contentType = response.headers.get('content-type') || 'text/plain';
-      
-      res.setHeader('Content-Type', contentType);
-      res.status(200).send(content);
-      return;
-    } catch (error) {
-      console.error('Error loading resource:', error);
-      return res.status(500).send('Error loading resource');
-    }
-  }
-  
   // Configurar headers para permitir iframe
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -57,19 +14,10 @@ export default async function handler(req, res) {
     // Obtener el contenido HTML
     let html = await response.text();
     
-    // Reescribir las rutas para que usen nuestro proxy
-    const proxyBase = '/api/proxy/indicadores?resource=';
+    // Agregar meta tag para permitir contenido mixto (solo para desarrollo)
+    html = html.replace('<head>', '<head><meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">');
     
-    // Reemplazar rutas relativas por nuestro proxy
-    html = html.replace(/src="\.\/([^"]+)"/g, `src="${proxyBase}$1"`);
-    html = html.replace(/href="\.\/([^"]+)"/g, `href="${proxyBase}$1"`);
-    html = html.replace(/url\(\.\/([^)]+)\)/g, `url(${proxyBase}$1)`);
-    
-    // También reemplazar rutas absolutas del servidor
-    html = html.replace(/src="http:\/\/212\.128\.194\.13\/gestionfirmes\/indicadores\/([^"]+)"/g, `src="${proxyBase}$1"`);
-    html = html.replace(/href="http:\/\/212\.128\.194\.13\/gestionfirmes\/indicadores\/([^"]+)"/g, `href="${proxyBase}$1"`);
-    
-    // Devolver el contenido HTML modificado
+    // Devolver el contenido HTML sin modificaciones
     res.status(200).send(html);
     
   } catch (error) {
