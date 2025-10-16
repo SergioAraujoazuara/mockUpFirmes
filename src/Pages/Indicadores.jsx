@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaChartBar, FaArrowLeft, FaChevronDown, FaMapMarkerAlt, FaRoad } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import ProductionMessage from '../Components/ProductionMessage';
 
 function Indicadores() {
   const [selectedIndicator, setSelectedIndicator] = useState('Índice General');
@@ -137,16 +138,24 @@ function Indicadores() {
         {/* Iframe Container */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="relative" style={{ height: '600px' }}>
-                   <iframe
-                     src="/api/proxy/indicadores"
-                     title="Indicadores de Estado de la Red"
-                     className="w-full h-full border-0"
-                     style={{
-                       backgroundColor: '#f9fafb'
-                     }}
-                     allowFullScreen
-                     sandbox="allow-scripts allow-same-origin allow-forms"
-                   />
+            {import.meta.env.DEV ? (
+              <iframe
+                src="http://212.128.194.13/gestionfirmes/indicadores/"
+                title="Indicadores de Estado de la Red"
+                className="w-full h-full border-0"
+                style={{
+                  backgroundColor: '#f9fafb'
+                }}
+                allowFullScreen
+              />
+            ) : (
+              <div className="p-8">
+                <ProductionMessage 
+                  title="Indicadores - Estado de la red"
+                  directUrl="http://212.128.194.13/gestionfirmes/indicadores/"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
