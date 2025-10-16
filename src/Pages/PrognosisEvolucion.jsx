@@ -149,7 +149,7 @@ function PrognosisEvolucion() {
                 onClick={() => console.log('Años:', selectedYears)}
                 className="w-full bg-sky-600 text-white py-1.5 px-3 rounded-lg text-sm font-medium hover:bg-sky-700 transition-colors"
               >
-                Aplicar
+                Aplicars
               </button>
             </div>
           </div>
