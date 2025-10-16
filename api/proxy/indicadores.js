@@ -2,10 +2,31 @@ export default async function handler(req, res) {
   // Si es una petición de recurso (CSS, JS, imagen), hacer proxy directo
   if (req.query.resource) {
     try {
-      const resourceUrl = `http://212.128.194.13/gestionfirmes/indicadores/${req.query.resource}`;
-      const response = await fetch(resourceUrl);
+      // Intentar diferentes rutas posibles para el recurso
+      const possiblePaths = [
+        `http://212.128.194.13/gestionfirmes/indicadores/${req.query.resource}`,
+        `http://212.128.194.13/gestionfirmes/indicadores/resources/${req.query.resource}`,
+        `http://212.128.194.13/gestionfirmes/indicadores/css/${req.query.resource}`,
+        `http://212.128.194.13/gestionfirmes/indicadores/js/${req.query.resource}`,
+        `http://212.128.194.13/gestionfirmes/indicadores/images/${req.query.resource}`,
+        `http://212.128.194.13/gestionfirmes/${req.query.resource}`,
+        `http://212.128.194.13/${req.query.resource}`
+      ];
       
-      if (!response.ok) {
+      let response = null;
+      for (const url of possiblePaths) {
+        try {
+          response = await fetch(url);
+          if (response.ok) {
+            break;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+      
+      if (!response || !response.ok) {
+        console.log(`Resource not found: ${req.query.resource}`);
         return res.status(404).send('Resource not found');
       }
       
@@ -16,6 +37,7 @@ export default async function handler(req, res) {
       res.status(200).send(content);
       return;
     } catch (error) {
+      console.error('Error loading resource:', error);
       return res.status(500).send('Error loading resource');
     }
   }
