@@ -15,19 +15,31 @@ const Navbar = () => {
   const [userNombre, setUserNombre] = useState('');
   const [userRol, setUserRol] = useState('');
   const [menuOpen, setMenuOpen] = useState(false); // Menú móvil
-  const [dropdownOpen, setDropdownOpen] = useState(false); // Inventario
-  const [dropdownInspectionOpen, setDropdownInspectionOpen] = useState(false); // Gestión
-  const [dropdownMonitoringOpen, setDropdownMonitoringOpen] = useState(false); // Monitoreo
-  const [dropdownConservacionOpen, setDropdownConservacionOpen] = useState(false); // Estado de conservación
-  const [dropdownRehabilitacionOpen, setDropdownRehabilitacionOpen] = useState(false); // Actuaciones de rehabilitación
+  const [dropdownDatosGeneralesOpen, setDropdownDatosGeneralesOpen] = useState(false); // Datos generales
+  const [dropdownInventarioOpen, setDropdownInventarioOpen] = useState(false); // Inventario de red
+  const [dropdownOrdenesOpen, setDropdownOrdenesOpen] = useState(false); // Órdenes de estudio
+  const [dropdownActuacionesOpen, setDropdownActuacionesOpen] = useState(false); // Actuaciones
+  const [dropdownCampañasOpen, setDropdownCampañasOpen] = useState(false); // Campañas de auscultación
+  const [dropdownAnalisisOpen, setDropdownAnalisisOpen] = useState(false); // Análisis evolutivo
+  const [dropdownGISOpen, setDropdownGISOpen] = useState(false); // GIS submenu
+  const [dropdownPresupuestoOpen, setDropdownPresupuestoOpen] = useState(false); // Presupuesto conservación
+  const [dropdownCVFOpen, setDropdownCVFOpen] = useState(false); // CVF
+  const [dropdownOtrosOpen, setDropdownOtrosOpen] = useState(false); // Otros
+  const [dropdownPowerBIOpen, setDropdownPowerBIOpen] = useState(false); // Power BI
   const [dropdownUserOpen, setDropdownUserOpen] = useState(false); // Menú de usuario
 
   // Referencias para detectar clics fuera de los menús
-  const dropdownRef = useRef(null);
-  const inspectionRef = useRef(null);
-  const monitoringRef = useRef(null);
-  const conservacionRef = useRef(null);
-  const rehabilitacionRef = useRef(null);
+  const datosGeneralesRef = useRef(null);
+  const inventarioRef = useRef(null);
+  const ordenesRef = useRef(null);
+  const actuacionesRef = useRef(null);
+  const campañasRef = useRef(null);
+  const analisisRef = useRef(null);
+  const gisRef = useRef(null);
+  const presupuestoRef = useRef(null);
+  const cvfRef = useRef(null);
+  const otrosRef = useRef(null);
+  const powerBIRef = useRef(null);
   const userRef = useRef(null);
 
   useEffect(() => {
@@ -58,11 +70,17 @@ const Navbar = () => {
   };
 
   const closeAllDropdowns = () => {
-    setDropdownOpen(false);
-    setDropdownInspectionOpen(false);
-    setDropdownMonitoringOpen(false);
-    setDropdownConservacionOpen(false);
-    setDropdownRehabilitacionOpen(false);
+    setDropdownDatosGeneralesOpen(false);
+    setDropdownInventarioOpen(false);
+    setDropdownOrdenesOpen(false);
+    setDropdownActuacionesOpen(false);
+    setDropdownCampañasOpen(false);
+    setDropdownAnalisisOpen(false);
+    setDropdownGISOpen(false);
+    setDropdownPresupuestoOpen(false);
+    setDropdownCVFOpen(false);
+    setDropdownOtrosOpen(false);
+    setDropdownPowerBIOpen(false);
     setDropdownUserOpen(false);
   };
 
@@ -91,12 +109,12 @@ const Navbar = () => {
     <nav className="bg-gray-100 shadow">
       <div className="container mx-auto ps-0 pr-4 xl:px-10">
         {/* Título y Logo */}
-        <div className="flex items-center justify-between gap-6 py-3 border-b border-gray-200">
+        <div className="flex items-center justify-between gap-6 py-3 border-b border-gray-200 pr-12">
           <div className="flex items-center gap-6">
             <Link to="/" className="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity">
               <img className="h-auto" src={Imagen} width={120} alt="logo" />
             </Link>
-            <h1 className="text-xl font-bold text-gray-500">
+            <h1 className="text-lg font-medium text-gray-500">
               Sistema de gestión de firmes de la RCE
             </h1>
           </div>
@@ -109,21 +127,21 @@ const Navbar = () => {
                   closeAllDropdowns();
                   setDropdownUserOpen(!dropdownUserOpen);
                 }}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:text-sky-600 hover:bg-gray-50"
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
               >
-                <FaUserAlt />
-                <span className="font-medium">{userNombre || 'Usuario'}</span>
-                <FaCaretDown />
+                <FaUserAlt className="text-sm" />
+                <span>{userNombre || 'Usuario'}</span>
+                <FaCaretDown className="text-xs" />
               </button>
               {dropdownUserOpen && (
-                <div className="absolute right-0 bg-white shadow-lg rounded-md mt-2 py-2 w-56 z-50">
-                  <div className="px-4 py-2 border-b border-gray-100">
+                <div className="absolute right-0 bg-white shadow-xl rounded-lg mt-2 py-2 w-56 z-50 border border-gray-100">
+                  <div className="px-4 py-2.5 border-b border-gray-100">
                     <p className="text-xs text-gray-500">Usuario</p>
-                    <p className="font-medium text-gray-700">{userNombre}</p>
+                    <p className="font-medium text-gray-700 text-sm">{userNombre}</p>
                   </div>
                   <Link
                     to="/"
-                    className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                    className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                     onClick={handleLinkClick}
                   >
                     Inicio
@@ -131,7 +149,7 @@ const Navbar = () => {
                   {(userRol === 'admin' || userRol === 'usuario') && (
                     <Link
                       to="/admin"
-                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                      className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
                       Administración
@@ -139,7 +157,7 @@ const Navbar = () => {
                   )}
                   <button
                     onClick={toggleLogoutConfirmation}
-                    className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                    className="w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50 text-sm transition-colors duration-150"
                   >
                     Cerrar sesión
                   </button>
@@ -150,219 +168,232 @@ const Navbar = () => {
         </div>
         
         {/* Barra de navegación con menú */}
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-14">
           {/* Espacio para el menú móvil */}
           <div></div>
 
           {menuOpen && (
-            <div className="xl:hidden bg-white shadow-md absolute top-40 left-0 w-full z-50">
+            <div className="xl:hidden bg-white shadow-xl absolute top-40 left-0 w-full z-50 rounded-lg mx-4 border border-gray-100">
                 <div className="flex flex-col space-y-4 p-4">
 
-                  {/* Dashboard */}
-                  {(userRol === 'usuario' || userRol === 'admin') && (
+                  {/* Dashboard - Oculto temporalmente */}
+                  {/* {(userRol === 'usuario' || userRol === 'admin') && (
                     <Link
                       to="/dashboard-firmes"
-                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 font-medium"
+                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
                       Dashboard
                     </Link>
-                  )}
+                  )} */}
 
+                  {/* Datos generales */}
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <div>
                       <button
-                        onClick={() => handleDropdownClick(setDropdownInspectionOpen, dropdownInspectionOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+                        onClick={() => handleDropdownClick(setDropdownDatosGeneralesOpen, dropdownDatosGeneralesOpen)}
+                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
                       >
-                        Gestión <FaCaretDown />
+                        Datos generales <FaCaretDown />
                       </button>
-                      {dropdownInspectionOpen && (
+                      {dropdownDatosGeneralesOpen && (
                         <div className="pl-6">
-                          {/* Campos anteriores comentados
                           <Link
-                            to={`/elemento/${proyecto}`}
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
+                            to="/mapa-trafico"
+                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                             onClick={handleLinkClick}
                           >
-                            Iniciar Inspección
+                            Mapa de tráfico
                           </Link>
                           <Link
-                            to="/dashboard"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
+                            to="/aemet"
+                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            onClick={handleLinkClick}
+                          >
+                            AEMET
+                          </Link>
+                          <Link
+                            to="/boe"
+                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            onClick={handleLinkClick}
+                          >
+                            BOE
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Inventario de red */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <div>
+                      <button
+                        onClick={() => handleDropdownClick(setDropdownInventarioOpen, dropdownInventarioOpen)}
+                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
+                      >
+                        Inventario de red <FaCaretDown />
+                      </button>
+                      {dropdownInventarioOpen && (
+                        <div className="pl-6">
+                          <Link
+                            to="/consultas"
+                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            onClick={handleLinkClick}
+                          >
+                            Consultas
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Órdenes de estudio */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <Link
+                      to="/ordenes-estudio"
+                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      onClick={handleLinkClick}
+                    >
+                      Órdenes de estudio
+                    </Link>
+                  )}
+
+                  {/* Actuaciones */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <Link
+                      to="/actuaciones"
+                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      onClick={handleLinkClick}
+                    >
+                      Actuaciones
+                    </Link>
+                  )}
+
+                  {/* Campañas de auscultación */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <Link
+                      to="/campañas-auscultacion"
+                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      onClick={handleLinkClick}
+                    >
+                      Campañas de auscultación
+                    </Link>
+                  )}
+
+                  {/* Análisis evolutivo */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <div>
+                      <button
+                        onClick={() => setDropdownAnalisisOpen(!dropdownAnalisisOpen)}
+                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
+                      >
+                        Análisis evolutivo
+                        <FaCaretDown className={`transition-transform duration-200 ${dropdownAnalisisOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      {dropdownAnalisisOpen && (
+                        <div className="pl-4">
+                          {/* GIS submenu */}
+                          <div>
+                            <button
+                              onClick={() => setDropdownGISOpen(!dropdownGISOpen)}
+                              className="flex justify-between items-center w-full text-left px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            >
+                              GIS
+                              <FaCaretDown className={`transition-transform duration-200 ${dropdownGISOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {dropdownGISOpen && (
+                              <div className="pl-4">
+                                <Link
+                                  to="/indicadores"
+                                  className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                  onClick={handleLinkClick}
+                                >
+                                  Indicadores
+                                </Link>
+                                <Link
+                                  to="/prognosis-evolucion"
+                                  className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                  onClick={handleLinkClick}
+                                >
+                                  Prognosis
+                                </Link>
+                                <Link
+                                  to="/seguimiento-administrativo"
+                                  className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                  onClick={handleLinkClick}
+                                >
+                                  Seguimiento administrativo
+                                </Link>
+                              </div>
+                            )}
+                          </div>
+                          {/* Dashboard */}
+                          <Link
+                            to="/dashboard-firmes"
+                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                             onClick={handleLinkClick}
                           >
                             Dashboard
                           </Link>
-                          <Link
-                            to="/visor_inspeccion"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            BIM
-                          </Link>
-                          */}
-                          
-                          <Link
-                            to="/noticias"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Noticias
-                          </Link>
-                          <Link
-                            to="/foro"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Foro
-                          </Link>
-                          <Link
-                            to="/descargas"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Descargas
-                          </Link>
-                          <Link
-                            to="/documentacion"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Documentación Técnica
-                          </Link>
                         </div>
                       )}
                     </div>
                   )}
 
+                  {/* Presupuesto conservación */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <Link
+                      to="/presupuesto-conservacion"
+                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      onClick={handleLinkClick}
+                    >
+                      Presupuesto conservación
+                    </Link>
+                  )}
+
+                  {/* CVF */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <Link
+                      to="/cvf"
+                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      onClick={handleLinkClick}
+                    >
+                      CVF
+                    </Link>
+                  )}
+
+                  {/* Otros */}
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <div>
                       <button
-                        onClick={() => handleDropdownClick(setDropdownMonitoringOpen, dropdownMonitoringOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
+                        onClick={() => handleDropdownClick(setDropdownOtrosOpen, dropdownOtrosOpen)}
+                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
                       >
-                        Monitoreo <FaCaretDown />
+                        Otros <FaCaretDown />
                       </button>
-                      {dropdownMonitoringOpen && (
+                      {dropdownOtrosOpen && (
                         <div className="pl-6">
-                          <Link
-                            to="/indicadores"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
+                          <button
+                            onClick={() => handleDropdownClick(setDropdownPowerBIOpen, dropdownPowerBIOpen)}
+                            className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
                           >
-                            Indicadores - Estado de la red
-                          </Link>
-                          <Link
-                            to="/seguimiento-administrativo"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Seguimiento Administrativo
-                          </Link>
-                          <Link
-                            to="/prognosis-evolucion"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Prognosis de Evolución
-                          </Link>
+                            Power BI <FaCaretDown />
+                          </button>
+                          {dropdownPowerBIOpen && (
+                            <div className="pl-6">
+                              <Link
+                                to="/auscultacion/llacuna"
+                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                onClick={handleLinkClick}
+                              >
+                                Llacuna
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
                   )}
-
-                  {(userRol === 'usuario' || userRol === 'admin') && (
-                    <div>
-                      <button
-                        onClick={() => handleDropdownClick(setDropdownOpen, dropdownOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
-                      >
-                        Inventario <FaCaretDown />
-                      </button>
-                      {dropdownOpen && (
-                        <div className="pl-6">
-                          <Link
-                            to="/consultas"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Consultas
-                          </Link>
-                          <Link
-                            to="/actualizacion"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Actualización
-                          </Link>
-                          <Link
-                            to="/informe-anual"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Informe Anual
-                          </Link>
-                          {/* Opciones anteriores comentadas
-                          <Link
-                            to="/formularios"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Formulario
-                          </Link>
-                          <Link
-                            to="/verRegistros"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Registros
-                          </Link>
-                          */}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {(userRol === 'usuario' || userRol === 'admin') && (
-                    <div>
-                      <button
-                        onClick={() => handleDropdownClick(setDropdownConservacionOpen, dropdownConservacionOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100"
-                      >
-                        Estado de conservación <FaCaretDown />
-                      </button>
-                      {dropdownConservacionOpen && (
-                        <div className="pl-6">
-                          <Link
-                            to="/consultas-conservacion"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Consultas
-                          </Link>
-                          {/* Opciones anteriores comentadas
-                          <Link
-                            to="/auscultacion/llacuna"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Llacuna
-                          </Link>
-                          <Link
-                            to="/auscultacion/glorias"
-                            className="block px-4 py-2 text-gray-600 hover:bg-gray-100"
-                            onClick={handleLinkClick}
-                          >
-                            Glorias
-                          </Link>
-                          */}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-
 
                   {user && (
                     <div className='px-6 font-medium text-gray-500'>
@@ -382,311 +413,256 @@ const Navbar = () => {
 
           {/* Menú principal */}
             {user && (
-              <div className="hidden xl:ml-6 xl:flex xl:space-x-8 items-center">
+              <div className="hidden xl:ml-6 xl:flex xl:space-x-2 items-center">
 
                 {/* Inicio */}
                 <Link
                   to="/"
-                  className="px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
+                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                   onClick={handleLinkClick}
                 >
                   Inicio
                 </Link>
 
-                {/* Dashboard */}
-                {(userRol === 'usuario' || userRol === 'admin') && (
+                {/* Dashboard - Oculto temporalmente */}
+                {/* {(userRol === 'usuario' || userRol === 'admin') && (
                   <Link
                     to="/dashboard-firmes"
-                    className="px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     onClick={handleLinkClick}
                   >
                     Dashboard
                   </Link>
-                )}
+                )} */}
 
-                {/* Gestión */}
+                {/* Datos generales */}
                 {(userRol === 'usuario' || userRol === 'admin') && (
-                  <div className="relative" ref={inspectionRef}>
+                  <div className="relative" ref={datosGeneralesRef}>
                     <button
                       onClick={() => {
-                        closeAllDropdowns(); // Cierra los otros dropdowns
-                        setDropdownInspectionOpen(!dropdownInspectionOpen); // Alterna el estado del actual
+                        closeAllDropdowns();
+                        setDropdownDatosGeneralesOpen(!dropdownDatosGeneralesOpen);
                       }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
+                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     >
-                      Gestión <FaCaretDown />
+                      Datos generales <FaCaretDown />
                     </button>
-                    {dropdownInspectionOpen && (
-                      <div className="absolute bg-white shadow-lg rounded-md mt-2 py-2 w-48 z-50">
-                        {/* Campos anteriores comentados
+                    {dropdownDatosGeneralesOpen && (
+                      <div className="absolute bg-white shadow-xl rounded-lg mt-2 py-2 w-52 z-50 border border-gray-100">
                         <Link
-                          to={`/elemento/${proyecto}`}
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                          to="/mapa-trafico"
+                          className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                           onClick={handleLinkClick}
                         >
-                          Iniciar Inspección
+                          Mapa de tráfico
                         </Link>
                         <Link
-                          to="/dashboard"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                          to="/aemet"
+                          className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                          onClick={handleLinkClick}
+                        >
+                          AEMET
+                        </Link>
+                        <Link
+                          to="/boe"
+                          className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                          onClick={handleLinkClick}
+                        >
+                          BOE
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Inventario de red */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <div className="relative" ref={inventarioRef}>
+                    <button
+                      onClick={() => {
+                        closeAllDropdowns();
+                        setDropdownInventarioOpen(!dropdownInventarioOpen);
+                      }}
+                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    >
+                      Inventario de red <FaCaretDown />
+                    </button>
+                    {dropdownInventarioOpen && (
+                      <div className="absolute bg-white shadow-xl rounded-lg mt-2 py-2 w-52 z-50 border border-gray-100">
+                        <Link
+                          to="/consultas"
+                          className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                          onClick={handleLinkClick}
+                        >
+                          Consultas
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Órdenes de estudio */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <Link
+                    to="/ordenes-estudio"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    onClick={handleLinkClick}
+                  >
+                    Órdenes de estudio
+                  </Link>
+                )}
+
+                {/* Actuaciones */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <Link
+                    to="/actuaciones"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    onClick={handleLinkClick}
+                  >
+                    Actuaciones
+                  </Link>
+                )}
+
+                {/* Campañas de auscultación */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <Link
+                    to="/campañas-auscultacion"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    onClick={handleLinkClick}
+                  >
+                    Campañas de auscultación
+                  </Link>
+                )}
+
+                {/* Análisis evolutivo */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <div className="relative" ref={analisisRef}>
+                    <button
+                      onClick={() => {
+                        closeAllDropdowns();
+                        setDropdownAnalisisOpen(!dropdownAnalisisOpen);
+                      }}
+                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    >
+                      Análisis evolutivo <FaCaretDown />
+                    </button>
+                    {dropdownAnalisisOpen && (
+                      <div className="absolute bg-white shadow-xl rounded-lg mt-2 py-2 w-52 z-50 border border-gray-100">
+                        {/* GIS submenu */}
+                        <div className="relative" ref={gisRef}>
+                          <button
+                            onClick={() => {
+                              setDropdownGISOpen(!dropdownGISOpen);
+                            }}
+                            className="flex items-center justify-between w-full px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                          >
+                            GIS
+                            <FaCaretDown className={`transition-transform duration-200 ${dropdownGISOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                          {dropdownGISOpen && (
+                            <div className="absolute left-full top-0 ml-1 bg-white shadow-xl rounded-lg py-2 w-56 z-50 border border-gray-100">
+                              <Link
+                                to="/indicadores"
+                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                onClick={handleLinkClick}
+                              >
+                                Indicadores
+                              </Link>
+                              <Link
+                                to="/prognosis-evolucion"
+                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                onClick={handleLinkClick}
+                              >
+                                Prognosis
+                              </Link>
+                              <Link
+                                to="/seguimiento-administrativo"
+                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                onClick={handleLinkClick}
+                              >
+                                Seguimiento administrativo
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                        {/* Dashboard */}
+                        <Link
+                          to="/dashboard-firmes"
+                          className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                           onClick={handleLinkClick}
                         >
                           Dashboard
                         </Link>
-                        <Link
-                          to="/visor_inspeccion"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          BIM
-                        </Link>
-                        */}
-                        
-                        <Link
-                          to="/noticias"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Noticias
-                        </Link>
-                        <Link
-                          to="/foro"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Foro
-                        </Link>
-                        <Link
-                          to="/descargas"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Descargas
-                        </Link>
-                        <Link
-                          to="/documentacion"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Documentación Técnica
-                        </Link>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Monitoreo */}
+                {/* Presupuesto conservación */}
                 {(userRol === 'usuario' || userRol === 'admin') && (
-                  <div className="relative" ref={monitoringRef}>
+                  <Link
+                    to="/presupuesto-conservacion"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    onClick={handleLinkClick}
+                  >
+                    Presupuesto conservación
+                  </Link>
+                )}
+
+                {/* CVF */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <Link
+                    to="/cvf"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    onClick={handleLinkClick}
+                  >
+                    CVF
+                  </Link>
+                )}
+
+                {/* Otros */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <div className="relative" ref={otrosRef}>
                     <button
                       onClick={() => {
-                        closeAllDropdowns(); // Cierra los otros dropdowns
-                        setDropdownMonitoringOpen(!dropdownMonitoringOpen); // Alterna el estado del actual
+                        closeAllDropdowns();
+                        setDropdownOtrosOpen(!dropdownOtrosOpen);
                       }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
+                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     >
-                      Monitoreo <FaCaretDown />
+                      Otros <FaCaretDown />
                     </button>
-                    {dropdownMonitoringOpen && (
-                      <div className="absolute bg-white shadow-lg rounded-md mt-2 py-2 w-64 z-50">
-                        <Link
-                          to="/indicadores"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Indicadores - Estado de la red
-                        </Link>
-                        <Link
-                          to="/seguimiento-administrativo"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Seguimiento Administrativo
-                        </Link>
-                        <Link
-                          to="/prognosis-evolucion"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Prognosis de Evolución
-                        </Link>
+                    {dropdownOtrosOpen && (
+                      <div className="absolute bg-white shadow-xl rounded-lg mt-2 py-2 w-52 z-50 border border-gray-100">
+                        <div className="relative" ref={powerBIRef}>
+                          <button
+                            onClick={() => {
+                              setDropdownPowerBIOpen(!dropdownPowerBIOpen);
+                            }}
+                            className="flex items-center justify-between w-full px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                          >
+                            Power BI <FaCaretDown />
+                          </button>
+                          {dropdownPowerBIOpen && (
+                            <div className="absolute left-full top-0 bg-white shadow-xl rounded-lg py-2 w-48 z-50 border border-gray-100">
+                              <Link
+                                to="/auscultacion/llacuna"
+                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                onClick={handleLinkClick}
+                              >
+                                Llacuna
+                              </Link>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
-                  </div>
-                )}
-
-                {/* Parte de obra */}
-                {(userRol === 'usuario' || userRol === 'admin') && (
-                  <div className="relative" ref={dropdownRef}>
-                    <button
-                      onClick={() => {
-                        closeAllDropdowns(); // Cierra los otros dropdowns
-                        setDropdownOpen(!dropdownOpen); // Alterna el estado del actual
-                      }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
-                    >
-                      Inventario <FaCaretDown />
-                    </button>
-                    {dropdownOpen && (
-                      <div className="absolute bg-white shadow-lg rounded-md mt-2 py-2 w-48 z-50">
-                        <Link
-                          to="/consultas"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Consultas
-                        </Link>
-                        <Link
-                          to="/actualizacion"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Actualización
-                        </Link>
-                        <Link
-                          to="/informe-anual"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Informe Anual
-                        </Link>
-                        {/* Opciones anteriores comentadas
-                        <Link
-                          to="/formularios"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Formulario
-                        </Link>
-                        <Link
-                          to="/verRegistros"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Registros
-                        </Link>
-                        */}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Auscultación */}
-                {(userRol === 'usuario' || userRol === 'admin') && (
-                  <div className="relative" ref={conservacionRef}>
-                    <button
-                      onClick={() => {
-                        closeAllDropdowns(); // Cierra los otros dropdowns
-                        setDropdownConservacionOpen(!dropdownConservacionOpen); // Alterna el estado del actual
-                      }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
-                    >
-                      Estado de conservación <FaCaretDown />
-                    </button>
-                    {dropdownConservacionOpen && (
-                      <div className="absolute bg-white shadow-lg rounded-md mt-2 py-2 w-48 z-50">
-                        <Link
-                          to="/consultas-conservacion"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Consultas
-                        </Link>
-                        {/* Opciones anteriores comentadas
-                        <Link
-                          to="/auscultacion/llacuna"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Llacuna
-                        </Link>
-                        <Link
-                          to="/auscultacion/glorias"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Glorias
-                        </Link>
-                        */}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {(userRol === 'usuario' || userRol === 'admin') && (
-                  <div className="relative" ref={rehabilitacionRef}>
-                    <button
-                      onClick={() => {
-                        closeAllDropdowns(); // Cierra los otros dropdowns
-                        setDropdownRehabilitacionOpen(!dropdownRehabilitacionOpen); // Alterna el estado del actual
-                      }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
-                    >
-                      Actuaciones de rehabilitación <FaCaretDown />
-                    </button>
-                    {dropdownRehabilitacionOpen && (
-                      <div className="absolute bg-white shadow-lg rounded-md mt-2 py-2 w-48 z-50">
-                        <Link
-                          to="/poe"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          P.O.E
-                        </Link>
-                        <Link
-                          to="/ordenes-estudios"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Ordenes de estudios
-                        </Link>
-                        {/* Opciones anteriores comentadas
-                        <Link
-                          to="/auscultacion/llacuna"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Llacuna
-                        </Link>
-                        <Link
-                          to="/auscultacion/glorias"
-                          className="block px-4 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-                          onClick={handleLinkClick}
-                        >
-                          Glorias
-                        </Link>
-                        */}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-{(userRol === 'usuario' || userRol === 'admin') && (
-                  <div className="relative">
-                    <Link
-                      to="/mapa-interactivo"
-                      className="px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
-                      onClick={handleLinkClick}
-                    >
-                      Mapa interactivo
-                    </Link>
-                  </div>
-                )}
-
-{(userRol === 'usuario' || userRol === 'admin') && (
-                  <div className="relative">
-                    <Link
-                      to="/fichas"
-                      className="px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
-                      onClick={handleLinkClick}
-                    >
-                      Fichas
-                    </Link>
                   </div>
                 )}
 
               </div>
             )}
+
 
           {/* Botón hamburguesa móvil */}
           <div className="flex items-center">
@@ -732,4 +708,6 @@ const NavLink = ({ to, linkName, onClick }) => (
 );
 
 export default Navbar;
+
+
 

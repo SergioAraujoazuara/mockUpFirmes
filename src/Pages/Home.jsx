@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ImagenHome from '../assets/imagenHome3.jpg';
+import ImagenHome from '../../public/fondoHome.jpeg';
 import { FaChartBar, FaCog } from "react-icons/fa";
 
 function Home() {
@@ -14,18 +14,12 @@ function Home() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section Moderno */}
       <div
-        className="relative min-h-[70vh] bg-cover bg-center flex items-center justify-center overflow-hidden"
+        className="relative min-h-[80vh] bg-cover bg-center flex items-center justify-center overflow-hidden"
         style={{ backgroundImage: `url(${ImagenHome})` }}
       >
         {/* Overlay simple */}
-        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 bg-black/50"></div>
         
-        {/* Elementos decorativos de fondo */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse delay-1000"></div>
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse delay-2000"></div>
-        </div>
         
         <div className="relative text-center text-white px-6 flex flex-col items-center z-10">
           <div className="mb-6">
@@ -34,12 +28,12 @@ function Home() {
             </span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-blue-300 bg-clip-text text-transparent leading-tight">
-            Gestión de Firmes
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white leading-tight">
+            Sistema avanzado de gestión de firmes
           </h1>
           
-          <p className="text-xl md:text-2xl max-w-4xl mx-auto text-gray-300 mb-8 leading-relaxed">
-            Sistema integral de gestión y mantenimiento de firmes de la RCE
+          <p className="text-xl md:text-2xl max-w-4xl mx-auto text-white mb-8 leading-relaxed">
+            Sistema integral de consulta mantenimiento de firmes de la RCE
           </p>
           
           <div className="flex justify-center">
