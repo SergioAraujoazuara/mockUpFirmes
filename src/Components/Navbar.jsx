@@ -158,6 +158,16 @@ const Navbar = () => {
             <div className="xl:hidden bg-white shadow-md absolute top-40 left-0 w-full z-50">
                 <div className="flex flex-col space-y-4 p-4">
 
+                  {/* Dashboard */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <Link
+                      to="/dashboard-firmes"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 font-medium"
+                      onClick={handleLinkClick}
+                    >
+                      Dashboard
+                    </Link>
+                  )}
 
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <div>
@@ -382,6 +392,17 @@ const Navbar = () => {
                 >
                   Inicio
                 </Link>
+
+                {/* Dashboard */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <Link
+                    to="/dashboard-firmes"
+                    className="px-3 py-2 rounded-md text-md font-medium text-gray-500 hover:text-sky-600"
+                    onClick={handleLinkClick}
+                  >
+                    Dashboard
+                  </Link>
+                )}
 
                 {/* Gestión */}
                 {(userRol === 'usuario' || userRol === 'admin') && (

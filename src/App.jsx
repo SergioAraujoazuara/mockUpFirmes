@@ -33,6 +33,7 @@ import Indicadores from './Pages/Indicadores.jsx';
 import SeguimientoAdministrativo from './Pages/SeguimientoAdministrativo.jsx';
 import PrognosisEvolucion from './Pages/PrognosisEvolucion.jsx';
 import Consultas from './Pages/Consultas.jsx';
+import DashboardFirmes from './Pages/DashboardFirmes.jsx';
 
 // App.js
 // This is the main entry point for the application. It defines the routing structure
@@ -51,6 +52,7 @@ function App() {
     { path: '/seguimiento-administrativo', element: <SeguimientoAdministrativo /> },
     { path: '/prognosis-evolucion', element: <PrognosisEvolucion /> },
     { path: '/consultas', element: <Consultas /> },
+    { path: '/dashboard-firmes', element: <DashboardFirmes /> },
 
   ];
   // adminRoutes
