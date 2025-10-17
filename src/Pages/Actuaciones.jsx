@@ -48,9 +48,9 @@ const Actuaciones = () => {
 
   const tabs = [
     { id: 'ifc', name: 'Archivos IFC', icon: FaFile, description: 'Modelos BIM y archivos IFC' },
-    { id: 'microsoft365', name: 'Microsoft 365', icon: FaMicrosoft, description: 'Word, Excel, PowerPoint' },
+    { id: 'microsoft365', name: 'Microsoft 365', icon: FaMicrosoft, description: 'Word, Excel y PowerPoint' },
     { id: 'data', name: 'Data', icon: FaTable, description: 'CSV, JSON, XML y otros formatos de datos' },
-    { id: 'informes', name: 'Documentación Técnica', icon: FaFileAlt, description: 'Informes, planos y memorias técnicas' }
+    { id: 'informes', name: 'Documentación técnica', icon: FaFileAlt, description: 'Informes, planos y memorias técnicas' }
   ];
 
   const handleFileSelect = (tabId) => {
@@ -220,7 +220,7 @@ const Actuaciones = () => {
                           <Icon className="text-2xl text-sky-600" />
                         </div>
                         <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                          Subir {tab.name}
+                          Cargar {tab.name}
                         </h3>
                         <p className="text-gray-600 mb-6 max-w-md">
                           Arrastra y suelta tus archivos aquí o haz clic para seleccionar
@@ -253,7 +253,7 @@ const Actuaciones = () => {
                             className="inline-flex items-center gap-2 px-6 py-3 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200"
                           >
                             <FaUpload />
-                            Seleccionar Archivos
+                            Seleccionar archivos
                           </button>
                         )}
                       </div>
@@ -264,7 +264,7 @@ const Actuaciones = () => {
                   <div>
                     <div className="flex items-center gap-3 mb-6">
                       <FaHistory className="text-gray-600" />
-                      <h3 className="text-lg font-semibold text-gray-800">Historial de Archivos</h3>
+                      <h3 className="text-lg font-semibold text-gray-800">Historial de archivos</h3>
                     </div>
 
                     <div className="space-y-3">
@@ -372,7 +372,7 @@ const Actuaciones = () => {
               <div className="w-10 h-10 bg-sky-100 rounded-lg flex items-center justify-center">
                 <FaFileAlt className="text-sky-600" />
               </div>
-              <h3 className="font-semibold text-gray-800">Documentación Técnica</h3>
+              <h3 className="font-semibold text-gray-800">Documentación técnica</h3>
             </div>
             <p className="text-sm text-gray-600">
               Informes, planos DWG y memorias técnicas de proyectos
