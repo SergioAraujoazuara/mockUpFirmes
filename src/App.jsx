@@ -35,6 +35,11 @@ import PrognosisEvolucion from './Pages/PrognosisEvolucion.jsx';
 import Consultas from './Pages/Consultas.jsx';
 import DashboardFirmes from './Pages/DashboardFirmes.jsx';
 import Actuaciones from './Pages/Actuaciones.jsx';
+import AcvfOpcion1 from './Pages/AcvfOpcion1.jsx';
+import AcvfOpcion2 from './Pages/AcvfOpcion2.jsx';
+import AcvfOpcion4 from './Pages/AcvfOpcion4.jsx';
+import BOE from './Pages/BOE.jsx';
+import OrdenesEstudio from './Pages/OrdenesEstudio.jsx';
 
 // App.js
 // This is the main entry point for the application. It defines the routing structure
@@ -55,6 +60,11 @@ function App() {
     { path: '/consultas', element: <Consultas /> },
     { path: '/dashboard-firmes', element: <DashboardFirmes /> },
     { path: '/actuaciones', element: <Actuaciones /> },
+    { path: '/acvf/opcion-1', element: <AcvfOpcion1 /> },
+    { path: '/acvf/opcion-2', element: <AcvfOpcion2 /> },
+    { path: '/acvf/opcion-4', element: <AcvfOpcion4 /> },
+    { path: '/boe', element: <BOE /> },
+    { path: '/ordenes-estudio', element: <OrdenesEstudio /> },
 
   ];
   // adminRoutes

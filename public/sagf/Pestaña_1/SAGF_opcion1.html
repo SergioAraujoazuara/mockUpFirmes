@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAGF - Sistema Avanzado de Gestión de Firmes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-md border-b border-gray-200">
+        <div class="px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo_tpf.png" alt="TPF Ingeniería" class="h-10">
+                    <div class="border-l border-gray-300 pl-4">
+                        <div class="flex items-center gap-2">
+                            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-1.5 rounded-lg">
+                                <i data-lucide="bar-chart-3" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-base font-bold text-gray-900">SAGF</h1>
+                                <p class="text-xs text-gray-500">Sistema Avanzado de Gestión de Firmes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i data-lucide="award" class="w-4 h-4 text-yellow-500"></i>
+                    <span class="text-xs font-medium text-gray-700">ISO 14040</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="px-6">
+            <nav class="flex gap-6">
+                <button onclick="changeTab('overview')" id="tab-overview" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-transparent text-gray-500 hover:text-gray-700">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    Resumen
+                </button>
+                <button onclick="changeTab('acv')" id="tab-acv" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-blue-600 text-blue-600 font-medium">
+                    <i data-lucide="leaf" class="w-4 h-4"></i>
+                    Análisis Ciclo de Vida
+                </button>
+                <button onclick="changeTab('proyectos')" id="tab-proyectos" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-transparent text-gray-500 hover:text-gray-700">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    Proyectos
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="p-4">
+        <!-- ACV Tab -->
+        <div id="content-acv" class="flex gap-4">
+            <!-- COLUMNA IZQUIERDA -->
+            <div class="w-64 flex-shrink-0 space-y-3">
+                <!-- KPI 1 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Emisiones CO₂</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">2,785</h3>
+                                <span class="text-xs text-gray-500">ton</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>12.3%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600">
+                            <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Energía</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">13,000</h3>
+                                <span class="text-xs text-gray-500">MWh</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>8.7%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-600">
+                            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Agua</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">45,200</h3>
+                                <span class="text-xs text-gray-500">m³</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>15.2%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600">
+                            <i data-lucide="droplets" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 4 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Sostenibilidad</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">87.5</h3>
+                                <span class="text-xs text-gray-500">/100</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>5.8%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600">
+                            <i data-lucide="award" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerta -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3">
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <h4 class="font-semibold text-blue-900 text-xs mb-1">Objetivo 2030</h4>
+                            <p class="text-xs text-blue-700">68% reducción</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen 1 -->
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-md p-3 text-white">
+                    <h4 class="text-xs font-medium opacity-90 mb-1">Material Reciclado</h4>
+                    <p class="text-xl font-bold">42%</p>
+                    <p class="text-xs opacity-80">+8% vs anterior</p>
+                </div>
+
+                <!-- Resumen 2 -->
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-md p-3 text-white">
+                    <h4 class="text-xs font-medium opacity-90 mb-1">Reducción Huella</h4>
+                    <p class="text-xl font-bold">1,240</p>
+                    <p class="text-xs opacity-80">ton CO₂ ahorradas</p>
+                </div>
+
+                <!-- Resumen 3 -->
+                <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg shadow-md p-3 text-white">
+                    <h4 class="text-xs font-medium opacity-90 mb-1">Certificaciones</h4>
+                    <p class="text-xl font-bold">7</p>
+                    <p class="text-xs opacity-80">ISO 14040, 14044</p>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA - Grid 2x2 -->
+            <div class="flex-1 grid grid-cols-2 gap-4">
+                <!-- Gráfico 1 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Emisiones por Fase</h3>
+                    <div style="height: 200px;">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 2 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Distribución Impacto</h3>
+                    <div style="height: 200px;">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 3 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Comparativa Firmes</h3>
+                    <div style="height: 200px;">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 4 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Tendencia vs Objetivo</h3>
+                    <div style="height: 200px;">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="content-overview" class="hidden bg-white rounded-xl shadow-lg p-12 text-center">
+            <i data-lucide="activity" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Resumen General</h3>
+            <p class="text-gray-600">Módulo en desarrollo</p>
+        </div>
+
+        <!-- Proyectos Tab -->
+        <div id="content-proyectos" class="hidden bg-white rounded-xl shadow-lg p-12 text-center">
+            <i data-lucide="bar-chart-3" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Proyectos</h3>
+            <p class="text-gray-600">Módulo en desarrollo</p>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Tab switching
+        function changeTab(tabName) {
+            // Hide all content
+            document.getElementById('content-acv').classList.add('hidden');
+            document.getElementById('content-overview').classList.add('hidden');
+            document.getElementById('content-proyectos').classList.add('hidden');
+
+            // Reset all tabs
+            ['overview', 'acv', 'proyectos'].forEach(tab => {
+                const btn = document.getElementById('tab-' + tab);
+                btn.classList.remove('border-blue-600', 'text-blue-600', 'font-medium');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            
+            // Activate selected tab
+            const activeBtn = document.getElementById('tab-' + tabName);
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            activeBtn.classList.add('border-blue-600', 'text-blue-600', 'font-medium');
+
+            // Reinitialize icons
+            lucide.createIcons();
+        }
+
+        // Chart 1 - Emisiones por Fase
+        const ctx1 = document.getElementById('chart1').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Extracción', 'Fabricación', 'Transporte', 'Construcción', 'Uso', 'Manten.', 'Fin vida'],
+                datasets: [{
+                    label: 'CO₂ (ton)',
+                    data: [245, 580, 120, 350, 890, 420, 180],
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+                    x: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+
+        // Chart 2 - Distribución de Impacto
+        const ctx2 = document.getElementById('chart2').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['CO₂', 'Energía', 'Agua', 'Residuos'],
+                datasets: [{
+                    data: [45, 30, 15, 10],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Chart 3 - Comparativa de Firmes
+        const ctx3 = document.getElementById('chart3').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Convencional', 'Reciclado 30%', 'Reciclado 50%', 'Sostenible'],
+                datasets: [
+                    {
+                        label: 'Impacto',
+                        data: [100, 75, 55, 40],
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Coste',
+                        data: [85, 78, 72, 80],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { font: { size: 9 } }
+                    }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 9 } } },
+                    y: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+
+        // Chart 4 - Tendencia
+        const ctx4 = document.getElementById('chart4').getContext('2d');
+        new Chart(ctx4, {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
+                datasets: [
+                    {
+                        label: 'Real',
+                        data: [2850, 2680, 2420, 2180, 1950, 1720],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Objetivo',
+                        data: [2800, 2600, 2400, 2200, 2000, 1800],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { font: { size: 9 } }
+                    }
+                },
+                scales: {
+                    y: { ticks: { font: { size: 9 } } },
+                    x: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

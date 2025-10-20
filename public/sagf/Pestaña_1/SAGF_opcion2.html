@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAGF Dashboard - ACV</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+	
+</head>
+
+<link rel="stylesheet" href="style.tabs.css">
+
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Análisis de Ciclo de Vida (ACV) del Firme</h1>
+            <div class="filters">
+                <select>
+                    <option>Proyecto Carretera M-30, Tramo Norte</option>
+                    <option>Proyecto Autovía A-4, Tramo Sur</option>
+                </select>
+                <input type="date" value="2025-10-26">
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <div class="kpi-card">
+                <div class="card-icon" style="background-color: #e0f2fe;">
+                    <i class="ph-bold ph-cloud" style="color: #0ea5e9;"></i>
+                </div>
+                <div class="card-content">
+                    <p>Huella de carbono total</p>
+                    <h3>1,250 <span class="unit">t CO₂-eq</span></h3>
+                </div>
+            </div>
+            <div class="kpi-card">
+                 <div class="card-icon" style="background-color: #fef9c3;">
+                    <i class="ph-bold ph-lightning" style="color: #eab308;"></i>
+                </div>
+                <div class="card-content">
+                    <p>Consumo energético</p>
+                    <h3>8.5 <span class="unit">TJ</span></h3>
+                </div>
+            </div>
+            <div class="kpi-card">
+                 <div class="card-icon" style="background-color: #dcfce7;">
+                    <i class="ph-bold ph-money" style="color: #22c55e;"></i>
+                </div>
+                <div class="card-content">
+                    <p>Coste ciclo de vida (LCC)</p>
+                    <h3>€2.1M <span class="unit"></span></h3>
+                </div>
+            </div>
+            <div class="kpi-card">
+                 <div class="card-icon" style="background-color: #ede9fe;">
+                    <i class="ph-bold ph-recycle" style="color: #8b5cf6;"></i>
+                </div>
+                <div class="card-content">
+                    <p>Índice de circularidad</p>
+                    <h3>68% <span class="unit"></span></h3>
+                </div>
+            </div>
+
+            <div class="main-chart-card">
+                <h4><i class="ph-fill ph-chart-bar"></i> Impacto ambiental por fase del ACV</h4>
+                <p>Comparativa de emisiones de GEI para distintas alternativas de diseño del firme.</p>
+                <canvas id="acvBarChart"></canvas>
+            </div>
+
+            <div class="secondary-chart-card">
+                <h4><i class="ph-fill ph-chart-polar"></i> Radar de sostenibilidad</h4>
+                <p>Análisis multi-criterio de las alternativas.</p>
+                 <canvas id="sustainabilityRadarChart"></canvas>
+            </div>
+
+            <div class="secondary-chart-card">
+                 <h4><i class="ph-fill ph-tree-structure"></i> Desglose de materiales</h4>
+                 <p>Contribución a la huella de carbono por material.</p>
+                 <canvas id="materialsDoughnutChart"></canvas>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+	
+	<section class="lcsatabs" id="lcsatabs">
+  <div class="lcsatabs-header" role="tablist" aria-label="Indicadores LCSA">
+    <button role="tab" aria-selected="true" aria-controls="tab-amb" id="btn-amb">Ambiental (LCA)</button>
+    <button role="tab" aria-selected="false" aria-controls="tab-econ" id="btn-econ">Económico (LCC)</button>
+    <button role="tab" aria-selected="false" aria-controls="tab-soc" id="btn-soc">Social (S-LCA)</button>
+    <button role="tab" aria-selected="false" aria-controls="tab-res" id="btn-res">Resumen</button>
+  </div>
+  <div class="lcsatabs-panel" id="tab-amb" role="tabpanel" aria-labelledby="btn-amb" aria-hidden="false">
+    <p class="lcsa-kicker">Indicadores ambientales conforme a EN 15804+A2 / ReCiPe (midpoint).</p>
+    <table class='lcsa-table'><thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead><tbody><tr><td>GWP – Potencial de calentamiento global</td><td class='lcsa-unit'>kg CO₂e</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Incluye fabricación, transporte, construcción, conservación y uso por resistencia a la rodadura.</td></tr><tr><td>AP – Acidificación</td><td class='lcsa-unit'>kg SO₂e</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Emisiones en fabricación de ligantes/áridos y transporte.</td></tr><tr><td>EP – Eutrofización</td><td class='lcsa-unit'>kg PO₄³⁻e</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Aportes de nutrientes de procesos industriales/lixiviados.</td></tr><tr><td>POCP – Ozono fotoquímico</td><td class='lcsa-unit'>kg NMVOCe</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>COV en fabricación/puesta en obra de mezclas asfálticas.</td></tr><tr><td>ODP – Agotamiento de ozono</td><td class='lcsa-unit'>kg CFC-11e</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Generalmente bajo; se reporta por comparabilidad.</td></tr><tr><td>PM – Formación de partículas</td><td class='lcsa-unit'>kg PM₂.₅e</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Polvo en canteras, fabricación y obra.</td></tr><tr><td>Toxicidad humana (cáncer/no cáncer)</td><td class='lcsa-unit'>CTUh</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Derivado de sustancias y procesos de producción.</td></tr><tr><td>Eco-toxicidad acuática continental</td><td class='lcsa-unit'>CTUe</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Emisiones a agua asociadas a producción y obra.</td></tr><tr><td>Radiación ionizante</td><td class='lcsa-unit'>kBq U-235e</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Exigido en algunos marcos normativos.</td></tr><tr><td>Uso del suelo / transformación</td><td class='lcsa-unit'>m²·a</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Extracción de áridos y ocupación de instalaciones.</td></tr><tr><td>CED – Demanda de energía primaria (no ren./ren.)</td><td class='lcsa-unit'>MJ</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Suma de energía directa e incorporada.</td></tr><tr><td>Agotamiento de recursos abióticos (minerales/metales)</td><td class='lcsa-unit'>kg Sbe</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Consumo de recursos no renovables.</td></tr><tr><td>Uso de agua</td><td class='lcsa-unit'>m³ depriv.</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Agua consumida en procesos; categoría A2 EN 15804.</td></tr><tr><td>Residuos generados (pelig./no pelig./inertes)</td><td class='lcsa-unit'>kg</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Incluye fresado y fin de vida.</td></tr><tr><td>Materiales secundarios/reciclados</td><td class='lcsa-unit'>kg / %</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>RAP, áridos reciclados, adiciones minerales.</td></tr><tr><td>Salidas para valorización/reciclaje</td><td class='lcsa-unit'>kg</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Flujos que evitan disposición final.</td></tr></tbody></table>
+  </div>
+  <div class="lcsatabs-panel" id="tab-econ" role="tabpanel" aria-labelledby="btn-econ" aria-hidden="true">
+    <p class="lcsa-kicker">Indicadores económicos (LCC) con descuento real y separación agencia/usuario.</p>
+    <table class='lcsa-table'><thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead><tbody><tr><td>NPV – Coste del ciclo de vida (agencia)</td><td class='lcsa-unit'>€ / km·carril·año</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>CAPEX + OPEX + fin de vida, actualizado (3–5 % real).</td></tr><tr><td>Coste de usuario por intervenciones</td><td class='lcsa-unit'>€ / intervención</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Demoras, desvíos y sobreconsumo de combustible.</td></tr><tr><td>Coste total anual</td><td class='lcsa-unit'>€ / año</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Suma de costes de agencia y usuario en el horizonte.</td></tr><tr><td>Índice coste-eficacia (CO₂ evitado)</td><td class='lcsa-unit'>€ / kg CO₂e evitado</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Inversión adicional dividida por reducción de GWP.</td></tr><tr><td>Relación Beneficio/Coste</td><td class='lcsa-unit'>adim.</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Beneficios netos / costes netos (escenario de referencia).</td></tr><tr><td>VAN incremental (alternativa vs. base)</td><td class='lcsa-unit'>€</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Diferencia de NPV entre alternativas.</td></tr><tr><td>Exposición a precio de betún/energía</td><td class='lcsa-unit'>% del coste</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Porción de coste sensible a esos insumos.</td></tr><tr><td>Valorización material (ahorro neto)</td><td class='lcsa-unit'>€ / %</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Ahorros por RAP/árido reciclado menos costes asociados.</td></tr></tbody></table>
+  </div>
+  <div class="lcsatabs-panel" id="tab-soc" role="tabpanel" aria-labelledby="btn-soc" aria-hidden="true">
+    <p class="lcsa-kicker">Indicadores sociales por actor: trabajadores, comunidad, usuarios, proveedores.</p>
+    <table class='lcsa-table'><thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead><tbody><tr><td>LTIFR/TRIFR – Accidentes con baja</td><td class='lcsa-unit'>nº / 10⁶ h</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Seguridad de los trabajadores en planta/obra.</td></tr><tr><td>Horas de formación en seguridad</td><td class='lcsa-unit'>h / trabajador·año</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Capacitación y cultura preventiva.</td></tr><tr><td>Cumplimiento EPI/exposición ocupacional</td><td class='lcsa-unit'>% jornadas conformes</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Ruido, polvo, COV; vs. VLEP.</td></tr><tr><td>% empleo local / FTE creados</td><td class='lcsa-unit'>% / FTE</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Contribución socioeconómica local.</td></tr><tr><td>Quejas de comunidad</td><td class='lcsa-unit'>nº / mes</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Ruido, polvo, accesos durante obra.</td></tr><tr><td>Proximidad receptores sensibles <300 m</td><td class='lcsa-unit'>nº</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Escuelas, hospitales; medidas mitigadoras.</td></tr><tr><td>Accesibilidad afectada (hogares/servicios)</td><td class='lcsa-unit'>nº / días</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Impacto temporal por desvíos/cortes.</td></tr><tr><td>Compras locales</td><td class='lcsa-unit'>% del gasto</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Peso de proveedores locales/regionales.</td></tr><tr><td>Seguridad vial (accidentes por 100 M veh-km)</td><td class='lcsa-unit'>nº / 100 M veh-km</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Antes/después en relación con el estado superficial.</td></tr><tr><td>Demoras por obra</td><td class='lcsa-unit'>h·veh</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Horas de retraso acumuladas.</td></tr><tr><td>Variación tiempo medio de viaje</td><td class='lcsa-unit'>% / min</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Cambio tras la intervención (estado superficial).</td></tr><tr><td>Ruido de rodadura</td><td class='lcsa-unit'>Δ dB(A)</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Cambio respecto a referencia a velocidad estándar.</td></tr><tr><td>Proveedores auditados/conformes</td><td class='lcsa-unit'>%</td><td data-h='Valor'>—</td><td class='lcsa-note' data-h='Nota'>Trazabilidad y cumplimiento social.</td></tr></tbody></table>
+  </div>
+  <div class="lcsatabs-panel" id="tab-res" role="tabpanel" aria-labelledby="btn-res" aria-hidden="true">
+    <p class="lcsa-kicker">Cuadro resumen: valores clave por alternativa.</p>
+    <table class="lcsa-table">
+      <thead><tr><th>Dimensión</th><th>Indicador</th><th>Unidad</th><th>Alternativa A</th><th>Alternativa B</th><th>Alternativa C</th></tr></thead>
+      <tbody>
+        <tr><td>Ambiental</td><td>GWP</td><td>kg CO₂e</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Económico</td><td>NPV (agencia)</td><td>€/km·carril·año</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Social</td><td>LTIFR</td><td>nº/10⁶ h</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<script src="indicators.tabs.js"></script>	
+</body>
+</html>

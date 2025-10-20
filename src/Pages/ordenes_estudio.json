@@ -1,0 +1,462 @@
+{
+    "fecha_consulta": "20-10-2025",
+    "provincias": {
+      "ALICANTE": [
+        {
+          "clave": "32-A-3480",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "29/04/1998",
+          "fecha_fin": "28/04/2000",
+          "presupuesto_oe": "7.452.550,09",
+          "presupuesto_vigente": "7.453.100,33",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-330 ALICANTE-L.P VALENCIA"
+        },
+        {
+          "clave": "32-A-3590",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/02/1999",
+          "fecha_fin": "29/07/1999",
+          "presupuesto_oe": "3.305.566,57",
+          "presupuesto_vigente": "3.845.308,18",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 ALICANTE-L.P MURCIA"
+        },
+        {
+          "clave": "32-A-3600",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/02/1999",
+          "fecha_fin": "13/05/1999",
+          "presupuesto_oe": "2.824.756,89",
+          "presupuesto_vigente": "2.828.907,01",
+          "titulo": "RENOVACION SUPERFICIAL EN LA CARRETERA A-7 VARIOS PPKK"
+        },
+        {
+          "clave": "32-A-3610",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/02/1999",
+          "fecha_fin": "09/08/1999",
+          "presupuesto_oe": "2.794.706,29",
+          "presupuesto_vigente": "4.010.250,20",
+          "titulo": "REHABILITACION FIRME EN LA CARRETERA N-332 ALICANTE-L.P MURCIA (VARIOS)"
+        },
+        {
+          "clave": "32-A-3620",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "09/03/1999",
+          "fecha_fin": "09/05/2001",
+          "presupuesto_oe": "4.459.509,81",
+          "presupuesto_vigente": "4.461.074,83",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-332 ALICANTE-VERGEL"
+        },
+        {
+          "clave": "32-A-3630",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "09/03/1999",
+          "fecha_fin": "04/02/2002",
+          "presupuesto_oe": "4.433.065,28",
+          "presupuesto_vigente": "5.066.663,02",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 ENTRE LOS PP.KK. 752,37 Y 809,26."
+        },
+        {
+          "clave": "32-A-3820",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "11/06/2001",
+          "fecha_fin": "25/06/2004",
+          "presupuesto_oe": "1.260.322,38",
+          "presupuesto_vigente": "1.717.086,75",
+          "titulo": "REHABILITACION FIRME RIGIDO CON M.B. EN LA CARRETERA N-338 ENTRE LOS PPKK 0,00 Y EL 4,45. TRAMO: ACCESO AEROPUERTO ALICANTE"
+        },
+        {
+          "clave": "32-A-3850",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "05/06/2001",
+          "fecha_fin": "02/09/2004",
+          "presupuesto_oe": "901.518,16",
+          "presupuesto_vigente": "1.783.828,59",
+          "titulo": "CONSERVACION DEL FIRME EN LA CARRETERA N-344 ENTRE LOS PP.KK. 118,60 Y 124,52"
+        },
+        {
+          "clave": "32-A-4060",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/09/2004",
+          "fecha_fin": "03/03/2005",
+          "presupuesto_oe": "1.939.999,76",
+          "presupuesto_vigente": "1.998.802,75",
+          "titulo": "REHABILITACION DE FIRME EN LA CARRETERA N-332 ENTRE LOS PP.KK. 143,00 Y 153,00. TRAMO VARIANTE DE BENIDORM."
+        },
+        {
+          "clave": "32-A-4090",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "08/07/2005",
+          "fecha_fin": "19/01/2006",
+          "presupuesto_oe": "2.132.781,51",
+          "presupuesto_vigente": "2.689.705,11",
+          "titulo": "REHABILITACION ESTRUCTURAL DEL FIRME DE LA CARRETERAS A-7 Y A-70. VARIOS TRAMOS"
+        },
+        {
+          "clave": "32-A-4100",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "10/10/2005",
+          "fecha_fin": "27/02/2006",
+          "presupuesto_oe": "1.786.620,21",
+          "presupuesto_vigente": "1.913.859,57",
+          "titulo": "REHABILITACION DEL FIRME EN LA CARRETERA A-77 ENTRE LOS PP.KK. 0,00 Y 11,40. TRAMO: ALICANTE - RAMBLA DE RAMBUCHAR."
+        },
+        {
+          "clave": "32-A-4120",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "19/01/2006",
+          "fecha_fin": "27/02/2006",
+          "presupuesto_oe": "3.594.980,93",
+          "presupuesto_vigente": "3.594.980,93",
+          "titulo": "REHABILITACION SUPERFICIAL EN LA CARRETERA A-70 (PPKK 1,00 A 23,00) Y A-7 (PPKK 714,00 A 749,149)"
+        },
+        {
+          "clave": "32-A-4240",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "26/06/2006",
+          "fecha_intermedia": "16/02/2007",
+          "fecha_fin": "15/01/2008",
+          "presupuesto_oe": "10.406.659,49",
+          "presupuesto_vigente": "10.104.800,95",
+          "titulo": "REHABILITACION SUPERFICIAL Y ESTRUCTURAL DEL FIRME EN LAS CARRETERAS A-7, N-340 (PPKK 722,00 AL 809,00) Y N-332 (PPKK 38,00 AL 204,00)"
+        },
+        {
+          "clave": "32-A-4310",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "08/02/2007",
+          "presupuesto_oe": "8.970.857,78",
+          "presupuesto_vigente": "",
+          "titulo": "REFUERZO, REPERFILADO Y SELLADO DE GRIETAS EN EL FIRME, MEJORA DEL DRENAJE, REHABILITACION DE TALUDES Y REPARACION DE TUBOS DE ACERO CORRUGADO EN LA AUTOVIA A-7 ENTRE LOS PP.KK 11+000 AL 46+400"
+        },
+        {
+          "clave": "32-A-4550",
+          "situacion": "PROGRAMADA",
+          "prioridad": "0",
+          "fecha_inicio": "24/07/2012",
+          "presupuesto_oe": "2.029.517,18",
+          "presupuesto_vigente": "",
+          "titulo": "Rehabilitación superficial del firme en las carreteras A-7,A-70,A-77.A-77a,A-78,A-79, El-20 entre los PPKK, 709,400-749,072, 7,750-46,332, 807,000-808,565; 0,000-31,000; 3,860-7,750; 0,000-4,700; 709,950-716,200, 0,000-6,000; 0,000-2,800 respectivamente. Tramos: Varios. Provincia: Alicante."
+        },
+        {
+          "clave": "32-A-4560",
+          "situacion": "PROGRAMADA",
+          "prioridad": "0",
+          "fecha_inicio": "24/07/2012",
+          "presupuesto_oe": "5.419.576,43",
+          "presupuesto_vigente": "",
+          "titulo": "Rehabilitación superficial del firme en las carreteras N-340, N-325 N-338, N-332 y N-332 a entre los PPKK 678,814-709, 950 716,200-733,856 (N-340); 0,000-20,200 (N-325); 0,000-5,000 (N-338); 38,810-98,683 y 122,500-204,643 (N-332) y 121,685-122,500 (N-332a) respectivamente. Tramos: Varios Provincia: Alicante."
+        }
+      ],
+      "ALBACETE": [
+        {
+          "clave": "32-AB-2540",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "17/09/1991",
+          "fecha_fin": "07/04/2000",
+          "presupuesto_oe": "10.818.217,88",
+          "presupuesto_vigente": "7.237.911,25",
+          "titulo": "REFUERZO DE FIRME Y MEJORA TRAVESIAS EN LA CARRETERA N-301 ALBACETE-L.P. MURCIA (P.CAÑADA, TOBARRA, C)"
+        },
+        {
+          "clave": "32-AB-2990",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/04/1997",
+          "fecha_fin": "08/10/1998",
+          "presupuesto_oe": "775.305,61",
+          "presupuesto_vigente": "865.178,32",
+          "titulo": "REFUERZO DEL FIRME EN LA CARRETERA N-330 (PP.KK 93,46 A 99,06) Y N-430 (N-430 589,82 A 596,00)"
+        },
+        {
+          "clave": "32-AB-3000",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/04/1997",
+          "fecha_fin": "21/07/2003",
+          "presupuesto_oe": "919.548,52",
+          "presupuesto_vigente": "1.873.424,93",
+          "titulo": "MICROAGLOMERADO EN LA CARRETERA N-301 P.K 229,10/232,30 M.D Y 215/242,7 M.I"
+        },
+        {
+          "clave": "32-AB-3090",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "14/01/1999",
+          "fecha_fin": "14/04/1999",
+          "presupuesto_oe": "661.113,31",
+          "presupuesto_vigente": "692.076,79",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-430 MUNERA"
+        },
+        {
+          "clave": "32-AB-4040",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/09/1999",
+          "fecha_fin": "31/07/2000",
+          "presupuesto_oe": "4.808.096,84",
+          "presupuesto_vigente": "4.611.012,45",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-310 L.P CIUDAD REAL-L.P CUENCA"
+        },
+        {
+          "clave": "32-AB-4210",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "16/02/2001",
+          "fecha_fin": "10/09/2008",
+          "presupuesto_oe": "1.803.036,30",
+          "presupuesto_vigente": "2.380.316,91",
+          "titulo": "REFUERZO DE FIRME Y MEJORA DE SEÑALIZACIÓN VERTICAL EN LA CARRETERA N-322 ENTRE LOS PP.KK. 275.70 Y 291.00. TRAMO ALCARAZ - INTERSECCIÓN CM-3224."
+        },
+        {
+          "clave": "32-AB-4260",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "30/05/2002",
+          "fecha_fin": "15/10/2003",
+          "presupuesto_oe": "4.499.999,96",
+          "presupuesto_vigente": "4.947.122,30",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-322 ENTRE LOS PP.KK. 373.50 Y 417.00. TRAMO PUENTE SOBRE RIO JUCAR - REQUENA."
+        },
+        {
+          "clave": "32-AB-4270",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "24/06/2002",
+          "fecha_fin": "10/09/2008",
+          "presupuesto_oe": "3.999.999,96",
+          "presupuesto_vigente": "5.648.956,78",
+          "titulo": "REFUERZO DEL FIRME EN LA CARRETERA N-322 ENTRE LOS PP.KK. 246,21 Y 275,70. TRAMO. ALCARAZ - INTERSECCIÓN CM-3223."
+        },
+        {
+          "clave": "32-AB-4290",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "23/01/2004",
+          "fecha_fin": "18/01/2005",
+          "presupuesto_oe": "5.399.999,95",
+          "presupuesto_vigente": "7.017.276,77",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA A-31 ENTRE LOS PP.KK. 243,50 Y 251,50. ALBACETE"
+        },
+        {
+          "clave": "32-AB-4420",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "10/11/2005",
+          "fecha_fin": "10/05/2006",
+          "presupuesto_oe": "2.000.000,00",
+          "presupuesto_vigente": "2.367.823,88",
+          "titulo": "REHABILITACIÓN SUPERFICIAL DEL FIRME EN LA CARRETERA A-35 ENTRE LOS PPKK 0,00 AL 8,50. TRAMO ENLACE A-31 - L.P. VALENCIA"
+        },
+        {
+          "clave": "32-AB-4500",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "12/12/2006",
+          "fecha_fin": "10/05/2007",
+          "presupuesto_oe": "11.675.000,00",
+          "presupuesto_vigente": "13.296.910,83",
+          "titulo": "REHABILITACION SUPERFICIAL DE FIRME EN LAS CARRETERAS N-322 ENTRE LOS PPKK 291,00 AL 316,30 Y N-430 ENTRE LOS PPKK 419,70 AL 486,50"
+        },
+        {
+          "clave": "32-AB-4570",
+          "situacion": "VIVA",
+          "prioridad": "1",
+          "fecha_inicio": "06/06/2008",
+          "fecha_fin": "29/09/2008",
+          "presupuesto_oe": "2.600.000,00",
+          "presupuesto_vigente": "2.920.818,07",
+          "titulo": "REHABILITACION SUPERFICIAL DEL FIRME."
+        }
+      ],
+      "ALMERÍA": [
+        {
+          "clave": "32-AL-2680",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "29/07/1993",
+          "fecha_fin": "12/07/2000",
+          "presupuesto_oe": "1.244.095,06",
+          "presupuesto_vigente": "1.341.670,80",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 AGUADULCE-ALMERIA"
+        },
+        {
+          "clave": "32-AL-2690",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "29/07/1993",
+          "fecha_fin": "08/08/2003",
+          "presupuesto_oe": "1.322.226,63",
+          "presupuesto_vigente": "1.505.871,99",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340a ENTRE PP.KK. 463,000 Y 513,000"
+        },
+        {
+          "clave": "32-AL-2920",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "21/04/1998",
+          "fecha_fin": "28/07/1999",
+          "presupuesto_oe": "1.388.337,96",
+          "presupuesto_vigente": "1.414.035,92",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 VENTA DEL POBRE-LOS GALLARDOS"
+        },
+        {
+          "clave": "32-AL-3110",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/07/2002",
+          "fecha_fin": "16/05/2005",
+          "presupuesto_oe": "4.490.000,32",
+          "presupuesto_vigente": "5.682.373,78",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 ENTRE PP.KK. 553,00 Y 566,90. TRAMO: HUERCAL OVERA - L.P. MURCIA."
+        },
+        {
+          "clave": "32-AL-3120",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/07/2002",
+          "fecha_fin": "08/09/2005",
+          "presupuesto_oe": "2.660.000,22",
+          "presupuesto_vigente": "3.422.300,08",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 ENTRE LOS PP.KK. 547,00 Y 553,60. ENLACE DE ALMANZONA - HUERCAL OVERA."
+        },
+        {
+          "clave": "32-AL-3130",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/07/2002",
+          "fecha_fin": "03/03/2004",
+          "presupuesto_oe": "4.980.000,12",
+          "presupuesto_vigente": "6.458.326,82",
+          "titulo": "REFUERZO DE FIRME DE LA CARRETERA N-340 ENLACE DE ANTAS - ENLACE DE ALMANZORAS"
+        },
+        {
+          "clave": "32-AL-3140",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/07/2002",
+          "fecha_fin": "03/03/2004",
+          "presupuesto_oe": "3.600.000,00",
+          "presupuesto_vigente": "4.571.334,60",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 ENTRE PP.KK. 525,00 Y 534,00. TRAMO: ENLACE MOJACAR - ENLACE DE ANTAS."
+        },
+        {
+          "clave": "32-AL-3150",
+          "situacion": "PROGRAMADA",
+          "prioridad": "0",
+          "fecha_inicio": "01/07/2002",
+          "fecha_intermedia": "12/09/2006",
+          "fecha_fin": "26/11/2008",
+          "presupuesto_oe": "15.391.973,35",
+          "presupuesto_vigente": "19.979.006,92",
+          "titulo": "REHABILITACION DEL FIRME EN LA A-7 ENTRE EL PPKK 467,900 AL 494,805 (AMBAS CALZADAS). TRAMO: CUESTA COLORA - VENTA DEL POBRE. PROVINCIA: ALMERÍA"
+        },
+        {
+          "clave": "32-AL-3160",
+          "situacion": "ADJUDICADA",
+          "prioridad": "-",
+          "fecha_inicio": "01/07/2002",
+          "fecha_fin": "03/03/2004",
+          "presupuesto_oe": "4.180.000,12",
+          "presupuesto_vigente": "5.325.018,15",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340 ENTRE PP.KK. 514,00 Y 525,00 . TRAMO: VENTA ANITA-ENLACE DE MOJACAR."
+        },
+        {
+          "clave": "32-AL-3180",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "10/07/2002",
+          "presupuesto_oe": "4.230.000,12",
+          "presupuesto_vigente": "",
+          "titulo": "REFUERZO DE FIRME EN LA CARRETERA N-340a PP.KKK 511,00 AL 561,00. TRAMO: VARIOS PPKK GALLARDOS, ANTAS, HUERVAL, OVERA"
+        },
+        {
+          "clave": "32-AL-3390",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "17/07/2007",
+          "presupuesto_oe": "2.500.000,00",
+          "presupuesto_vigente": "",
+          "titulo": "REHABILITACION ESTRUCTURAL DEL FIRME EN LA CARRETERA N-341 ENTRE LOS PP.KK. 0,000 AL 17,600. TRAMO: VENTA DEL POBRE-CARBONERAS. PROVINCIA DE ALMERIA."
+        },
+        {
+          "clave": "32-AL-3440",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "26/09/2007",
+          "presupuesto_oe": "7.800.000,00",
+          "presupuesto_vigente": "",
+          "titulo": "REHABILITACION DEL FIRME EN LAS CARRETERAS N-340 P.K 377,65/383,9; A-92 P.K 375,3/383,1 Y A-92a"
+        },
+        {
+          "clave": "32-AL-3500",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "10/03/2008",
+          "presupuesto_oe": "12.748.525,83",
+          "presupuesto_vigente": "",
+          "titulo": "REHABILITACION DEL FIRME EN LA AUTOVÍA A-7 ENTRE LOS PPKK 494,805 AL 514,000. TRAMO: VENTA DEL POBRE - VENTA ANITA. PROVINCIA:ALMERIA"
+        },
+        {
+          "clave": "32-AL-3540",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "06/06/2008",
+          "presupuesto_oe": "4.316.824,32",
+          "presupuesto_vigente": "",
+          "titulo": "FRESADO Y REPOSICION DEL FIRME EN LA CARRETERA A-7 DEL P.K 383+800 AL 392+700 VARIANTE DE ADRA"
+        },
+        {
+          "clave": "32-AL-3560",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "19/02/2009",
+          "presupuesto_oe": "7.140.244,30",
+          "presupuesto_vigente": "",
+          "titulo": "REHABILITACION ESTRUCTURAL DEL FIRME EN LA AUTOVÍA E-15 Y A-7 ENTRE LOS PPKK 429,300 AL ENLACE 451,710. TRAMO ENLACE 429 (ROQUETAS DE MAR - AGUADULCE - ENIX - FELIX) - ENLACE 452 (VIATOR - BASE MILITAR DE LA LEGION - A-92 GUADIX-GRANADA)."
+        },
+        {
+          "clave": "32-AL-3570",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "27/02/2009",
+          "presupuesto_oe": "7.200.000,00",
+          "presupuesto_vigente": "",
+          "titulo": "REHABILITACION ESTRUCTURAL DEL FIRME EN LA AUTOVÍA E-15 A-7 ENTRE LOS PPKK 451,710 AL 467,150. TRAMO: ENLACE A-92 - CUESTA COLORÁ. PROVINCIA: ALMERIA"
+        },
+        {
+          "clave": "32-AL-3580",
+          "situacion": "PROGRAMADA",
+          "prioridad": "0",
+          "fecha_inicio": "27/02/2009",
+          "presupuesto_oe": "8.640.000,00",
+          "presupuesto_vigente": "",
+          "titulo": "REHABILITACION ESTRUCTURAL DEL FIRME EN LA AUTOVÍA E-15 A-7 ENTRE LOS PPKK 411,480 AL 429,300. TRAMO: ADRA - EL PARADOR. PROVINCIA: ALMERIA"
+        },
+        {
+          "clave": "32-AL-3590",
+          "situacion": "VIVA",
+          "prioridad": "",
+          "fecha_inicio": "11/03/2009",
+          "presupuesto_oe": "9.100.000,00",
+          "presupuesto_vigente": "",
+          "titulo": "REHABILITACION ESTRUCTURAL DEL FIRME EN LA AUTOVÍA E-15 A-7 ENTRE LOS PPKK 392,700 AL 411,480. TRAMO: ADRA - ENLACE 411 (LAS NORIAS- STA MARIA DEL AGUILA-LA MOJONERA). PROVINCIA: ALMERIA"
+        }
+      ]
+    }
+  }
+  

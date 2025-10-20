@@ -24,6 +24,7 @@ const Navbar = () => {
   const [dropdownGISOpen, setDropdownGISOpen] = useState(false); // GIS submenu
   const [dropdownPresupuestoOpen, setDropdownPresupuestoOpen] = useState(false); // Presupuesto conservación
   const [dropdownCVFOpen, setDropdownCVFOpen] = useState(false); // CVF
+  const [dropdownACVFOpen, setDropdownACVFOpen] = useState(false); // ACVF
   const [dropdownOtrosOpen, setDropdownOtrosOpen] = useState(false); // Otros
   const [dropdownPowerBIOpen, setDropdownPowerBIOpen] = useState(false); // Power BI
   const [dropdownUserOpen, setDropdownUserOpen] = useState(false); // Menú de usuario
@@ -38,6 +39,7 @@ const Navbar = () => {
   const gisRef = useRef(null);
   const presupuestoRef = useRef(null);
   const cvfRef = useRef(null);
+  const acvfRef = useRef(null);
   const otrosRef = useRef(null);
   const powerBIRef = useRef(null);
   const userRef = useRef(null);
@@ -79,6 +81,7 @@ const Navbar = () => {
     setDropdownGISOpen(false);
     setDropdownPresupuestoOpen(false);
     setDropdownCVFOpen(false);
+    setDropdownACVFOpen(false);
     setDropdownOtrosOpen(false);
     setDropdownPowerBIOpen(false);
     setDropdownUserOpen(false);
@@ -109,12 +112,12 @@ const Navbar = () => {
     <nav className="bg-gray-100 shadow">
       <div className="container mx-auto ps-0 pr-4 xl:px-10">
         {/* Título y Logo */}
-        <div className="flex items-center justify-between gap-6 py-3 border-b border-gray-200 pr-12">
-          <div className="flex items-center gap-6">
+        <div className="flex items-center justify-between gap-4 py-2 border-b border-gray-200">
+          <div className="flex items-center gap-4">
             <Link to="/" className="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity">
-              <img className="h-auto" src={Imagen} width={120} alt="logo" />
+              <img className="h-auto" src={Imagen} width={100} alt="logo" />
             </Link>
-            <h1 className="text-lg font-medium text-gray-500">
+            <h1 className="text-sm font-medium text-gray-500 hidden lg:block">
               Sistema de gestión de firmes de la RCE
             </h1>
           </div>
@@ -127,7 +130,7 @@ const Navbar = () => {
                   closeAllDropdowns();
                   setDropdownUserOpen(!dropdownUserOpen);
                 }}
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                className="flex items-center gap-2 px-2 py-1.5 rounded text-sm font-medium text-gray-500 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
               >
                 <FaUserAlt className="text-sm" />
                 <span>{userNombre || 'Usuario'}</span>
@@ -168,19 +171,19 @@ const Navbar = () => {
         </div>
         
         {/* Barra de navegación con menú */}
-        <div className="flex justify-between items-center h-14">
+        <div className="flex justify-between items-center h-10">
           {/* Espacio para el menú móvil */}
           <div></div>
 
           {menuOpen && (
-            <div className="xl:hidden bg-white shadow-xl absolute top-40 left-0 w-full z-50 rounded-lg mx-4 border border-gray-100">
-                <div className="flex flex-col space-y-4 p-4">
+            <div className="xl:hidden bg-white shadow-xl absolute top-32 left-0 w-full z-50 rounded-lg mx-4 border border-gray-100">
+                <div className="flex flex-col space-y-2 p-3">
 
                   {/* Dashboard - Oculto temporalmente */}
                   {/* {(userRol === 'usuario' || userRol === 'admin') && (
                     <Link
                       to="/dashboard-firmes"
-                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      className="block px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
                       Dashboard
@@ -192,7 +195,7 @@ const Navbar = () => {
                     <div>
                       <button
                         onClick={() => handleDropdownClick(setDropdownDatosGeneralesOpen, dropdownDatosGeneralesOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
+                        className="flex justify-between items-center w-full text-left px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded transition-colors duration-150"
                       >
                         Datos generales <FaCaretDown />
                       </button>
@@ -200,21 +203,21 @@ const Navbar = () => {
                         <div className="pl-6">
                           <Link
                             to="/mapa-trafico"
-                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                             onClick={handleLinkClick}
                           >
                             Mapa de tráfico
                           </Link>
                           <Link
                             to="/aemet"
-                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                             onClick={handleLinkClick}
                           >
                             AEMET
                           </Link>
                           <Link
                             to="/boe"
-                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                             onClick={handleLinkClick}
                           >
                             BOE
@@ -229,7 +232,7 @@ const Navbar = () => {
                     <div>
                       <button
                         onClick={() => handleDropdownClick(setDropdownInventarioOpen, dropdownInventarioOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
+                        className="flex justify-between items-center w-full text-left px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded transition-colors duration-150"
                       >
                         Inventario de red <FaCaretDown />
                       </button>
@@ -237,7 +240,7 @@ const Navbar = () => {
                         <div className="pl-6">
                           <Link
                             to="/consultas"
-                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                             onClick={handleLinkClick}
                           >
                             Consultas
@@ -251,10 +254,10 @@ const Navbar = () => {
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <Link
                       to="/ordenes-estudio"
-                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      className="block px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
-                      Órdenes de estudio
+                      Órdenes de estudio (GECO)
                     </Link>
                   )}
 
@@ -262,7 +265,7 @@ const Navbar = () => {
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <Link
                       to="/actuaciones"
-                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      className="block px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
                       Actuaciones
@@ -273,7 +276,7 @@ const Navbar = () => {
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <Link
                       to="/campañas-auscultacion"
-                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      className="block px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
                       Campañas de auscultación
@@ -285,7 +288,7 @@ const Navbar = () => {
                     <div>
                       <button
                         onClick={() => setDropdownAnalisisOpen(!dropdownAnalisisOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
+                        className="flex justify-between items-center w-full text-left px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded transition-colors duration-150"
                       >
                         Análisis evolutivo
                         <FaCaretDown className={`transition-transform duration-200 ${dropdownAnalisisOpen ? 'rotate-180' : ''}`} />
@@ -305,21 +308,21 @@ const Navbar = () => {
                               <div className="pl-4">
                                 <Link
                                   to="/indicadores"
-                                  className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                  className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                   onClick={handleLinkClick}
                                 >
                                   Indicadores
                                 </Link>
                                 <Link
                                   to="/prognosis-evolucion"
-                                  className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                  className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                   onClick={handleLinkClick}
                                 >
                                   Prognosis
                                 </Link>
                                 <Link
                                   to="/seguimiento-administrativo"
-                                  className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                  className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                   onClick={handleLinkClick}
                                 >
                                   Seguimiento administrativo
@@ -330,7 +333,7 @@ const Navbar = () => {
                           {/* Dashboard */}
                           <Link
                             to="/dashboard-firmes"
-                            className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                             onClick={handleLinkClick}
                           >
                             Dashboard
@@ -344,7 +347,7 @@ const Navbar = () => {
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <Link
                       to="/presupuesto-conservacion"
-                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      className="block px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
                       Presupuesto conservación
@@ -355,11 +358,37 @@ const Navbar = () => {
                   {(userRol === 'usuario' || userRol === 'admin') && (
                     <Link
                       to="/cvf"
-                      className="block px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded-lg transition-colors duration-150"
+                      className="block px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm font-medium rounded transition-colors duration-150"
                       onClick={handleLinkClick}
                     >
                       CVF
                     </Link>
+                  )}
+
+                  {/* ACVF */}
+                  {(userRol === 'usuario' || userRol === 'admin') && (
+                    <div>
+                      <button
+                        onClick={() => handleDropdownClick(setDropdownACVFOpen, dropdownACVFOpen)}
+                        className="flex justify-between items-center w-full text-left px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded transition-colors duration-150"
+                      >
+                        ACVF <FaCaretDown />
+                      </button>
+                      {dropdownACVFOpen && (
+                        <div className="pl-6">
+                          {[1,2,4].map((n) => (
+                            <Link
+                              key={n}
+                              to={`/acvf/opcion-${n}`}
+                              className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                              onClick={handleLinkClick}
+                            >
+                              Opción {n}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   {/* Otros */}
@@ -367,7 +396,7 @@ const Navbar = () => {
                     <div>
                       <button
                         onClick={() => handleDropdownClick(setDropdownOtrosOpen, dropdownOtrosOpen)}
-                        className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
+                        className="flex justify-between items-center w-full text-left px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded transition-colors duration-150"
                       >
                         Otros <FaCaretDown />
                       </button>
@@ -375,7 +404,7 @@ const Navbar = () => {
                         <div className="pl-6">
                           <button
                             onClick={() => handleDropdownClick(setDropdownPowerBIOpen, dropdownPowerBIOpen)}
-                            className="flex justify-between items-center w-full text-left px-4 py-3 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded-lg transition-colors duration-150"
+                            className="flex justify-between items-center w-full text-left px-3 py-2 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm rounded transition-colors duration-150"
                           >
                             Power BI <FaCaretDown />
                           </button>
@@ -383,7 +412,7 @@ const Navbar = () => {
                             <div className="pl-6">
                               <Link
                                 to="/auscultacion/llacuna"
-                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                 onClick={handleLinkClick}
                               >
                                 Llacuna
@@ -396,11 +425,11 @@ const Navbar = () => {
                   )}
 
                   {user && (
-                    <div className='px-6 font-medium text-gray-500'>
-                      <p className=''>Usuario: {userNombre}</p>
+                    <div className='px-4 font-medium text-gray-500'>
+                      <p className='text-xs'>Usuario: {userNombre}</p>
                       <button
                         onClick={toggleLogoutConfirmation}
-                        className="bg-sky-600 text-white px-4 py-2 rounded-md text-left mt-5"
+                        className="bg-sky-600 text-white px-3 py-1.5 rounded text-xs text-left mt-3"
                       >
                         Salir
                       </button>
@@ -413,12 +442,12 @@ const Navbar = () => {
 
           {/* Menú principal */}
             {user && (
-              <div className="hidden xl:ml-6 xl:flex xl:space-x-2 items-center">
+              <div className="hidden xl:ml-4 xl:flex xl:space-x-1 items-center">
 
                 {/* Inicio */}
                 <Link
                   to="/"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                  className="px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                   onClick={handleLinkClick}
                 >
                   Inicio
@@ -428,7 +457,7 @@ const Navbar = () => {
                 {/* {(userRol === 'usuario' || userRol === 'admin') && (
                   <Link
                     to="/dashboard-firmes"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    className="px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     onClick={handleLinkClick}
                   >
                     Dashboard
@@ -443,7 +472,7 @@ const Navbar = () => {
                         closeAllDropdowns();
                         setDropdownDatosGeneralesOpen(!dropdownDatosGeneralesOpen);
                       }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                      className="flex items-center gap-1 px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     >
                       Datos generales <FaCaretDown />
                     </button>
@@ -483,7 +512,7 @@ const Navbar = () => {
                         closeAllDropdowns();
                         setDropdownInventarioOpen(!dropdownInventarioOpen);
                       }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                      className="flex items-center gap-1 px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     >
                       Inventario de red <FaCaretDown />
                     </button>
@@ -505,10 +534,10 @@ const Navbar = () => {
                 {(userRol === 'usuario' || userRol === 'admin') && (
                   <Link
                     to="/ordenes-estudio"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    className="px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     onClick={handleLinkClick}
                   >
-                    Órdenes de estudio
+                    Órdenes de estudio (GECO)
                   </Link>
                 )}
 
@@ -516,7 +545,7 @@ const Navbar = () => {
                 {(userRol === 'usuario' || userRol === 'admin') && (
                   <Link
                     to="/actuaciones"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    className="px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     onClick={handleLinkClick}
                   >
                     Actuaciones
@@ -527,7 +556,7 @@ const Navbar = () => {
                 {(userRol === 'usuario' || userRol === 'admin') && (
                   <Link
                     to="/campañas-auscultacion"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    className="px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     onClick={handleLinkClick}
                   >
                     Campañas de auscultación
@@ -542,7 +571,7 @@ const Navbar = () => {
                         closeAllDropdowns();
                         setDropdownAnalisisOpen(!dropdownAnalisisOpen);
                       }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                      className="flex items-center gap-1 px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     >
                       Análisis evolutivo <FaCaretDown />
                     </button>
@@ -563,21 +592,21 @@ const Navbar = () => {
                             <div className="absolute left-full top-0 ml-1 bg-white shadow-xl rounded-lg py-2 w-56 z-50 border border-gray-100">
                               <Link
                                 to="/indicadores"
-                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                 onClick={handleLinkClick}
                               >
                                 Indicadores
                               </Link>
                               <Link
                                 to="/prognosis-evolucion"
-                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                 onClick={handleLinkClick}
                               >
                                 Prognosis
                               </Link>
                               <Link
                                 to="/seguimiento-administrativo"
-                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                 onClick={handleLinkClick}
                               >
                                 Seguimiento administrativo
@@ -602,7 +631,7 @@ const Navbar = () => {
                 {(userRol === 'usuario' || userRol === 'admin') && (
                   <Link
                     to="/presupuesto-conservacion"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    className="px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     onClick={handleLinkClick}
                   >
                     Presupuesto conservación
@@ -613,11 +642,40 @@ const Navbar = () => {
                 {(userRol === 'usuario' || userRol === 'admin') && (
                   <Link
                     to="/cvf"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    className="px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     onClick={handleLinkClick}
                   >
                     CVF
                   </Link>
+                )}
+
+                {/* ACVF */}
+                {(userRol === 'usuario' || userRol === 'admin') && (
+                  <div className="relative" ref={acvfRef}>
+                    <button
+                      onClick={() => {
+                        closeAllDropdowns();
+                        setDropdownACVFOpen(!dropdownACVFOpen);
+                      }}
+                      className="flex items-center gap-1 px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                    >
+                      ACVF <FaCaretDown />
+                    </button>
+                    {dropdownACVFOpen && (
+                      <div className="absolute bg-white shadow-xl rounded-lg mt-2 py-2 w-52 z-50 border border-gray-100">
+                        {[1,2,4].map((n) => (
+                          <Link
+                            key={n}
+                            to={`/acvf/opcion-${n}`}
+                            className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                            onClick={handleLinkClick}
+                          >
+                            Opción {n}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Otros */}
@@ -628,7 +686,7 @@ const Navbar = () => {
                         closeAllDropdowns();
                         setDropdownOtrosOpen(!dropdownOtrosOpen);
                       }}
-                      className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
+                      className="flex items-center gap-1 px-2 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-sky-600 hover:bg-gray-100 transition-all duration-200"
                     >
                       Otros <FaCaretDown />
                     </button>
@@ -647,7 +705,7 @@ const Navbar = () => {
                             <div className="absolute left-full top-0 bg-white shadow-xl rounded-lg py-2 w-48 z-50 border border-gray-100">
                               <Link
                                 to="/auscultacion/llacuna"
-                                className="block px-4 py-2.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
+                                className="block px-3 py-1.5 text-gray-600 hover:bg-sky-50 hover:text-sky-600 text-sm transition-colors duration-150"
                                 onClick={handleLinkClick}
                               >
                                 Llacuna

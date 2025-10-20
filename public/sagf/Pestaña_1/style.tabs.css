@@ -1,0 +1,30 @@
+
+.lcsatabs {
+    max-width: 1600px;
+    margin: auto;
+}
+
+/* --- Tabs for LCSA indicators (namespaced .lcsatabs) --- */
+.lcsatabs { margin-top: 24px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; }
+.lcsatabs-header { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; border-bottom: 1px solid #e2e8f0; }
+.lcsatabs-header button {
+  appearance: none; background: #f1f5f9; border: 1px solid #e2e8f0; color: #0f172a;
+  padding: 8px 12px; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 16px;
+}
+.lcsatabs-header button[aria-selected="true"] { background: #e9d5ff; border-color: #c4b5fd; }
+.lcsatabs-panel { display: none; padding: 12px 16px 20px; }
+.lcsatabs-panel[aria-hidden="false"] { display: block; }
+.lcsa-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.lcsa-table th, .lcsa-table td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+.lcsa-table th { text-align: left; color: #475569; font-weight: 600; }
+.lcsa-kicker { font-size: 12px; color: #64748b; margin: 0 0 8px 0; }
+.lcsa-note { color: #475569; font-size: 13px; }
+.lcsa-unit { white-space: nowrap; color: #334155; }
+@media (max-width: 640px) {
+  .lcsa-table thead { display: none; }
+  .lcsa-table tr { display: grid; grid-template-columns: 1fr; padding: 8px 0; }
+  .lcsa-table td { border: none; padding: 4px 0; }
+  .lcsa-table td[data-h]:before { content: attr(data-h) ": "; font-weight: 600; color: #475569; }
+}
+
+

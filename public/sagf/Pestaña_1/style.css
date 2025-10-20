@@ -1,0 +1,196 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-color: #f8fafc;
+    --card-bg-color: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --shadow-color: rgba(149, 157, 165, 0.1);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 2rem;
+}
+
+.dashboard-container {
+    max-width: 1600px;
+    margin: auto;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.filters select, .filters input {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--card-bg-color);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    margin-left: 1rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.kpi-card, .main-chart-card, .secondary-chart-card {
+    background-color: var(--card-bg-color);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover, .main-chart-card:hover, .secondary-chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.kpi-card {
+    display: flex;
+    align-items: center;
+}
+
+.kpi-card .card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.kpi-card i {
+    font-size: 1.5rem;
+}
+
+.kpi-card .card-content p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.kpi-card .card-content h3 {
+    margin: 0.25rem 0 0;
+    font-size: 1.75rem;
+}
+
+.kpi-card .unit {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-left: 0.25rem;
+}
+
+/* ---- CHART CARDS ---- */
+/* Keep explicit heights if desired; charts will flex to fill the remaining space under headings */
+.main-chart-card {
+    grid-column: 1 / 5;
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+}
+
+.secondary-chart-card {
+    grid-column: span 2;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make headings and descriptions shrink naturally */
+.main-chart-card h4, .secondary-chart-card h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.main-chart-card h4 i, .secondary-chart-card h4 i {
+    margin-right: 0.5rem;
+    color: #8b5cf6;
+}
+
+.main-chart-card p, .secondary-chart-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.75rem 0;
+    flex: 0 0 auto;
+}
+
+/* Make the canvas take all remaining height inside the card */
+.main-chart-card canvas,
+.secondary-chart-card canvas {
+    flex: 1 1 auto;
+    min-height: 0;              /* important to allow flex children to shrink */
+    width: 100% !important;
+    display: block;
+}
+
+/* Optional: full-width radar legend on small cards */
+.chartjs-size-monitor,
+.chartjs-size-monitor-expand,
+.chartjs-size-monitor-shrink {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .main-chart-card, .secondary-chart-card {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .main-chart-card, .secondary-chart-card, .kpi-card {
+        grid-column: span 1;
+    }
+    .main-chart-card {
+        height: 350px;
+    }
+    .secondary-chart-card {
+        height: 350px;
+    }
+}

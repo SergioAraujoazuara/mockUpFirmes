@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAGF - Sistema Avanzado de Gestión de Firmes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .lcsa-tabs { margin-top: 24px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .lcsa-tabs-header { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; border-bottom: 1px solid #e2e8f0; }
+        .lcsa-tabs-header button {
+            appearance: none; background: #f1f5f9; border: 1px solid #e2e8f0; color: #0f172a;
+            padding: 8px 12px; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 14px;
+        }
+        .lcsa-tabs-header button.active { background: #e9d5ff; border-color: #c4b5fd; }
+        .lcsa-tabs-panel { display: none; padding: 12px 16px 20px; }
+        .lcsa-tabs-panel.active { display: block; }
+        .lcsa-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .lcsa-table th, .lcsa-table td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .lcsa-table th { text-align: left; color: #475569; font-weight: 600; }
+        .lcsa-kicker { font-size: 12px; color: #64748b; margin: 0 0 8px 0; }
+        .lcsa-note { color: #475569; font-size: 13px; }
+        .lcsa-unit { white-space: nowrap; color: #334155; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-md border-b border-gray-200">
+        <div class="px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+					<img src="logo_tpf.png" alt="TPF Ingeniería" class="h-10">
+                    <div class="border-l border-gray-300 pl-4">
+                        <div class="flex items-center gap-2">
+                            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-1.5 rounded-lg">
+                                <i data-lucide="bar-chart-3" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-base font-bold text-gray-900">SAGF</h1>
+                                <p class="text-xs text-gray-500">Sistema Avanzado de Gestión de Firmes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i data-lucide="award" class="w-4 h-4 text-yellow-500"></i>
+                    <span class="text-xs font-medium text-gray-700">ISO 14040 & 14044</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="px-6">
+            <nav class="flex gap-6">
+                <button onclick="changeTab('acv')" id="tab-acv" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-blue-600 text-blue-600 font-medium">
+                    <i data-lucide="leaf" class="w-4 h-4"></i>
+                    Análisis Ciclo de Vida
+                </button>
+                <button onclick="changeTab('analisis')" id="tab-analisis" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-transparent text-gray-500 hover:text-gray-700">
+                    <i data-lucide="chart-bar" class="w-4 h-4"></i>
+                    Análisis Detallado
+                </button>
+                <button onclick="changeTab('indicadores')" id="tab-indicadores" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-transparent text-gray-500 hover:text-gray-700">
+                    <i data-lucide="list-checks" class="w-4 h-4"></i>
+                    Indicadores individuales
+                </button>
+                <button onclick="changeTab('proyectos')" id="tab-proyectos" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-transparent text-gray-500 hover:text-gray-700">
+                    <i data-lucide="folder" class="w-4 h-4"></i>
+                    Proyectos
+                </button>
+				<button onclick="changeTab('overview')" id="tab-overview" class="flex items-center gap-2 py-3 px-1 border-b-2 transition-colors text-sm border-transparent text-gray-500 hover:text-gray-700">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    Resumen
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="p-4">
+        <!-- ACV Tab (Opción 1) -->
+        <div id="content-acv" class="flex gap-4">
+            <!-- COLUMNA IZQUIERDA -->
+            <div class="w-64 flex-shrink-0 space-y-3">
+                <!-- KPI 1 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Huella de carbono</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">2,785</h3>
+                                <span class="text-xs text-gray-500">ton CO₂ eq</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>12,3%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600">
+                            <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Consumo energético</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">7,520</h3>
+                                <span class="text-xs text-gray-500">MWh</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>8,7%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-600">
+                            <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Consumo de agua</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">45,200</h3>
+                                <span class="text-xs text-gray-500">m³</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>15,2%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600">
+                            <i data-lucide="droplets" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 4 -->
+                <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <p class="text-xs font-medium text-gray-600 mb-1">Circularidad</p>
+                            <div class="flex items-baseline gap-1">
+                                <h3 class="text-2xl font-bold text-gray-900">87,5</h3>
+                                <span class="text-xs text-gray-500">/100</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-1 text-xs text-green-600">
+                                <i data-lucide="trending-down" class="w-3 h-3"></i>
+                                <span>5,8%</span>
+                            </div>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600">
+                            <i data-lucide="recycle" class="w-5 h-5 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerta -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3">
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <h4 class="font-semibold text-blue-900 text-xs mb-1">Objetivo 2030</h4>
+                            <p class="text-xs text-blue-700">68% reducción</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen 1 -->
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-md p-3 text-white">
+                    <h4 class="text-xs font-medium opacity-90 mb-1">Material reciclado</h4>
+                    <p class="text-xl font-bold">42%</p>
+                    <p class="text-xs opacity-80">+8% vs anterior</p>
+                </div>
+
+                <!-- Resumen 2 -->
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-md p-3 text-white">
+                    <h4 class="text-xs font-medium opacity-90 mb-1">Reducción huella de carbono</h4>
+                    <p class="text-xl font-bold">1,240</p>
+                    <p class="text-xs opacity-80">ton CO₂ eq ahorradas</p>
+                </div>
+
+                <!-- Resumen 3 -->
+                <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg shadow-md p-3 text-white">
+                    <h4 class="text-xs font-medium opacity-90 mb-1">Estándares seguidos</h4>
+                    <p class="text-xl font-bold">7</p>
+                    <p class="text-xs opacity-80">ISO 14040, 14044, OC 3/2024</p>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA - Grid 2x2 -->
+            <div class="flex-1 grid grid-cols-2 gap-4" style="grid-auto-rows: 1fr;">
+                <!-- Gráfico 1 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100 flex flex-col">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Emisiones por etapas de Ciclo de Vida</h3>
+                    <div class="flex-1" style="min-height: 0;">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 2 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100 flex flex-col">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Distribución del impacto estimado</h3>
+                    <div class="flex-1" style="min-height: 0;">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 3 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100 flex flex-col">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Comparativa de firmes</h3>
+                    <div class="flex-1" style="min-height: 0;">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico 4 -->
+                <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100 flex flex-col">
+                    <h3 class="text-sm font-bold text-gray-900 mb-3">Tendencia vs Objetivo</h3>
+                    <div class="flex-1" style="min-height: 0;">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análisis Detallado Tab (Opción 2) -->
+        <div id="content-analisis" class="hidden">
+            <div class="bg-white rounded-lg shadow-md border border-gray-100 p-6 mb-4">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Análisis de Ciclo de Vida (ACV) del firme</h2>
+                
+
+                <!-- KPIs Row -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600">
+								<i data-lucide="leaf" class="w-5 h-5 text-white"></i>
+							</div>
+                            <div>
+                                <p class="text-sm text-gray-600">Huella de carbono total</p>
+                                <h3 class="text-2xl font-bold">2,785 <span class="text-sm font-normal">t CO₂-eq</span></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-50 rounded-lg p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-600">
+								<i data-lucide="zap" class="w-5 h-5 text-white"></i>
+							</div>
+                            <div>
+                                <p class="text-sm text-gray-600">Consumo energético</p>
+                                <h3 class="text-2xl font-bold">7,52 <span class="text-sm font-normal">MWh</span></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600">
+                                <i data-lucide="euro" class="w-6 h-6 text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Coste ciclo de vida (LCC)</p>
+                                <h3 class="text-2xl font-bold">€2,1M</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600">
+								<i data-lucide="recycle" class="w-5 h-5 text-white"></i>
+							</div>
+                            <div>
+                                <p class="text-sm text-gray-600">Índice de circularidad</p>
+                                <h3 class="text-2xl font-bold">87,5%</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                            <i data-lucide="bar-chart" class="w-5 h-5 text-purple-600"></i>
+                            Impacto ambiental por fase del ACV
+                        </h4>
+                        <p class="text-sm text-gray-600 mb-4">Comparativa de emisiones de GEI para distintas alternativas de diseño del firme.</p>
+                        <div style="height: 300px;">
+                            <canvas id="acvBarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <i data-lucide="radar" class="w-5 h-5 text-purple-600"></i>
+                                Radar de sostenibilidad
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-4">Análisis multi-criterio de las alternativas.</p>
+                            <div style="height: 300px;">
+                                <canvas id="sustainabilityRadarChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <i data-lucide="pie-chart" class="w-5 h-5 text-purple-600"></i>
+                                Desglose de materiales
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-4">Contribución a la huella de carbono por material.</p>
+                            <div style="height: 300px;">
+                                <canvas id="materialsDoughnutChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicadores LCSA Tab -->
+        <div id="content-indicadores" class="hidden">
+            <div class="lcsa-tabs">
+                <div class="lcsa-tabs-header">
+                    <button onclick="changeLCSATab('amb')" id="lcsa-amb" class="active">Ambientales</button>
+                    <button onclick="changeLCSATab('econ')" id="lcsa-econ">Económicos</button>
+                    <button onclick="changeLCSATab('soc')" id="lcsa-soc">Sociales</button>
+                    <button onclick="changeLCSATab('res')" id="lcsa-res">Resumen</button>
+                </div>
+
+                <!-- Panel Ambiental -->
+                <div class="lcsa-tabs-panel active" id="panel-amb">
+                    <p class="lcsa-kicker">Indicadores ambientales conforme a EN 15804+A2 / ReCiPe (midpoint).</p>
+                    <table class='lcsa-table'>
+                        <thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead>
+                        <tbody>
+                            <tr><td>GWP – Potencial de calentamiento global</td><td class='lcsa-unit'>kg CO₂e</td><td>—</td><td class='lcsa-note'>Incluye fabricación, transporte, construcción, conservación y uso por resistencia a la rodadura.</td></tr>
+                            <tr><td>AP – Acidificación</td><td class='lcsa-unit'>kg SO₂e</td><td>—</td><td class='lcsa-note'>Emisiones en fabricación de ligantes/áridos y transporte.</td></tr>
+                            <tr><td>EP – Eutrofización</td><td class='lcsa-unit'>kg PO₄³⁻e</td><td>—</td><td class='lcsa-note'>Aportes de nutrientes de procesos industriales/lixiviados.</td></tr>
+                            <tr><td>POCP – Ozono fotoquímico</td><td class='lcsa-unit'>kg NMVOCe</td><td>—</td><td class='lcsa-note'>COV en fabricación/puesta en obra de mezclas asfálticas.</td></tr>
+                            <tr><td>ODP – Agotamiento de ozono</td><td class='lcsa-unit'>kg CFC-11e</td><td>—</td><td class='lcsa-note'>Generalmente bajo; se reporta por comparabilidad.</td></tr>
+                            <tr><td>PM – Formación de partículas</td><td class='lcsa-unit'>kg PM₂.₅e</td><td>—</td><td class='lcsa-note'>Polvo en canteras, fabricación y obra.</td></tr>
+                            <tr><td>Toxicidad humana (cáncer/no cáncer)</td><td class='lcsa-unit'>CTUh</td><td>—</td><td class='lcsa-note'>Derivado de sustancias y procesos de producción.</td></tr>
+                            <tr><td>Eco-toxicidad acuática continental</td><td class='lcsa-unit'>CTUe</td><td>—</td><td class='lcsa-note'>Emisiones a agua asociadas a producción y obra.</td></tr>
+                            <tr><td>Radiación ionizante</td><td class='lcsa-unit'>kBq U-235e</td><td>—</td><td class='lcsa-note'>Exigido en algunos marcos normativos.</td></tr>
+                            <tr><td>Uso del suelo / transformación</td><td class='lcsa-unit'>m²·a</td><td>—</td><td class='lcsa-note'>Extracción de áridos y ocupación de instalaciones.</td></tr>
+                            <tr><td>CED – Demanda de energía primaria (no ren./ren.)</td><td class='lcsa-unit'>MJ</td><td>—</td><td class='lcsa-note'>Suma de energía directa e incorporada.</td></tr>
+                            <tr><td>Agotamiento de recursos abióticos (minerales/metales)</td><td class='lcsa-unit'>kg Sbe</td><td>—</td><td class='lcsa-note'>Consumo de recursos no renovables.</td></tr>
+                            <tr><td>Uso de agua</td><td class='lcsa-unit'>m³ depriv.</td><td>—</td><td class='lcsa-note'>Agua consumida en procesos; categoría A2 EN 15804.</td></tr>
+                            <tr><td>Residuos generados (pelig./no pelig./inertes)</td><td class='lcsa-unit'>kg</td><td>—</td><td class='lcsa-note'>Incluye fresado y fin de vida.</td></tr>
+                            <tr><td>Materiales secundarios/reciclados</td><td class='lcsa-unit'>kg / %</td><td>—</td><td class='lcsa-note'>RAP, áridos reciclados, adiciones minerales.</td></tr>
+                            <tr><td>Salidas para valorización/reciclaje</td><td class='lcsa-unit'>kg</td><td>—</td><td class='lcsa-note'>Flujos que evitan disposición final.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel Económico -->
+                <div class="lcsa-tabs-panel" id="panel-econ">
+                    <p class="lcsa-kicker">Indicadores económicos (LCC) con descuento real y separación agencia/usuario.</p>
+                    <table class='lcsa-table'>
+                        <thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead>
+                        <tbody>
+                            <tr><td>NPV – Coste del ciclo de vida (agencia)</td><td class='lcsa-unit'>€ / km·carril·año</td><td>—</td><td class='lcsa-note'>CAPEX + OPEX + fin de vida, actualizado (3–5 % real).</td></tr>
+                            <tr><td>Coste de usuario por intervenciones</td><td class='lcsa-unit'>€ / intervención</td><td>—</td><td class='lcsa-note'>Demoras, desvíos y sobreconsumo de combustible.</td></tr>
+                            <tr><td>Coste total anual</td><td class='lcsa-unit'>€ / año</td><td>—</td><td class='lcsa-note'>Suma de costes de agencia y usuario en el horizonte.</td></tr>
+                            <tr><td>Índice coste-eficacia (CO₂ evitado)</td><td class='lcsa-unit'>€ / kg CO₂e evitado</td><td>—</td><td class='lcsa-note'>Inversión adicional dividida por reducción de GWP.</td></tr>
+                            <tr><td>Relación Beneficio/Coste</td><td class='lcsa-unit'>adim.</td><td>—</td><td class='lcsa-note'>Beneficios netos / costes netos (escenario de referencia).</td></tr>
+                            <tr><td>VAN incremental (alternativa vs. base)</td><td class='lcsa-unit'>€</td><td>—</td><td class='lcsa-note'>Diferencia de NPV entre alternativas.</td></tr>
+                            <tr><td>Exposición a precio de betún/energía</td><td class='lcsa-unit'>% del coste</td><td>—</td><td class='lcsa-note'>Porción de coste sensible a esos insumos.</td></tr>
+                            <tr><td>Valorización material (ahorro neto)</td><td class='lcsa-unit'>€ / %</td><td>—</td><td class='lcsa-note'>Ahorros por RAP/árido reciclado menos costes asociados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel Social -->
+                <div class="lcsa-tabs-panel" id="panel-soc">
+                    <p class="lcsa-kicker">Indicadores sociales por actor: trabajadores, comunidad, usuarios, proveedores.</p>
+                    <table class='lcsa-table'>
+                        <thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead>
+                        <tbody>
+                            <tr><td>LTIFR/TRIFR – Accidentes con baja</td><td class='lcsa-unit'>nº / 10⁶ h</td><td>—</td><td class='lcsa-note'>Seguridad de los trabajadores en planta/obra.</td></tr>
+                            <tr><td>Horas de formación en seguridad</td><td class='lcsa-unit'>h / trabajador·año</td><td>—</td><td class='lcsa-note'>Capacitación y cultura preventiva.</td></tr>
+                            <tr><td>Cumplimiento EPI/exposición ocupacional</td><td class='lcsa-unit'>% jornadas conformes</td><td>—</td><td class='lcsa-note'>Ruido, polvo, COV; vs. VLEP.</td></tr>
+                            <tr><td>% empleo local / FTE creados</td><td class='lcsa-unit'>% / FTE</td><td>—</td><td class='lcsa-note'>Contribución socioeconómica local.</td></tr>
+                            <tr><td>Quejas de comunidad</td><td class='lcsa-unit'>nº / mes</td><td>—</td><td class='lcsa-note'>Ruido, polvo, accesos durante obra.</td></tr>
+                            <tr><td>Proximidad receptores sensibles <300 m</td><td class='lcsa-unit'>nº</td><td>—</td><td class='lcsa-note'>Escuelas, hospitales; medidas mitigadoras.</td></tr>
+                            <tr><td>Accesibilidad afectada (hogares/servicios)</td><td class='lcsa-unit'>nº / días</td><td>—</td><td class='lcsa-note'>Impacto temporal por desvíos/cortes.</td></tr>
+                            <tr><td>Compras locales</td><td class='lcsa-unit'>% del gasto</td><td>—</td><td class='lcsa-note'>Peso de proveedores locales/regionales.</td></tr>
+                            <tr><td>Seguridad vial (accidentes por 100 M veh-km)</td><td class='lcsa-unit'>nº / 100 M veh-km</td><td>—</td><td class='lcsa-note'>Antes/después en relación con el estado superficial.</td></tr>
+                            <tr><td>Demoras por obra</td><td class='lcsa-unit'>h·veh</td><td>—</td><td class='lcsa-note'>Horas de retraso acumuladas.</td></tr>
+                            <tr><td>Variación tiempo medio de viaje</td><td class='lcsa-unit'>% / min</td><td>—</td><td class='lcsa-note'>Cambio tras la intervención (estado superficial).</td></tr>
+                            <tr><td>Ruido de rodadura</td><td class='lcsa-unit'>Δ dB(A)</td><td>—</td><td class='lcsa-note'>Cambio respecto a referencia a velocidad estándar.</td></tr>
+                            <tr><td>Proveedores auditados/conformes</td><td class='lcsa-unit'>%</td><td>—</td><td class='lcsa-note'>Trazabilidad y cumplimiento social.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel Resumen -->
+                <div class="lcsa-tabs-panel" id="panel-res">
+                    <p class="lcsa-kicker">Cuadro resumen: valores clave por alternativa.</p>
+                    <table class="lcsa-table">
+                        <thead><tr><th>Dimensión</th><th>Indicador</th><th>Unidad</th><th>Alternativa A</th><th>Alternativa B</th><th>Alternativa C</th></tr></thead>
+                        <tbody>
+                            <tr><td>Ambiental</td><td>GWP</td><td>kg CO₂e</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td>Económico</td><td>NPV (agencia)</td><td>€/km·carril·año</td><td>—</td><td>—</td><td>—</td></tr>
+                            <tr><td>Social</td><td>LTIFR</td><td>nº/10⁶ h</td><td>—</td><td>—</td><td>—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="content-overview" class="hidden bg-white rounded-xl shadow-lg p-12 text-center">
+            <i data-lucide="activity" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Resumen General</h3>
+            <p class="text-gray-600">Módulo en desarrollo</p>
+        </div>
+
+        <!-- Proyectos Tab -->
+        <div id="content-proyectos" class="hidden bg-white rounded-xl shadow-lg p-12 text-center">
+            <i data-lucide="folder" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Proyectos</h3>
+			<div class="flex gap-4 mb-6">
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg bg-white">
+                        <option>Proyecto Carretera M-30, Tramo Norte</option>
+						<option>Proyecto Carretera M-30, Tramo Sur</option>
+                        <option>Proyecto Autovía A-4, Tramo Norte</option>
+						<option>Proyecto Autovía A-4, Tramo Sur</option>
+                    </select>
+					<select class="px-4 py-2 border border-gray-300 rounded-lg bg-white">
+                        <option>PK 1-50</option>
+                        <option>PK 50-100</option>
+						<option>PK 100-150</option>
+						<option>PK 150-200</option>
+						<option>PK 200-250</option>
+						<option>PK 250-300</option>
+                    </select>
+                    <input type="date" value="2025-10-16" class="px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+            <p class="text-gray-600">Módulo en desarrollo</p>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Tab switching
+        function changeTab(tabName) {
+            // Hide all content
+            document.getElementById('content-acv').classList.add('hidden');
+            document.getElementById('content-overview').classList.add('hidden');
+            document.getElementById('content-analisis').classList.add('hidden');
+            document.getElementById('content-indicadores').classList.add('hidden');
+            document.getElementById('content-proyectos').classList.add('hidden');
+
+            // Reset all tabs
+            ['overview', 'acv', 'analisis', 'indicadores', 'proyectos'].forEach(tab => {
+                const btn = document.getElementById('tab-' + tab);
+                btn.classList.remove('border-blue-600', 'text-blue-600', 'font-medium');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            
+            // Activate selected tab
+            const activeBtn = document.getElementById('tab-' + tabName);
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+            activeBtn.classList.add('border-blue-600', 'text-blue-600', 'font-medium');
+
+            // Reinitialize icons
+            lucide.createIcons();
+        }
+
+        // LCSA Tab switching
+        function changeLCSATab(tabName) {
+            // Hide all panels
+            document.querySelectorAll('.lcsa-tabs-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            // Reset all buttons
+            document.querySelectorAll('.lcsa-tabs-header button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected panel
+            document.getElementById('panel-' + tabName).classList.add('active');
+            
+            // Activate selected button
+            document.getElementById('lcsa-' + tabName).classList.add('active');
+        }
+
+        // Chart 1 - Emisiones por Fase (Opción 1)
+        const ctx1 = document.getElementById('chart1').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Extracción', 'Fabricación', 'Transporte', 'Construcción', 'Uso', 'Manten.', 'Fin vida'],
+                datasets: [{
+                    label: 'CO₂ (ton)',
+                    data: [245, 580, 120, 350, 890, 420, 180],
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+                    x: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+
+        // Chart 2 - Distribución de Impacto (Opción 1)
+        const ctx2 = document.getElementById('chart2').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['CO₂', 'Energía', 'Agua', 'Residuos'],
+                datasets: [{
+                    data: [45, 30, 15, 10],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Chart 3 - Comparativa de Firmes (Opción 1)
+        const ctx3 = document.getElementById('chart3').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Convencional', 'Hormigón', 'Mezcla reciclada', 'Mezcla sostenible'],
+                datasets: [
+                    {
+                        label: 'Impacto',
+                        data: [100, 75, 55, 40],
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Coste',
+                        data: [85, 78, 72, 80],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { font: { size: 9 } }
+                    }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 9 } } },
+                    y: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+
+        // Chart 4 - Tendencia (Opción 1)
+        const ctx4 = document.getElementById('chart4').getContext('2d');
+        new Chart(ctx4, {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
+                datasets: [
+                    {
+                        label: 'Real',
+                        data: [2850, 2680, 2420, 2180, 1950, 1720],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Objetivo',
+                        data: [2800, 2600, 2400, 2200, 2000, 1800],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { font: { size: 9 } }
+                    }
+                },
+                scales: {
+                    y: { ticks: { font: { size: 9 } } },
+                    x: { ticks: { font: { size: 9 } } }
+                }
+            }
+        });
+
+        // Chart 5 - Barras Apiladas (Opción 2)
+        const ctxBar = document.getElementById('acvBarChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['Alternativa A: Convencional', 'Alternativa B: Hormigón', 'Alternativa C: Mezcla reciclada', 'Alternativa D: Mezcla sostenible'],
+                datasets: [
+                    {
+                        label: 'Extracción y Fabricación',
+                        data: [120, 150, 80, 70],
+                        backgroundColor: '#38bdf8',
+                    },
+                    {
+                        label: 'Transporte y Construcción',
+                        data: [50, 40, 60, 40],
+                        backgroundColor: '#fbbf24',
+                    },
+                    {
+                        label: 'Uso y Mantenimiento',
+                        data: [200, 150, 180, 140],
+                        backgroundColor: '#f87171',
+                    },
+                    {
+                        label: 'Fin de Vida',
+                        data: [30, 25, 50, 40],
+                        backgroundColor: '#a78bfa',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Impacto (kg CO₂-eq)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 6 - Radar de Sostenibilidad (Opción 2)
+        const ctxRadar = document.getElementById('sustainabilityRadarChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Huella carbono', 'Coste (€)', 'Durabilidad (Años)', 'Circularidad (%)', 'Uso de Agua'],
+                datasets: [{
+                    label: 'Alternativa A: Convencional',
+                    data: [4, 6, 7, 5, 6],
+                    fill: true,
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    borderColor: 'rgb(239, 68, 68)',
+                    pointBackgroundColor: 'rgb(239, 68, 68)',
+                }, {
+                    label: 'Alternativa B: Hormigón',
+                    data: [6, 7, 8, 1, 9],
+                    fill: true,
+                    backgroundColor: 'rgba(90, 37, 194, 0.2)',
+                    borderColor: 'rgb(90, 37, 194)',
+                    pointBackgroundColor: 'rgb(90, 37, 194)',
+                }, {
+                    label: 'Alternativa C: Mezcla reciclada',
+                    data: [8, 5, 6, 9, 7],
+                    fill: true,
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    borderColor: 'rgb(34, 197, 94)',
+                    pointBackgroundColor: 'rgb(34, 197, 94)',
+				}, {
+                    label: 'Alternativa D: Mezcla sostenible',
+                    data: [9, 6, 4, 7, 5],
+                    fill: true,
+                    backgroundColor: 'rgba(234, 197, 94, 0.2)',
+                    borderColor: 'rgb(234, 197, 94)',
+                    pointBackgroundColor: 'rgb(234, 197, 94)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: {
+                    line: { borderWidth: 3 }
+                },
+                scales: {
+                    r: {
+                        angleLines: { display: false },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        ticks: {
+                            backdropColor: 'rgba(255, 255, 255, 0.5)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 7 - Dona de Materiales (Opción 2)
+        const ctxDoughnut = document.getElementById('materialsDoughnutChart').getContext('2d');
+        new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: ['Áridos', 'Ligante Asfáltico', 'Cemento', 'Aditivos', 'Acero'],
+                datasets: [{
+                    label: 'Contribución a la Huella de carbono',
+                    data: [45, 30, 15, 5, 5],
+                    backgroundColor: [
+                        '#64748b',
+                        '#1e293b',
+                        '#94a3b8',
+                        '#a78bfa',
+                        '#e2e8f0'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
