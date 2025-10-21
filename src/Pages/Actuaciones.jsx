@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import HeaderPage from '../Components/HeaderPage';
 import { 
   FaFile, 
   FaDatabase, 
@@ -13,7 +14,7 @@ import {
   FaTable,
   FaCloud,
   FaServer,
-  FaArrowLeft
+  FaClipboardList
 } from 'react-icons/fa';
 
 const Actuaciones = () => {
@@ -27,7 +28,7 @@ const Actuaciones = () => {
     ifc: [
       { id: 1, name: 'Modelo_estructura_vial.ifc', size: '2.4 MB', date: '2024-01-15', status: 'success' },
       { id: 2, name: 'Puente_principal.ifc', size: '5.1 MB', date: '2024-01-12', status: 'success' },
-      { id: 3, name: 'Tunel_acceso.ifc', size: '3.8 MB', date: '2024-01-10', status: 'error' }
+      { id: 3, name: 'Tunel_acceso.ifc', size: '3.8 MB', date: '2024-01-10', status: 'success' }
     ],
     microsoft365: [
       { id: 1, name: 'Informe_estado_red.docx', size: '1.5 MB', date: '2024-01-16', status: 'success' },
@@ -42,7 +43,12 @@ const Actuaciones = () => {
     informes: [
       { id: 1, name: 'Informe_Técnico_Q1.pdf', size: '4.2 MB', date: '2024-01-16', status: 'success' },
       { id: 2, name: 'Plano_General_v2.dwg', size: '8.7 MB', date: '2024-01-15', status: 'success' },
-      { id: 3, name: 'Memoria_Proyecto.pdf', size: '1.8 MB', date: '2024-01-14', status: 'error' }
+      { id: 3, name: 'Memoria_Proyecto.pdf', size: '1.8 MB', date: '2024-01-14', status: 'success' }
+    ],
+    plantilla: [
+      { id: 1, name: 'Plantilla_Inspeccion_Firmes.docx', size: '2.1 MB', date: '2024-01-16', status: 'success' },
+      { id: 2, name: 'Formulario_Estado_Vial.xlsx', size: '1.5 MB', date: '2024-01-15', status: 'success' },
+      { id: 3, name: 'Informe_Mantenimiento_Preventivo.pdf', size: '3.2 MB', date: '2024-01-14', status: 'success' }
     ]
   };
 
@@ -50,8 +56,9 @@ const Actuaciones = () => {
     { id: 'ifc', name: 'Archivos IFC', icon: FaFile, description: 'Modelos BIM y archivos IFC' },
     { id: 'microsoft365', name: 'Microsoft 365', icon: FaMicrosoft, description: 'Word, Excel y PowerPoint' },
     { id: 'data', name: 'Data', icon: FaTable, description: 'CSV, JSON, XML y otros formatos de datos' },
-    { id: 'informes', name: 'Documentación técnica', icon: FaFileAlt, description: 'Informes, planos y memorias técnicas' }
-  ];
+    { id: 'informes', name: 'Documentación técnica', icon: FaFileAlt, description: 'Informes, planos y memorias técnicas' },
+  //   { id: 'plantilla', name: 'Plantilla de carga de datos', icon: FaClipboardList, description: 'Configurar plantillas y subir informes personalizados' }
+ ];
 
   const handleFileSelect = (tabId) => {
     const input = document.createElement('input');
@@ -145,36 +152,22 @@ const Actuaciones = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'success':
-        return 'bg-green-50 text-green-700 border-green-200';
-      case 'error':
-        return 'bg-red-50 text-red-700 border-red-200';
-      default:
-        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-    }
+    return 'text-gray-600';
+  };
+
+  const getStatusIconColor = (status) => {
+    return 'bg-green-700';
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header moderno */}
-      <div className="bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 py-4">
-          <div className="flex items-center justify-between pb-4 border-b-2 border-gray-300">
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-6 bg-gradient-to-b from-sky-600 to-sky-700 rounded-full"></div>
-              <h1 className="text-base font-semibold text-gray-600">Carga de Datos</h1>
-            </div>
-            <Link 
-              to="/" 
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-all duration-200"
-            >
-              <FaArrowLeft className="text-xs" />
-              <span>Volver</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* Header usando componente reutilizable */}
+      <HeaderPage 
+        title="Carga de datos"
+        showBackButton={true}
+        backPath="/"
+        backText="Volver"
+      />
 
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-6">
         {/* Tabs Navigation */}
@@ -220,7 +213,7 @@ const Actuaciones = () => {
                           <Icon className="text-2xl text-sky-600" />
                         </div>
                         <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                          Cargar {tab.name}
+                          Cargar archivos
                         </h3>
                         <p className="text-gray-600 mb-6 max-w-md">
                           Arrastra y suelta tus archivos aquí o haz clic para seleccionar
@@ -253,12 +246,90 @@ const Actuaciones = () => {
                             className="inline-flex items-center gap-2 px-6 py-3 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200"
                           >
                             <FaUpload />
-                            Seleccionar archivos
+                            Seleccionar
                           </button>
                         )}
                       </div>
                     </div>
                   </div>
+
+                  {/* Plantilla Configuration Section - Solo para la pestaña plantilla */}
+                  {tab.id === 'plantilla' && (
+                    <div className="mb-8">
+                      <div className="bg-white rounded-xl border border-gray-200 p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <FaClipboardList className="text-sky-600" />
+                          <h3 className="text-lg font-semibold text-gray-800">Configurar Plantilla</h3>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                          Personaliza tu formulario de carga de datos según tus necesidades específicas.
+                        </p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                          <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">
+                              Nombre de la plantilla
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ej: Inspección de Firmes"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                            />
+                          </div>
+                          <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">
+                              Tipo de informe
+                            </label>
+                            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                              <option>Inspección de firmes</option>
+                              <option>Mantenimiento preventivo</option>
+                              <option>Estado de vías</option>
+                              <option>Mediciones técnicas</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-gray-800">Campos del formulario</h4>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" className="rounded border-gray-300" defaultChecked />
+                              <span className="text-sm text-gray-700">Fecha de inspección</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" className="rounded border-gray-300" defaultChecked />
+                              <span className="text-sm text-gray-700">Ubicación (PK)</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" className="rounded border-gray-300" defaultChecked />
+                              <span className="text-sm text-gray-700">Estado del firme</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" className="rounded border-gray-300" />
+                              <span className="text-sm text-gray-700">Temperatura ambiente</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" className="rounded border-gray-300" />
+                              <span className="text-sm text-gray-700">Humedad relativa</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" className="rounded border-gray-300" />
+                              <span className="text-sm text-gray-700">Observaciones</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                          <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancelar
+                          </button>
+                          <button className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">
+                            Guardar plantilla
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* History Section */}
                   <div>
@@ -291,9 +362,9 @@ const Actuaciones = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-green-200 bg-green-100 text-green-800">
-                            {getStatusIcon(file.status)}
-                            Completado
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-700 rounded-full"></div>
+                            <span className="text-xs text-gray-600">Completado</span>
                           </div>
                         </div>
                       ))}
@@ -315,9 +386,11 @@ const Actuaciones = () => {
                               </div>
                             </div>
                           </div>
-                          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(file.status)}`}>
-                            {getStatusIcon(file.status)}
-                            {file.status === 'success' ? 'Completado' : file.status === 'error' ? 'Error' : 'Pendiente'}
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${getStatusIconColor(file.status)}`}></div>
+                            <span className={`text-xs ${getStatusColor(file.status)}`}>
+                              Completado
+                            </span>
                           </div>
                         </div>
                       ))}

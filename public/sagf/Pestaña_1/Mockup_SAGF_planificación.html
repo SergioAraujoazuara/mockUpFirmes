@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cronograma de Actuaciones - 2025–2026 (Semanas ISO · v3)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background: #f8fafc; }
+    .gantt-container { display: flex; height: 100vh; overflow: hidden; }
+    .gantt-sidebar {
+      width: 350px; background: white; border-right: 2px solid #e2e8f0;
+      overflow-y: auto; flex-shrink: 0;
+    }
+    .gantt-chart { flex: 1; overflow-x: auto; overflow-y: auto; background: #ffffff; }
+    .gantt-header {
+      display: flex; flex-wrap: nowrap; white-space: nowrap; position: sticky; top: 0; background: #f1f5f9; z-index: 10; border-bottom: 2px solid #cbd5e1;
+    }
+    .gantt-month {
+      padding: 8px; text-align: center; font-weight: 600; color: #475569; border-right: 1px solid #cbd5e1; font-size: 13px;
+      background: #f1f5f9;
+    }
+    .gantt-weeks {
+      display: flex; background: #f1f5f9; flex-wrap: nowrap;
+    }
+    .gantt-week {
+      width: 60px; padding: 6px 4px; text-align: center; font-size: 11px; color: #475569;
+      border-right: 1px solid #e2e8f0; white-space: nowrap; background: #f1f5f9;
+    }
+    .gantt-month-block {
+      display: inline-block; vertical-align: top; border-right: 1px solid #cbd5e1; background: #f1f5f9; flex: 0 0 auto;
+    }
+    .gantt-row { display: flex; border-bottom: 1px solid #e2e8f0; min-height: 50px; position: relative; }
+    .gantt-row:hover { background: #f8fafc; }
+    .task-info { padding: 12px; border-bottom: 1px solid #e2e8f0; min-height: 50px; display: flex; flex-direction: column; justify-content: center; }
+    .task-name { font-weight: 600; font-size: 13px; color: #1e293b; margin-bottom: 2px; }
+    .task-details { font-size: 11px; color: #64748b; }
+    .task-bar {
+      position: absolute; height: 32px; border-radius: 6px; display: flex; align-items: center; padding: 0 10px;
+      font-size: 11px; font-weight: 500; color: white; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      top: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .task-bar:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .task-bar.conservacion { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .task-bar.rehabilitacion { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .task-bar.reconstruccion { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    .task-bar.emergencia { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); }
+    .task-bar.planificada { opacity: 0.7; border: 2px dashed rgba(255,255,255,0.5); }
+    .task-bar.en-curso { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
+    .task-bar.completada { opacity: 0.5; }
+    .legend-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 12px; }
+    .legend-box { width: 24px; height: 16px; border-radius: 4px; }
+    .tooltip {
+      position: absolute; background: #1e293b; color: white; padding: 12px; border-radius: 8px; font-size: 12px; z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3); pointer-events: none; display: none; min-width: 250px;
+    }
+    .tooltip.show { display: block; }
+    .filter-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; border: 1px solid #cbd5e1; background: white; cursor: pointer; transition: all 0.2s; }
+    .filter-btn:hover { background: #f1f5f9; }
+    .filter-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .today-line { position: absolute; width: 2px; background: #ef4444; top: 0; bottom: 0; z-index: 5; }
+    .grid-lines { position: absolute; top: 0; bottom: 0; width: 100%; pointer-events: none; }
+    .grid-line { position: absolute; width: 1px; background: #f1f5f9; top: 0; bottom: 0; }
+    @media (max-width: 1280px) { .gantt-sidebar { width: 280px; } }
+    @media (max-width: 1024px) {
+      .gantt-sidebar { width: 240px; }
+      .task-name { font-size: 12px; }
+      .gantt-week { font-size: 10px; padding: 4px 2px; }
+    }
+    @media (max-width: 768px) {
+      .gantt-sidebar { width: 200px; }
+      .task-name { font-size: 11px; }
+      .task-details { font-size: 10px; }
+      .gantt-month { font-size: 12px; }
+      .gantt-week { font-size: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="gantt-container">
+    <div class="gantt-sidebar">
+      <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-slate-700 to-slate-800">
+        <h1 class="text-lg font-bold text-white mb-1">Cronograma de Actuaciones 2025–2026</h1>
+        <p class="text-xs text-slate-300">Semanas ISO (lunes–domingo)</p>
+      </div>
+      <div class="p-4 border-b border-gray-200 bg-gray-50">
+        <p class="text-xs font-semibold text-gray-600 mb-2">FILTRAR POR TIPO:</p>
+        <div class="flex flex-wrap gap-2">
+          <button class="filter-btn active" onclick="filterTasks('all', event)">Todas</button>
+          <button class="filter-btn" onclick="filterTasks('conservacion', event)">Conservación</button>
+          <button class="filter-btn" onclick="filterTasks('rehabilitacion', event)">Rehabilitación</button>
+          <button class="filter-btn" onclick="filterTasks('reconstruccion', event)">Reconstrucción</button>
+        </div>
+        <p class="text-xs font-semibold text-gray-600 mb-2 mt-3">ESTADO:</p>
+        <div class="flex flex-wrap gap-2">
+          <button class="filter-btn active" onclick="filterStatus('all', event)">Todas</button>
+          <button class="filter-btn" onclick="filterStatus('licitada', event)">En licitación</button>
+          <button class="filter-btn" onclick="filterStatus('planificada', event)">Planificadas</button>
+          <button class="filter-btn" onclick="filterStatus('en-curso', event)">En curso</button>
+          <button class="filter-btn" onclick="filterStatus('completada', event)">Completadas</button>
+        </div>
+      </div>
+      <div class="p-4 border-b border-gray-200">
+        <p class="text-xs font-semibold text-gray-600 mb-3">LEYENDA:</p>
+        <div class="space-y-2">
+          <div class="legend-item"><div class="legend-box" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);"></div><span>Conservación</span></div>
+          <div class="legend-item"><div class="legend-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);"></div><span>Rehabilitación</span></div>
+          <div class="legend-item"><div class="legend-box" style="background: #3b82f6; opacity: 0.7; border: 2px dashed white;"></div><span>Planificada</span></div>
+          <div class="legend-item"><div class="legend-box" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);"></div><span>Reconstrucción</span></div>
+          <div class="legend-item"><div class="w-0.5 h-4 bg-red-500"></div><span>Línea de hoy</span></div>
+        </div>
+      </div>
+      <div id="task-list"></div>
+    </div>
+
+    <div class="gantt-chart">
+      <div class="p-4 border-b-2 border-gray-200 bg-white flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <button onclick="zoomOut()" class="px-3 py-1.5 bg-slate-700 text-white rounded-md text-sm hover:bg-slate-800 flex items-center gap-2">
+            <i data-lucide="zoom-out" class="w-4 h-4"></i> Alejar
+          </button>
+          <button onclick="zoomIn()" class="px-3 py-1.5 bg-slate-700 text-white rounded-md text-sm hover:bg-slate-800 flex items-center gap-2">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i> Acercar
+          </button>
+          <button onclick="centerToday()" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4"></i> Ir a Hoy
+          </button>
+        </div>
+        <div class="text-sm text-gray-600 flex items-center gap-2">
+          <i data-lucide="info" class="w-4 h-4"></i>
+          <span id="task-count">0 actuaciones programadas</span>
+        </div>
+      </div>
+      <div id="gantt-timeline" style="position: relative;">
+        <div class="gantt-header" id="gantt-header"></div>
+        <div class="grid-lines" id="grid-lines"></div>
+        <div class="today-line" id="today-line" style="left: 0px;"></div>
+        <div id="gantt-rows"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tooltip" class="tooltip"></div>
+
+  <script>
+    const tasks = [
+      { id: 1, name: 'Bacheo A-601', road: 'A-601', pk: '15+200 - 18+500', type: 'conservacion', start: '2025-01-15', end: '2025-02-28', status: 'completada', budget: '45.000 €', company: 'Construvial SA', priority: 'Media' },
+      { id: 2, name: 'Reconstrucción N-620', road: 'N-620', pk: '78+000 - 81+100', type: 'reconstruccion', start: '2025-02-01', end: '2025-05-15', status: 'en-curso', budget: '850.000 €', company: 'Ferrovial', priority: 'Alta' },
+      { id: 3, name: 'Sellado Fisuras BU-411', road: 'BU-411', pk: '5+000 - 12+300', type: 'conservacion', start: '2025-02-15', end: '2025-03-20', status: 'en-curso', budget: '28.500 €', company: 'Copcisa', priority: 'Baja' },
+      { id: 4, name: 'Refuerzo BU-V-8012', road: 'BU-V-8012', pk: '0+000 - 4+200', type: 'rehabilitacion', start: '2025-03-01', end: '2025-04-30', status: 'planificada', budget: '320.000 €', company: 'OHL', priority: 'Alta' },
+      { id: 5, name: 'Reciclado A-231', road: 'A-231', pk: '22+000 - 28+500', type: 'rehabilitacion', start: '2025-03-15', end: '2025-05-30', status: 'licitada', budget: '580.000 €', company: 'Acciona', priority: 'Alta' },
+      { id: 6, name: 'Microaglomerado N-234', road: 'N-234', pk: '45+000 - 55+800', type: 'conservacion', start: '2025-04-01', end: '2025-05-15', status: 'planificada', budget: '125.000 €', company: 'FCC', priority: 'Media' },
+      { id: 7, name: 'Reparación Juntas A-1', road: 'A-1', pk: '185+200 - 188+900', type: 'conservacion', start: '2025-01-08', end: '2025-02-10', status: 'completada', budget: '62.000 €', company: 'Dragados', priority: 'Alta' },
+      { id: 8, name: 'Fresado y Reposición BU-627', road: 'BU-627', pk: '8+500 - 15+200', type: 'rehabilitacion', start: '2025-04-15', end: '2025-06-30', status: 'planificada', budget: '425.000 €', company: 'Sacyr', priority: 'Media' },
+      { id: 9, name: 'Emergencia Baches N-I', road: 'N-I', pk: '250+100 - 250+800', type: 'emergencia', start: '2025-01-20', end: '2025-01-25', status: 'completada', budget: '15.000 €', company: 'Urgencias Viales', priority: 'Crítica' },
+      { id: 10, name: 'Tratamiento Superficial BU-P-4021', road: 'BU-P-4021', pk: '0+000 - 8+600', type: 'conservacion', start: '2025-05-01', end: '2025-06-15', status: 'planificada', budget: '95.000 €', company: 'Vías y Construcciones', priority: 'Baja' },
+      { id: 11, name: 'Reconstrucción A-62', road: 'A-62', pk: '102+000 - 108+500', type: 'reconstruccion', start: '2025-05-15', end: '2025-09-30', status: 'licitada', budget: '1.250.000 €', company: 'ACS', priority: 'Alta' },
+      { id: 12, name: 'Sellado Grietas N-627', road: 'N-627', pk: '12+000 - 18+400', type: 'conservacion', start: '2025-06-01', end: '2025-06-30', status: 'planificada', budget: '38.000 €', company: 'Copcisa', priority: 'Media' },
+      { id: 13, name: 'Renovación Capa Rodadura BU-550', road: 'BU-550', pk: '25+000 - 32+800', type: 'rehabilitacion', start: '2025-06-15', end: '2025-08-31', status: 'planificada', budget: '485.000 €', company: 'Ferrovial', priority: 'Alta' },
+      { id: 14, name: 'Bacheo Menor BU-V-5042', road: 'BU-V-5042', pk: '3+200 - 5+800', type: 'conservacion', start: '2025-07-01', end: '2025-07-20', status: 'planificada', budget: '22.000 €', company: 'Local Works', priority: 'Baja' },
+      { id: 15, name: 'Reciclado in situ N-120', road: 'N-120', pk: '88+000 - 95+500', type: 'rehabilitacion', start: '2025-07-15', end: '2025-09-30', status: 'licitada', budget: '620.000 €', company: 'Acciona', priority: 'Alta' },
+      { id: 16, name: 'Reparación Drenaje A-231', road: 'A-231', pk: '45+000 - 48+200', type: 'conservacion', start: '2025-08-01', end: '2025-09-15', status: 'planificada', budget: '78.000 €', company: 'Obras Públicas SA', priority: 'Media' },
+      { id: 17, name: 'Reconstrucción Completa BU-405', road: 'BU-405', pk: '0+000 - 6+200', type: 'reconstruccion', start: '2025-08-15', end: '2025-12-20', status: 'planificada', budget: '980.000 €', company: 'OHL', priority: 'Alta' },
+      { id: 18, name: 'Microaglomerado BU-P-8032', road: 'BU-P-8032', pk: '2+000 - 8+500', type: 'conservacion', start: '2025-09-01', end: '2025-10-15', status: 'licitada', budget: '68.000 €', company: 'FCC', priority: 'Media' },
+      { id: 19, name: 'Refuerzo Estructural N-234', road: 'N-234', pk: '120+000 - 128+800', type: 'rehabilitacion', start: '2025-09-15', end: '2025-11-30', status: 'planificada', budget: '725.000 €', company: 'Sacyr', priority: 'Alta' },
+      { id: 20, name: 'Sellado Masivo A-1', road: 'A-1', pk: '200+000 - 215+500', type: 'conservacion', start: '2025-10-01', end: '2025-11-15', status: 'planificada', budget: '145.000 €', company: 'Dragados', priority: 'Media' },
+      { id: 21, name: 'Renovación BU-V-7023', road: 'BU-V-7023', pk: '0+000 - 3+800', type: 'rehabilitacion', start: '2025-10-15', end: '2025-12-10', status: 'planificada', budget: '285.000 €', company: 'Construvial SA', priority: 'Media' },
+      { id: 22, name: 'Bacheo Preventivo N-623', road: 'N-623', pk: '35+000 - 42+200', type: 'conservacion', start: '2025-11-01', end: '2025-11-30', status: 'planificada', budget: '52.000 €', company: 'Copcisa', priority: 'Baja' },
+      { id: 23, name: 'Reconstrucción Total A-601', road: 'A-601', pk: '55+000 - 62+500', type: 'reconstruccion', start: '2025-11-15', end: '2026-03-31', status: 'licitada', budget: '1.450.000 €', company: 'ACS', priority: 'Alta' },
+      { id: 24, name: 'Tratamiento Superficial BU-550', road: 'BU-550', pk: '8+000 - 15+600', type: 'conservacion', start: '2025-12-01', end: '2025-12-20', status: 'planificada', budget: '72.000 €', company: 'FCC', priority: 'Media' },
+      { id: 25, name: 'Conservación N-110', road: 'N-110', pk: '10+000 - 18+000', type: 'conservacion', start: '2026-04-10', end: '2026-05-20', status: 'planificada', budget: '90.000 €', company: 'Vías y Construcciones', priority: 'Media' }
+    ];
+
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    const timelineRawStart = new Date(2025, 0, 1);
+    const timelineRawEnd = new Date(2026, 11, 31);
+
+    const dayMs = 24 * 60 * 60 * 1000;
+    let weekWidth = 60;
+    let minWeekWidth = 10;
+    let maxWeekWidth = 180;
+    let userHasZoomed = false;
+    let currentFilter = { type: 'all', status: 'all' };
+    let totalWeeks = 0;
+    let weekStarts = [];
+
+    function startOfISOWeek(d) {
+      const date = new Date(d);
+      const day = date.getDay();
+      const diff = (day === 0 ? -6 : 1 - day);
+      date.setDate(date.getDate() + diff);
+      date.setHours(0,0,0,0);
+      return date;
+    }
+    function endOfISOWeek(d) {
+      const start = startOfISOWeek(d);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      end.setHours(23,59,59,999);
+      return end;
+    }
+    function isoWeekNumber(d) {
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = (date.getUTCDay() + 6) % 7;
+      date.setUTCDate(date.getUTCDate() - dayNum + 3);
+      const firstThursday = new Date(Date.UTC(date.getUTCFullYear(), 0, 4));
+      const diff = date - firstThursday;
+      return 1 + Math.round(diff / (7 * dayMs));
+    }
+
+    let timelineStart = startOfISOWeek(timelineRawStart);
+    let timelineEnd = endOfISOWeek(timelineRawEnd);
+
+    function buildWeeks() {
+      weekStarts = [];
+      const totalDays = Math.floor((timelineEnd - timelineStart) / dayMs) + 1;
+      totalWeeks = Math.ceil(totalDays / 7);
+      for (let i = 0; i < totalWeeks; i++) {
+        const ws = new Date(timelineStart.getTime() + i * 7 * dayMs);
+        weekStarts.push(ws);
+      }
+    }
+
+    function getWeeksIndicesForMonth(year, monthIdx) {
+      const monthStart = new Date(year, monthIdx, 1);
+      const monthEnd = new Date(year, monthIdx + 1, 0, 23, 59, 59, 999);
+      const indices = [];
+      for (let i = 0; i < totalWeeks; i++) {
+        const ws = weekStarts[i];
+        const we = new Date(ws.getTime() + 6 * dayMs);
+        if (ws <= monthEnd && we >= monthStart) { indices.push(i); }
+      }
+      return indices;
+    }
+
+    function generateGanttChart() {
+      buildWeeks();
+      generateHeader();
+      generateTaskList();
+      generateRows();
+      positionTodayLine();
+      generateGridLines();
+      updateTaskCount();
+      setMinWeekWidthFromLabel();
+      autoScaleToWidth();
+    }
+
+    function generateHeader() {
+      const header = document.getElementById('gantt-header');
+      header.innerHTML = '';
+      const totalWidth = weekWidth * Math.max(totalWeeks, 1);
+      header.style.width = totalWidth + 'px';
+
+      const years = [2025, 2026];
+      years.forEach(year => {
+        for (let m = 0; m < 12; m++) {
+          const weekIdxs = getWeeksIndicesForMonth(year, m);
+          if (weekIdxs.length === 0) continue;
+
+          const monthContainer = document.createElement('div');
+          monthContainer.className = 'gantt-month-block';
+          monthContainer.style.width = `${weekWidth * weekIdxs.length}px`;
+
+          const monthName = document.createElement('div');
+          monthName.className = 'gantt-month';
+          monthName.textContent = `${months[m].toUpperCase()} ${year}`;
+
+          const weeksDiv = document.createElement('div');
+          weeksDiv.className = 'gantt-weeks';
+
+          weekIdxs.forEach(i => {
+            const ws = weekStarts[i];
+            const lab = String(isoWeekNumber(ws)).padStart(2, '0');
+            const weekDiv = document.createElement('div');
+            weekDiv.className = 'gantt-week';
+            weekDiv.style.width = `${weekWidth}px`;
+            weekDiv.textContent = `S${lab}`;
+            weeksDiv.appendChild(weekDiv);
+          });
+
+          monthContainer.appendChild(monthName);
+          monthContainer.appendChild(weeksDiv);
+          header.appendChild(monthContainer);
+        }
+      });
+    }
+
+    function generateTaskList() {
+      const taskList = document.getElementById('task-list');
+      taskList.innerHTML = '';
+      const filteredTasks = getFilteredTasks();
+      filteredTasks.forEach(task => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task-info';
+        taskDiv.innerHTML = `<div class="task-name">${task.name}</div>
+                             <div class="task-details">${task.road} | PK ${task.pk}</div>`;
+        taskList.appendChild(taskDiv);
+      });
+    }
+
+    function generateRows() {
+      const rowsContainer = document.getElementById('gantt-rows');
+      rowsContainer.innerHTML = '';
+      const filteredTasks = getFilteredTasks();
+      filteredTasks.forEach(task => {
+        const row = document.createElement('div');
+        row.className = 'gantt-row';
+        row.style.width = `${weekWidth * totalWeeks}px`;
+        const bar = createTaskBar(task);
+        row.appendChild(bar);
+        rowsContainer.appendChild(row);
+      });
+    }
+
+    function createTaskBar(task) {
+      const bar = document.createElement('div');
+      bar.className = `task-bar ${task.type} ${task.status}`;
+
+      const startDate = new Date(task.start);
+      const endDate = new Date(task.end);
+      const clampedStart = new Date(Math.max(startDate, timelineStart));
+      const clampedEnd = new Date(Math.min(endDate, timelineEnd));
+      const durationDays = Math.max(0, Math.ceil((clampedEnd - clampedStart) / dayMs) + 1);
+
+      const startOffset = getDateOffset(clampedStart);
+      const width = (durationDays / 7) * weekWidth;
+
+      bar.style.left = `${startOffset}px`;
+      bar.style.width = `${width}px`;
+      bar.title = task.name;
+      bar.textContent = task.name;
+
+      bar.addEventListener('mouseenter', (e) => showTooltip(e, task));
+      bar.addEventListener('mouseleave', hideTooltip);
+      bar.addEventListener('mousemove', (e) => moveTooltip(e));
+
+      return bar;
+    }
+
+    function getDateOffset(date) {
+      const daysDiff = Math.floor((date - timelineStart) / dayMs);
+      return (daysDiff / 7) * weekWidth;
+    }
+
+    function positionTodayLine() {
+      const today = new Date();
+      if (today >= timelineStart && today <= timelineEnd) {
+        const offset = getDateOffset(today);
+        document.getElementById('today-line').style.left = `${offset}px`;
+      } else {
+        document.getElementById('today-line').style.left = `-9999px`;
+      }
+    }
+
+    function generateGridLines() {
+      const gridContainer = document.getElementById('grid-lines');
+      gridContainer.innerHTML = '';
+      for (let i = 0; i <= totalWeeks; i++) {
+        const line = document.createElement('div');
+        line.className = 'grid-line';
+        line.style.left = `${i * weekWidth}px`;
+        gridContainer.appendChild(line);
+      }
+    }
+
+    function showTooltip(e, task) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.className = 'tooltip show';
+      tooltip.innerHTML = `
+        <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">${task.name}</div>
+        <div style="display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 11px;">
+          <span style="color: #94a3b8;">Carretera:</span><span>${task.road}</span>
+          <span style="color: #94a3b8;">PK:</span><span>${task.pk}</span>
+          <span style="color: #94a3b8;">Tipo:</span><span>${task.type.charAt(0).toUpperCase() + task.type.slice(1)}</span>
+          <span style="color: #94a3b8;">Estado:</span><span>${task.status.charAt(0).toUpperCase() + task.status.slice(1)}</span>
+          <span style="color: #94a3b8;">Inicio:</span><span>${formatDate(task.start)}</span>
+          <span style="color: #94a3b8;">Fin:</span><span>${formatDate(task.end)}</span>
+          <span style="color: #94a3b8;">Presupuesto:</span><span style="font-weight: 600; color: #10b981;">${task.budget}</span>
+          <span style="color: #94a3b8;">Empresa:</span><span>${task.company}</span>
+          <span style="color: #94a3b8;">Prioridad:</span><span style="font-weight: 600; color: ${getPriorityColor(task.priority)};">${task.priority}</span>
+        </div>`;
+      moveTooltip(e);
+    }
+
+    function moveTooltip(e) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.style.left = `${e.pageX + 15}px`;
+      tooltip.style.top = `${e.pageY + 15}px`;
+    }
+
+    function hideTooltip() { document.getElementById('tooltip').className = 'tooltip'; }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}`;
+    }
+
+    function getPriorityColor(priority) {
+      const colors = { 'Crítica': '#dc2626', 'Alta': '#f59e0b', 'Media': '#3b82f6', 'Baja': '#10b981' };
+      return colors[priority] || '#64748b';
+    }
+
+    function getFilteredTasks() {
+      return tasks.filter(task => {
+        const typeMatch = currentFilter.type === 'all' || task.type === currentFilter.type;
+        const statusMatch = currentFilter.status === 'all' || task.status === currentFilter.status;
+        return typeMatch && statusMatch;
+      });
+    }
+
+    function filterTasks(type, ev) {
+      currentFilter.type = type;
+      updateFilterButtons(ev);
+      generateTaskList();
+      generateRows();
+      updateTaskCount();
+    }
+
+    function filterStatus(status, ev) {
+      currentFilter.status = status;
+      updateFilterButtons(ev);
+      generateTaskList();
+      generateRows();
+      updateTaskCount();
+    }
+
+    function updateFilterButtons(ev) {
+      const container = ev.target.parentElement;
+      container.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      ev.target.classList.add('active');
+    }
+
+    function updateTaskCount() {
+      const count = getFilteredTasks().length;
+      document.getElementById('task-count').textContent = `${count} actuaciones programadas`;
+    }
+
+    function zoomIn() {
+      userHasZoomed = true;
+      if (weekWidth < maxWeekWidth) {
+        weekWidth += 10;
+        regenerate();
+      }
+    }
+
+    function zoomOut() {
+      userHasZoomed = true;
+      if (weekWidth > minWeekWidth) {
+        weekWidth -= 10;
+        regenerate();
+      }
+    }
+
+    function centerToday() {
+      const today = new Date();
+      if (today >= timelineStart && today <= timelineEnd) {
+        const offset = getDateOffset(today);
+        const chartContainer = document.querySelector('.gantt-chart');
+        chartContainer.scrollLeft = offset - chartContainer.clientWidth / 2;
+      }
+    }
+
+    function setMinWeekWidthFromLabel() {
+      const probe = document.createElement('div');
+      probe.className = 'gantt-week';
+      probe.style.position = 'absolute';
+      probe.style.visibility = 'hidden';
+      probe.style.width = 'auto';
+      probe.textContent = 'S88';
+      document.body.appendChild(probe);
+      const needed = probe.getBoundingClientRect().width + 6;
+      document.body.removeChild(probe);
+      minWeekWidth = Math.max(needed, 24);
+      if (weekWidth < minWeekWidth) {
+        weekWidth = minWeekWidth;
+      }
+    }
+
+    function autoScaleToWidth() {
+      if (userHasZoomed) return;
+      const chartContainer = document.querySelector('.gantt-chart');
+      if (!chartContainer) return;
+      const desired = chartContainer.clientWidth / Math.max(totalWeeks, 1);
+      const target = Math.max(minWeekWidth, Math.min(desired, maxWeekWidth));
+      if (Math.abs(target - weekWidth) > 0.5) {
+        weekWidth = target;
+        regenerate();
+      }
+    }
+
+    function regenerate() {
+      const header = document.getElementById('gantt-header');
+      header.style.width = (weekWidth * Math.max(totalWeeks, 1)) + 'px';
+      generateHeader();
+      generateRows();
+      generateGridLines();
+      positionTodayLine();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      buildWeeks();
+      setMinWeekWidthFromLabel();
+      generateGanttChart();
+      setInterval(positionTodayLine, 60000);
+      window.addEventListener('resize', () => { autoScaleToWidth(); });
+    });
+  </script>
+</body>
+</html>

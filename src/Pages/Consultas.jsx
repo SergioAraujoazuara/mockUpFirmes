@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaSearch, FaArrowLeft, FaFilter, FaDownload, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaSearch, FaArrowLeft, FaFilter, FaDownload, FaEye, FaChevronLeft, FaChevronRight, FaCheckCircle, FaExclamationTriangle, FaExclamationCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 function Consultas() {
@@ -63,11 +63,21 @@ function Consultas() {
 
   const getEstadoColor = (estado) => {
     switch(estado) {
-      case 'Excelente': return 'bg-green-100 text-green-800';
-      case 'Bueno': return 'bg-blue-100 text-blue-800';
-      case 'Regular': return 'bg-yellow-100 text-yellow-800';
-      case 'Malo': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Excelente': return 'text-gray-600';
+      case 'Bueno': return 'text-gray-600';
+      case 'Regular': return 'text-gray-600';
+      case 'Malo': return 'text-gray-600';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const getEstadoIcon = (estado) => {
+    switch(estado) {
+      case 'Excelente': return 'bg-green-700';
+      case 'Bueno': return 'bg-yellow-700';
+      case 'Regular': return 'bg-orange-700';
+      case 'Malo': return 'bg-red-700';
+      default: return 'bg-gray-700';
     }
   };
 
@@ -79,7 +89,7 @@ function Consultas() {
           <div className="flex items-center justify-between pb-4 border-b-2 border-gray-300">
             <div className="flex items-center gap-3">
               <div className="w-1 h-6 bg-gradient-to-b from-sky-500 to-sky-600 rounded-full"></div>
-              <h1 className="text-base font-semibold text-gray-800">Consultas - Inventario de Firmes</h1>
+              <h1 className="text-base font-semibold text-gray-800">Consultas - Inventario de firmes</h1>
             </div>
             <Link 
               to="/" 
@@ -94,6 +104,44 @@ function Consultas() {
 
       {/* Contenido */}
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-6">
+        
+        {/* Estadísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+              <div className="text-xs text-gray-600">Total Registros</div>
+            </div>
+            <div className="text-2xl font-bold text-gray-600">{inventarioData.length}</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-green-700 rounded-full"></div>
+              <div className="text-xs text-gray-600 font-light">Excelente</div>
+            </div>
+            <div className="text-2xl font-bold text-gray-600">
+              {inventarioData.filter(i => i.estado === 'Excelente').length}
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-yellow-700 rounded-full"></div>
+              <div className="text-xs text-gray-600 font-light">Bueno</div>
+            </div>
+            <div className="text-2xl font-bold text-gray-600">
+              {inventarioData.filter(i => i.estado === 'Bueno').length}
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-orange-700 rounded-full"></div>
+              <div className="text-xs text-gray-600 font-light">Regular</div>
+            </div>
+            <div className="text-2xl font-bold text-gray-600">
+              {inventarioData.filter(i => i.estado === 'Regular').length}
+            </div>
+          </div>
+        </div>
         
         {/* Barra de búsqueda y filtros */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -188,9 +236,12 @@ function Consultas() {
                       <td className="px-4 py-3 text-sm text-gray-700">{item.provincia}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{item.tipo}</td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEstadoColor(item.estado)}`}>
-                          {item.estado}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${getEstadoIcon(item.estado)}`}></div>
+                          <span className={`text-sm ${getEstadoColor(item.estado)}`}>
+                            {item.estado}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">{item.año}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{item.espesor}</td>
@@ -288,31 +339,6 @@ function Consultas() {
           )}
         </div>
 
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-xs text-gray-600 mb-1">Total Registros</div>
-            <div className="text-2xl font-bold text-gray-800">{inventarioData.length}</div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-xs text-gray-600 mb-1">Excelente</div>
-            <div className="text-2xl font-bold text-green-600">
-              {inventarioData.filter(i => i.estado === 'Excelente').length}
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-xs text-gray-600 mb-1">Bueno</div>
-            <div className="text-2xl font-bold text-blue-600">
-              {inventarioData.filter(i => i.estado === 'Bueno').length}
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-xs text-gray-600 mb-1">Regular</div>
-            <div className="text-2xl font-bold text-yellow-600">
-              {inventarioData.filter(i => i.estado === 'Regular').length}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

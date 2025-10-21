@@ -1,6 +1,7 @@
 import './App.css';
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
+import LayoutLateral from './Components/LayoutLateral';
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 import AuthTabs from './Login/AuthTabs.jsx';
@@ -40,6 +41,8 @@ import AcvfOpcion2 from './Pages/AcvfOpcion2.jsx';
 import AcvfOpcion4 from './Pages/AcvfOpcion4.jsx';
 import BOE from './Pages/BOE.jsx';
 import OrdenesEstudio from './Pages/OrdenesEstudio.jsx';
+import AcvAnalisisCicloVida from './Pages/AcvAnalisisCicloVida.jsx';
+import AcvCronograma from './Pages/AcvCronograma.jsx';
 
 // App.js
 // This is the main entry point for the application. It defines the routing structure
@@ -51,7 +54,6 @@ function App() {
   // These routes are accessible without authentication.
   const publicRoutes = [
     { path: '/', element: <Home /> },
-    { path: '/authTabs', element: <AuthTabs /> },
     { path: '/groc', element: <GrocIA /> },
     { path: '/sendEmail', element: <SendMail /> },
     { path: '/indicadores', element: <Indicadores /> },
@@ -63,9 +65,10 @@ function App() {
     { path: '/acvf/opcion-1', element: <AcvfOpcion1 /> },
     { path: '/acvf/opcion-2', element: <AcvfOpcion2 /> },
     { path: '/acvf/opcion-4', element: <AcvfOpcion4 /> },
+    { path: '/acv/analisis-ciclo-vida', element: <AcvAnalisisCicloVida /> },
+    { path: '/acv/cronograma', element: <AcvCronograma /> },
     { path: '/boe', element: <BOE /> },
-    { path: '/ordenes-estudio', element: <OrdenesEstudio /> },
-
+    { path: '/ordenes-estudio', element: <OrdenesEstudio /> }
   ];
   // adminRoutes
   // Routes restricted to admin users (and optionally general users).
@@ -112,29 +115,31 @@ function App() {
   
   return (
     <AuthProvider> {/* Provides authentication context globally */}
-
-      <Navbar />
       <Routes>
-        {publicRoutes.map((route, index) => (
-          <Route key={index} path={route.path} element={route.element} />
-        ))}
-        {adminRoutes.map((route, index) => (
-          <Route
-            key={index}
-            path={route.path}
-            element={<ProtectedRoutes allowedRoles={route.roles}>{route.element}</ProtectedRoutes>}
-          />
-        ))}
-        {inspectionRoutes.map((route, index) => (
-          <Route
-            key={index}
-            path={route.path}
-            element={<ProtectedRoutes allowedRoles={route.roles}>{route.element}</ProtectedRoutes>}
-          />
-        ))}
+        {/* Rutas con layout lateral */}
+        <Route path="/" element={<LayoutLateral />}>
+          {publicRoutes.map((route, index) => (
+            <Route key={index} path={route.path} element={route.element} />
+          ))}
+          {adminRoutes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              element={<ProtectedRoutes allowedRoles={route.roles}>{route.element}</ProtectedRoutes>}
+            />
+          ))}
+          {inspectionRoutes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              element={<ProtectedRoutes allowedRoles={route.roles}>{route.element}</ProtectedRoutes>}
+            />
+          ))}
+        </Route>
+        
+        {/* Rutas sin layout lateral (login, etc.) */}
+        <Route path="/authTabs" element={<AuthTabs />} />
       </Routes>
-      <Footer />
-
     </AuthProvider>
   );
 }

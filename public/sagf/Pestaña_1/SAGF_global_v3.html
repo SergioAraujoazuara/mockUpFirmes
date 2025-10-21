@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAGF - Sistema Avanzado de Gestión de Firmes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* Estilos específicos para el módulo LCSA integrado */
+        .lcsa-tabs { margin-top: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .lcsa-tabs-header { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 1rem; border-bottom: 1px solid #e2e8f0; background: white; }
+        .lcsa-tabs-header button {
+            appearance: none; background: linear-gradient(to right, #f1f5f9, #e2e8f0); border: 1px solid #cbd5e1;
+            color: #475569; padding: 0.625rem 1.25rem; border-radius: 0.5rem; cursor: pointer; 
+            font-size: 0.875rem; transition: all 0.3s; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .lcsa-tabs-header button:hover { background: linear-gradient(to right, #e2e8f0, #cbd5e1); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        .lcsa-tabs-header button.active { background: linear-gradient(to right, #3b82f6, #2563eb); color: white; border-color: #2563eb; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); }
+        .lcsa-tabs-panel { display: none; padding: 12px 16px 20px; }
+        .lcsa-tabs-panel.active { display: block; }
+        .lcsa-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .lcsa-table th, .lcsa-table td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .lcsa-table th { text-align: left; color: #475569; font-weight: 600; }
+        .lcsa-kicker { font-size: 12px; color: #64748b; margin: 0 0 8px 0; }
+        .lcsa-note { color: #475569; font-size: 13px; }
+        .lcsa-unit { white-space: nowrap; color: #334155; }
+    </style>
+
+<!-- Styles for Gantt (from cronograma.html) -->
+<style>
+.gantt-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .gantt-sidebar {
+            width: 350px;
+            background: white;
+            border-right: 2px solid #e2e8f0;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .gantt-chart {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+        .gantt-header {
+            display: flex;
+            position: sticky;
+            top: 0;
+            background: #f1f5f9;
+            z-index: 10;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .gantt-month {
+            min-width: 240px;
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #475569;
+            border-right: 1px solid #cbd5e1;
+            font-size: 13px;
+        }
+        .gantt-weeks {
+            display: flex;
+        }
+        .gantt-week {
+            width: 60px;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 11px;
+            color: #64748b;
+            border-right: 1px solid #e2e8f0;
+        }
+        .gantt-row {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            min-height: 50px;
+            position: relative;
+        }
+        .gantt-row:hover {
+            background: #f8fafc;
+        }
+        .task-info {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .task-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        .task-details {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .task-bar {
+            position: absolute;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 11px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            top: 9px;
+        }
+        .task-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .task-bar.conservacion { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .task-bar.rehabilitacion { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .task-bar.reconstruccion { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .task-bar.emergencia { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); }
+        .task-bar.planificada { opacity: 0.7; border: 2px dashed rgba(255,255,255,0.5); }
+        .task-bar.en-curso { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+        .task-bar.completada { opacity: 0.5; }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .legend-box {
+            width: 24px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .tooltip {
+            position: absolute;
+            background: #1e293b;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            pointer-events: none;
+            display: none;
+            min-width: 250px;
+        }
+        .tooltip.show {
+            display: block;
+        }
+        .milestone {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid #8b5cf6;
+            top: 19px;
+            cursor: pointer;
+        }
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover {
+            background: #f1f5f9;
+        }
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .today-line {
+            position: absolute;
+            width: 2px;
+            background: #ef4444;
+            top: 0;
+            bottom: 0;
+            z-index: 5;
+        }
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            pointer-events: none;
+        }
+        .grid-line {
+            position: absolute;
+            width: 1px;
+            background: #f1f5f9;
+            top: 0;
+            bottom: 0;
+        }
+</style>
+
+</head>
+<body class="h-screen w-screen overflow-hidden bg-gray-100 flex">
+
+    <aside class="w-64 bg-slate-800 text-white flex flex-col flex-shrink-0">
+        <div class="h-16 flex items-center justify-center border-b border-slate-700">
+            <h1 class="text-2xl font-bold text-white">SAGF</h1>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <a href="#" onclick="showModule('inicio')" class="nav-link active-nav flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors bg-slate-700 text-white">
+                <i data-lucide="home"></i> <span>Inicio</span>
+            </a>
+            <a href="#" onclick="showModule('inventario')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300">
+                <i data-lucide="database"></i> <span>Inventario y Auscultaciones</span>
+            </a>
+            <a href="#" onclick="showModule('analisis')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300">
+                <i data-lucide="bar-chart-3"></i> <span>Análisis y Prognosis</span>
+            </a>
+            <a href="#" onclick="showModule('programacion')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300">
+                <i data-lucide="calendar-check"></i> <span>Programación de Actuaciones</span>
+            </a>
+            <a href="#" onclick="showModule('acv')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300">
+                <i data-lucide="leaf"></i> <span>Análisis del Ciclo de Vida</span>
+            </a>
+            <a href="#" onclick="showModule('ia')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300">
+                <i data-lucide="brain-circuit"></i> <span>Extracción Automatizada (IA)</span>
+            </a>
+            <a href="#" onclick="showModule('indices')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300">
+                <i data-lucide="gauge"></i> <span>Índices Inteligentes</span>
+            </a>
+            <a href="#" onclick="showModule('notificaciones')" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300">
+                <i data-lucide="bell"></i> <span>Notificaciones</span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-slate-700">
+             <img src="logo_tpf.png" alt="TPF Ingeniería" class="h-8">
+			 <p class="text-sm text-gray-200">TPF Ingeniería</p>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col">
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+            <h2 id="module-title" class="text-xl font-semibold text-gray-800">Estado de los Firmes</h2>
+            <div class="flex items-center gap-4">
+                <i data-lucide="settings" class="text-gray-500 cursor-pointer hover:text-gray-800"></i>
+                <i data-lucide="help-circle" class="text-gray-500 cursor-pointer hover:text-gray-800"></i>
+                <div class="flex items-center gap-2">
+                    <img src="https://i.pravatar.cc/40" alt="Avatar" class="w-8 h-8 rounded-full">
+                    <div>
+                        <p class="text-sm font-medium text-gray-800">Usuario</p>
+                        <p class="text-xs text-gray-500">Administrador</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 p-6 overflow-y-auto">
+            
+            <div id="content-inicio" class="module-content">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">% Red en Buen Estado</p>
+                            <p class="text-3xl font-bold text-gray-800">6,4<span class="text-xl">%</span></p>
+                        </div>
+                        <div class="bg-blue-100 p-2 rounded-full"><i data-lucide="check-circle" class="text-blue-600"></i></div>
+                    </div>
+                     <div class="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Media IRI</p>
+                            <p class="text-3xl font-bold text-gray-800">1,88<span class="text-base font-normal ml-1">mm/m</span></p>
+                        </div>
+                        <div class="bg-green-100 p-2 rounded-full"><i data-lucide="move-horizontal" class="text-green-600"></i></div>
+                    </div>
+                     <div class="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Media CRT</p>
+                            <p class="text-3xl font-bold text-gray-800">89</p>
+                        </div>
+                        <div class="bg-yellow-100 p-2 rounded-full"><i data-lucide="grip" class="text-yellow-600"></i></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">N.º Tramos en Umbral Crítico</p>
+                            <p class="text-3xl font-bold text-gray-800">150</p>
+                        </div>
+                        <div class="bg-red-100 p-2 rounded-full"><i data-lucide="alert-triangle" class="text-red-600"></i></div>
+                    </div>
+
+                    <div class="lg:col-span-3 bg-white p-4 rounded-lg shadow border border-gray-100">
+                        <h3 class="font-semibold mb-4">Mapa de Estado de la Red</h3>
+                        <div class="rounded-md overflow-hidden h-[60vh]">
+                            <img src="gis_carreteras.png" alt="Mapa GIS de la Red de Firmes" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                           <h3 class="font-semibold mb-2">Alertas</h3>
+                           <ul class="space-y-2 text-sm">
+                               <li class="flex items-start gap-2"><i data-lucide="file-warning" class="w-4 h-4 text-yellow-500 mt-0.5"></i> <p>Validar datos de las últimas auscultaciones</p></li>
+                               <li class="flex items-start gap-2"><i data-lucide="database-backup" class="w-4 h-4 text-blue-500 mt-0.5"></i> <p>Actualizar el inventario estructural</p></li>
+                               <li class="flex items-start gap-2"><i data-lucide="line-chart" class="w-4 h-4 text-red-500 mt-0.5"></i> <p>Revisar la prognosis de CRT e IRI</p></li>
+                           </ul>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                            <h3 class="font-semibold mb-4">Evolución de Indicadores</h3>
+                            <div class="h-48"><canvas id="dashboard-chart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-inventario" class="module-content hidden p-6 bg-white rounded-lg shadow">
+                 <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"><i data-lucide="database" class="w-7 h-7 text-blue-600"></i>Inventario y Auscultaciones</h3>
+                 
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Gestión de Tramos y Carreteras</h4>
+                        <p class="text-gray-600 text-sm mb-4">Visualice y edite la información detallada de cada tramo de la red. Acceda a fichas técnicas, historial de actuaciones y parámetros estructurales.</p>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">Ver Inventario</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Datos de Auscultación</h4>
+                        <p class="text-gray-600 text-sm mb-4">Consulte los resultados de las campañas de auscultación (IRI, Deflexiones, Adherencia) y los nuevos índices de visión artificial.</p>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">Explorar Auscultaciones</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Historial de Actuaciones</h4>
+                        <p class="text-gray-600 text-sm mb-4">Acceda al registro completo de intervenciones de conservación y rehabilitación realizadas en cada tramo.</p>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">Ver Historial</button>
+                    </div>
+                 </div>
+
+                 <div class="mt-8 bg-white p-6 rounded-lg shadow border border-gray-100">
+                    <h4 class="font-semibold text-lg text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="upload" class="w-5 h-5 text-green-600"></i>Carga de Nuevos Datos</h4>
+                    <p class="text-gray-600 text-sm mb-4">Utilice nuestro asistente inteligente para cargar y procesar nuevas campañas de auscultación o actualizaciones del inventario de forma semi-automática.</p>
+                    <div class="flex items-center gap-4">
+                        <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm flex items-center gap-2"><i data-lucide="upload" class="w-4 h-4"></i> Cargar Fichero</button>
+                    </div>
+                 </div>
+            </div>
+
+            <div id="content-analisis" class="module-content hidden p-6 bg-white rounded-lg shadow">
+                 <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"><i data-lucide="bar-chart-3" class="w-7 h-7 text-purple-600"></i>Análisis y Prognosis</h3>
+
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Modelos Predictivos del Deterioro</h4>
+                        <p class="text-gray-600 text-sm mb-4">Simule la evolución de los índices de estado (IRI, CRT, Roge) para cualquier tramo y horizonte temporal. Utilice los modelos de *Machine Learning* y visión artificial.</p>
+                        <button class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 text-sm">Ejecutar Prognosis</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Visualización de Tendencias</h4>
+                        <p class="text-gray-600 text-sm mb-4">Explore gráficamente la evolución histórica y futura de los indicadores de estado de la red. Identifique tramos críticos y tendencias de deterioro.</p>
+                        <button class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 text-sm">Ver Tendencias</button>
+                    </div>
+                 </div>
+
+                 <div class="mt-8 bg-white p-6 rounded-lg shadow border border-gray-100">
+                    <h4 class="font-semibold text-lg text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="target" class="w-5 h-5 text-red-600"></i>Identificación de Tramos Críticos</h4>
+                    <p class="text-gray-600 text-sm mb-4">El sistema identifica automáticamente los tramos que superan umbrales de deterioro predefinidos o que muestran una aceleración en su degradación.</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Tramo</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">PK Inicio</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">PK Fin</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">IRI (2023)</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">IRI Prev. (2025)</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                    <th scope="col" class="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">A-601, Sentido Creciente</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">15.200</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">18.500</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">3.12</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-red-600">3.85 (Crítico)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Urgente</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><button class="text-blue-600 hover:text-blue-900">Detalles</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">N-620, Sentido Decreciente</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">78.000</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">81.100</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">2.55</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-yellow-600">3.20 (Atención)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Alerta</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><button class="text-blue-600 hover:text-blue-900">Detalles</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+            
+            <div id="content-programacion" class="module-content hidden p-6 bg-white rounded-lg shadow">
+                 <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"><i data-lucide="calendar-check" class="w-7 h-7 text-emerald-600"></i>Programación de Actuaciones</h3>
+                 
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Planificación Estratégica</h4>
+                        <p class="text-gray-600 text-sm mb-4">Defina escenarios de inversión a largo plazo, optimizando la asignación de recursos para mantener la red en el nivel de servicio deseado.</p>
+                        <button class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 text-sm">Crear Escenario</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Generación de Programas Anuales</h4>
+                        <p class="text-gray-600 text-sm mb-4">Genere automáticamente la propuesta del programa anual de actuaciones, priorizando tramos según criterios de eficiencia, criticidad y sostenibilidad.</p>
+                        <button class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 text-sm">Generar Programa</button>
+                    </div>
+                 </div>
+
+                 <div class="mt-8 bg-white p-6 rounded-lg shadow border border-gray-100">
+                    <h4 class="font-semibold text-lg text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="gantt-chart" class="w-5 h-5 text-indigo-600"></i>Visualización del Programa</h4>
+                    <p class="text-gray-600 text-sm mb-4">Consulte las actuaciones planificadas en un cronograma interactivo. Realice ajustes y visualice el impacto en los indicadores de rendimiento.</p>
+                    <div class="gantt-container">
+ <!-- Sidebar Izquierda -->
+ <div class="gantt-sidebar">
+  <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-slate-700 to-slate-800">
+   <h1 class="text-lg font-bold text-white mb-1">
+    Cronograma de Actuaciones 2025
+   </h1>
+   <p class="text-xs text-slate-300">
+    Plan de Mantenimiento de Firmes
+   </p>
+  </div>
+  <!-- Filtros -->
+  <div class="p-4 border-b border-gray-200 bg-gray-50">
+   <p class="text-xs font-semibold text-gray-600 mb-2">
+    FILTRAR POR TIPO:
+   </p>
+   <div class="flex flex-wrap gap-2">
+    <button class="filter-btn active" onclick="filterTasks('all')">
+     Todas
+    </button>
+    <button class="filter-btn" onclick="filterTasks('conservacion')">
+     Conservación
+    </button>
+    <button class="filter-btn" onclick="filterTasks('rehabilitacion')">
+     Rehabilitación
+    </button>
+    <button class="filter-btn" onclick="filterTasks('reconstruccion')">
+     Reconstrucción
+    </button>
+   </div>
+   <p class="text-xs font-semibold text-gray-600 mb-2 mt-3">
+    ESTADO:
+   </p>
+   <div class="flex flex-wrap gap-2">
+    <button class="filter-btn active" onclick="filterStatus('all')">
+     Todos
+    </button>
+    <button class="filter-btn" onclick="filterStatus('planificada')">
+     Planificadas
+    </button>
+    <button class="filter-btn" onclick="filterStatus('en-curso')">
+     En Curso
+    </button>
+    <button class="filter-btn" onclick="filterStatus('completada')">
+     Completadas
+    </button>
+   </div>
+  </div>
+  <!-- Leyenda -->
+  <div class="p-4 border-b border-gray-200">
+   <p class="text-xs font-semibold text-gray-600 mb-3">
+    LEYENDA:
+   </p>
+   <div class="space-y-2">
+    <div class="legend-item">
+     <div class="legend-box" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+     </div>
+     <span>
+      Conservación
+     </span>
+    </div>
+    <div class="legend-item">
+     <div class="legend-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+     </div>
+     <span>
+      Rehabilitación
+     </span>
+    </div>
+    <div class="legend-item">
+     <div class="legend-box" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+     </div>
+     <span>
+      Reconstrucción
+     </span>
+    </div>
+    <div class="legend-item">
+     <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid #8b5cf6;">
+     </div>
+     <span>
+      Hito importante
+     </span>
+    </div>
+    <div class="legend-item">
+     <div class="legend-box" style="background: #3b82f6; opacity: 0.7; border: 2px dashed white;">
+     </div>
+     <span>
+      Planificada
+     </span>
+    </div>
+    <div class="legend-item">
+     <div class="w-0.5 h-4 bg-red-500">
+     </div>
+     <span>
+      Línea de hoy
+     </span>
+    </div>
+   </div>
+  </div>
+  <!-- Lista de Tareas -->
+  <div id="task-list">
+   <!-- Se genera dinámicamente -->
+  </div>
+ </div>
+ <!-- Área del Gantt -->
+ <div class="gantt-chart">
+  <div class="p-4 border-b-2 border-gray-200 bg-white flex items-center justify-between">
+   <div class="flex items-center gap-4">
+    <button class="px-3 py-1.5 bg-slate-700 text-white rounded-md text-sm hover:bg-slate-800 flex items-center gap-2" onclick="zoomOut()">
+     <i class="w-4 h-4" data-lucide="zoom-out">
+     </i>
+     Alejar
+    </button>
+    <button class="px-3 py-1.5 bg-slate-700 text-white rounded-md text-sm hover:bg-slate-800 flex items-center gap-2" onclick="zoomIn()">
+     <i class="w-4 h-4" data-lucide="zoom-in">
+     </i>
+     Acercar
+    </button>
+    <button class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 flex items-center gap-2" onclick="centerToday()">
+     <i class="w-4 h-4" data-lucide="calendar">
+     </i>
+     Ir a Hoy
+    </button>
+   </div>
+   <div class="text-sm text-gray-600 flex items-center gap-2">
+    <i class="w-4 h-4" data-lucide="info">
+    </i>
+    <span id="task-count">
+     24 actuaciones programadas
+    </span>
+   </div>
+  </div>
+  <div id="gantt-timeline" style="position: relative;">
+   <!-- Cabecera de meses -->
+   <div class="gantt-header" id="gantt-header">
+    <!-- Se genera dinámicamente -->
+   </div>
+   <!-- Líneas de grid -->
+   <div class="grid-lines" id="grid-lines">
+    <!-- Se genera dinámicamente -->
+   </div>
+   <!-- Línea de hoy -->
+   <div class="today-line" id="today-line" style="left: 0px;">
+   </div>
+   <!-- Filas de tareas -->
+   <div id="gantt-rows">
+    <!-- Se genera dinámicamente -->
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+</div>
+
+                 </div>
+            </div>
+            
+            <div id="content-acv" class="module-content hidden">
+                <div class="bg-white shadow-sm border border-gray-200 rounded-t-lg">
+                    <div class="px-6">
+                        <nav class="flex gap-6 -mb-px">
+                            <button onclick="changeACVTab('acv-main')" id="tab-acv-main" class="acv-tab-btn flex items-center gap-2 py-3 px-1 border-b-2 text-sm border-blue-600 text-blue-600 font-medium">
+                                <i data-lucide="activity" class="w-4 h-4"></i> Resumen Gráfico
+                            </button>
+                            <button onclick="changeACVTab('acv-analisis')" id="tab-acv-analisis" class="acv-tab-btn flex items-center gap-2 py-3 px-1 border-b-2 text-sm border-transparent text-gray-500 hover:text-gray-700">
+                                <i data-lucide="chart-bar" class="w-4 h-4"></i> Análisis Detallado
+                            </button>
+                            <button onclick="changeACVTab('acv-indicadores')" id="tab-acv-indicadores" class="acv-tab-btn flex items-center gap-2 py-3 px-1 border-b-2 text-sm border-transparent text-gray-500 hover:text-gray-700">
+                                <i data-lucide="list-checks" class="w-4 h-4"></i> Indicadores LCSA
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <div id="content-acv-main" class="acv-content-panel mt-4">
+                    <div class="bg-white rounded-lg shadow-md border border-gray-100 p-6">
+					<div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100"><div class="flex items-start justify-between"><div class="flex-1"><p class="text-xs font-medium text-gray-600 mb-1">Huella de carbono</p><div class="flex items-baseline gap-1"><h3 class="text-2xl font-bold text-gray-900">2,785</h3><span class="text-xs text-gray-500">ton CO₂ eq</span></div><div class="flex items-center gap-1 mt-1 text-xs text-green-600"><i data-lucide="trending-down" class="w-3 h-3"></i><span>12,3%</span></div></div><div class="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600"><i data-lucide="leaf" class="w-5 h-5 text-white"></i></div></div></div>
+                        <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100"><div class="flex items-start justify-between"><div class="flex-1"><p class="text-xs font-medium text-gray-600 mb-1">Consumo energético</p><div class="flex items-baseline gap-1"><h3 class="text-2xl font-bold text-gray-900">7,520</h3><span class="text-xs text-gray-500">MWh</span></div><div class="flex items-center gap-1 mt-1 text-xs text-green-600"><i data-lucide="trending-down" class="w-3 h-3"></i><span>8,7%</span></div></div><div class="p-2 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-600"><i data-lucide="zap" class="w-5 h-5 text-white"></i></div></div></div>
+                        <div class="bg-white rounded-lg shadow-md p-3 border border-gray-100"><div class="flex items-start justify-between"><div class="flex-1"><p class="text-xs font-medium text-gray-600 mb-1">Circularidad</p><div class="flex items-baseline gap-1"><h3 class="text-2xl font-bold text-gray-900">87,5</h3><span class="text-xs text-gray-500">/100</span></div><div class="flex items-center gap-1 mt-1 text-xs text-green-600"><i data-lucide="trending-down" class="w-3 h-3"></i><span>5,8%</span></div></div><div class="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600"><i data-lucide="recycle" class="w-5 h-5 text-white"></i></div></div></div>
+                        <div class="bg-gradient-to-br from-blue-400 to-cyan-400 rounded-lg shadow-md p-3 text-white"><h4 class="text-xs font-medium opacity-90 mb-1">Reducción Huella</h4><p class="text-xl font-bold">1,240</p><p class="text-xs opacity-80">ton CO₂ eq ahorradas</p></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><h3 class="text-sm font-bold text-gray-900 mb-3">Emisiones por Etapa</h3><div class="flex-1"><canvas id="chart1"></canvas></div></div>
+                        <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><h3 class="text-sm font-bold text-gray-900 mb-3">Distribución de Impacto</h3><div class="flex-1"><canvas id="chart2"></canvas></div></div>
+                        <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><h3 class="text-sm font-bold text-gray-900 mb-3">Comparativa de Firmes</h3><div class="flex-1"><canvas id="chart3"></canvas></div></div>
+                        <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><h3 class="text-sm font-bold text-gray-900 mb-3">Tendencia vs. Objetivo</h3><div class="flex-1"><canvas id="chart4"></canvas></div></div>
+                    </div>
+					</div>
+                </div>
+                
+                <div id="content-acv-analisis" class="acv-content-panel hidden mt-4">
+                     <div class="bg-white rounded-lg shadow-md border border-gray-100 p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Análisis Detallado del Ciclo de Vida (ACV)</h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><div class="flex items-center gap-3"><div class="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600"><i data-lucide="leaf" class="w-5 h-5 text-white"></i></div><div><p class="text-sm">Huella de carbono</p><h3 class="text-2xl font-bold">2,785 <span class="text-sm font-normal">t CO₂-eq</span></h3></div></div></div>
+                            <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><div class="flex items-center gap-3"><div class="p-2 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-600"><i data-lucide="zap" class="w-5 h-5 text-white"></i></div><div><p class="text-sm">Consumo energético</p><h3 class="text-2xl font-bold">7,52 <span class="text-sm font-normal">MWh</span></h3></div></div></div>
+                            <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><div class="flex items-center gap-3"><div class="p-2 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-600"><i data-lucide="euro" class="w-6 h-6 text-white"></i></div><div><p class="text-sm">Coste ciclo de vida (LCC)</p><h3 class="text-2xl font-bold">€2,1M</h3></div></div></div>
+                            <div class="bg-white rounded-lg shadow-md p-4 border border-gray-100"><div class="flex items-center gap-3"><div class="p-2 rounded-lg bg-gradient-to-br from-purple-300 to-purple-600"><i data-lucide="recycle" class="w-5 h-5 text-white"></i></div><div><p class="text-sm">Índice de circularidad</p><h3 class="text-2xl font-bold">87,5%</h3></div></div></div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="bg-white border border-gray-200 rounded-lg p-4"><h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-purple-600"></i>Impacto por fase del ACV</h4><p class="text-sm text-gray-600 mb-4">Comparativa de emisiones de GEI para distintas alternativas de diseño.</p><div style="height: 300px;"><canvas id="acvBarChart"></canvas></div></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white border border-gray-200 rounded-lg p-4"><h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="radar" class="w-5 h-5 text-purple-600"></i>Radar de sostenibilidad</h4><p class="text-sm text-gray-600 mb-4">Análisis multi-criterio.</p><div style="height: 300px;"><canvas id="sustainabilityRadarChart"></canvas></div></div>
+                                <div class="bg-white border border-gray-200 rounded-lg p-4"><h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-purple-600"></i>Desglose de materiales</h4><p class="text-sm text-gray-600 mb-4">Contribución a la huella de carbono.</p><div style="height: 300px;"><canvas id="materialsDoughnutChart"></canvas></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-acv-indicadores" class="acv-content-panel hidden mt-4">
+                    <div class="lcsa-tabs">
+                        <div class="lcsa-tabs-header"><button onclick="changeLCSATab('amb')" id="lcsa-amb" class="active">Ambientales</button><button onclick="changeLCSATab('econ')" id="lcsa-econ">Económicos</button><button onclick="changeLCSATab('soc')" id="lcsa-soc">Sociales</button><button onclick="changeLCSATab('res')" id="lcsa-res">Resumen</button></div>
+						<!-- Panel Ambiental -->
+                <div class="lcsa-tabs-panel active" id="panel-amb">
+                    <p class="lcsa-kicker">Indicadores ambientales conforme a EN 15804+A2 / ReCiPe (midpoint).</p>
+                    <table class='lcsa-table'>
+                        <thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead>
+                        <tbody>
+                            <tr><td>GWP – Potencial de calentamiento global</td><td class='lcsa-unit'>kg CO₂e</td><td>—</td><td class='lcsa-note'>Incluye fabricación, transporte, construcción, conservación y uso por resistencia a la rodadura.</td></tr>
+                            <tr><td>AP – Acidificación</td><td class='lcsa-unit'>kg SO₂e</td><td>—</td><td class='lcsa-note'>Emisiones en fabricación de ligantes/áridos y transporte.</td></tr>
+                            <tr><td>EP – Eutrofización</td><td class='lcsa-unit'>kg PO₄³⁻e</td><td>—</td><td class='lcsa-note'>Aportes de nutrientes de procesos industriales/lixiviados.</td></tr>
+                            <tr><td>POCP – Ozono fotoquímico</td><td class='lcsa-unit'>kg NMVOCe</td><td>—</td><td class='lcsa-note'>COV en fabricación/puesta en obra de mezclas asfálticas.</td></tr>
+                            <tr><td>ODP – Agotamiento de ozono</td><td class='lcsa-unit'>kg CFC-11e</td><td>—</td><td class='lcsa-note'>Generalmente bajo; se reporta por comparabilidad.</td></tr>
+                            <tr><td>PM – Formación de partículas</td><td class='lcsa-unit'>kg PM₂.₅e</td><td>—</td><td class='lcsa-note'>Polvo en canteras, fabricación y obra.</td></tr>
+                            <tr><td>Toxicidad humana (cáncer/no cáncer)</td><td class='lcsa-unit'>CTUh</td><td>—</td><td class='lcsa-note'>Derivado de sustancias y procesos de producción.</td></tr>
+                            <tr><td>Eco-toxicidad acuática continental</td><td class='lcsa-unit'>CTUe</td><td>—</td><td class='lcsa-note'>Emisiones a agua asociadas a producción y obra.</td></tr>
+                            <tr><td>Radiación ionizante</td><td class='lcsa-unit'>kBq U-235e</td><td>—</td><td class='lcsa-note'>Exigido en algunos marcos normativos.</td></tr>
+                            <tr><td>Uso del suelo / transformación</td><td class='lcsa-unit'>m²·a</td><td>—</td><td class='lcsa-note'>Extracción de áridos y ocupación de instalaciones.</td></tr>
+                            <tr><td>CED – Demanda de energía primaria (no ren./ren.)</td><td class='lcsa-unit'>MJ</td><td>—</td><td class='lcsa-note'>Suma de energía directa e incorporada.</td></tr>
+                            <tr><td>Agotamiento de recursos abióticos (minerales/metales)</td><td class='lcsa-unit'>kg Sbe</td><td>—</td><td class='lcsa-note'>Consumo de recursos no renovables.</td></tr>
+                            <tr><td>Uso de agua</td><td class='lcsa-unit'>m³ depriv.</td><td>—</td><td class='lcsa-note'>Agua consumida en procesos; categoría A2 EN 15804.</td></tr>
+                            <tr><td>Residuos generados (pelig./no pelig./inertes)</td><td class='lcsa-unit'>kg</td><td>—</td><td class='lcsa-note'>Incluye fresado y fin de vida.</td></tr>
+                            <tr><td>Materiales secundarios/reciclados</td><td class='lcsa-unit'>kg / %</td><td>—</td><td class='lcsa-note'>RAP, áridos reciclados, adiciones minerales.</td></tr>
+                            <tr><td>Salidas para valorización/reciclaje</td><td class='lcsa-unit'>kg</td><td>—</td><td class='lcsa-note'>Flujos que evitan disposición final.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel Económico -->
+                <div class="lcsa-tabs-panel" id="panel-econ">
+                    <p class="lcsa-kicker">Indicadores económicos (LCC) con descuento real y separación agencia/usuario.</p>
+                    <table class='lcsa-table'>
+                        <thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead>
+                        <tbody>
+                            <tr><td>NPV – Coste del ciclo de vida (agencia)</td><td class='lcsa-unit'>€ / km·carril·año</td><td>—</td><td class='lcsa-note'>CAPEX + OPEX + fin de vida, actualizado (3–5 % real).</td></tr>
+                            <tr><td>Coste de usuario por intervenciones</td><td class='lcsa-unit'>€ / intervención</td><td>—</td><td class='lcsa-note'>Demoras, desvíos y sobreconsumo de combustible.</td></tr>
+                            <tr><td>Coste total anual</td><td class='lcsa-unit'>€ / año</td><td>—</td><td class='lcsa-note'>Suma de costes de agencia y usuario en el horizonte.</td></tr>
+                            <tr><td>Índice coste-eficacia (CO₂ evitado)</td><td class='lcsa-unit'>€ / kg CO₂e evitado</td><td>—</td><td class='lcsa-note'>Inversión adicional dividida por reducción de GWP.</td></tr>
+                            <tr><td>Relación Beneficio/Coste</td><td class='lcsa-unit'>adim.</td><td>—</td><td class='lcsa-note'>Beneficios netos / costes netos (escenario de referencia).</td></tr>
+                            <tr><td>VAN incremental (alternativa vs. base)</td><td class='lcsa-unit'>€</td><td>—</td><td class='lcsa-note'>Diferencia de NPV entre alternativas.</td></tr>
+                            <tr><td>Exposición a precio de betún/energía</td><td class='lcsa-unit'>% del coste</td><td>—</td><td class='lcsa-note'>Porción de coste sensible a esos insumos.</td></tr>
+                            <tr><td>Valorización material (ahorro neto)</td><td class='lcsa-unit'>€ / %</td><td>—</td><td class='lcsa-note'>Ahorros por RAP/árido reciclado menos costes asociados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Panel Social -->
+                <div class="lcsa-tabs-panel" id="panel-soc">
+                    <p class="lcsa-kicker">Indicadores sociales por actor: trabajadores, comunidad, usuarios, proveedores.</p>
+                    <table class='lcsa-table'>
+                        <thead><tr><th>Indicador</th><th>Unidad</th><th>Valor</th><th>Nota</th></tr></thead>
+                        <tbody>
+                            <tr><td>LTIFR/TRIFR – Accidentes con baja</td><td class='lcsa-unit'>nº / 10⁶ h</td><td>—</td><td class='lcsa-note'>Seguridad de los trabajadores en planta/obra.</td></tr>
+                            <tr><td>Horas de formación en seguridad</td><td class='lcsa-unit'>h / trabajador·año</td><td>—</td><td class='lcsa-note'>Capacitación y cultura preventiva.</td></tr>
+                            <tr><td>Cumplimiento EPI/exposición ocupacional</td><td class='lcsa-unit'>% jornadas conformes</td><td>—</td><td class='lcsa-note'>Ruido, polvo, COV; vs. VLEP.</td></tr>
+                            <tr><td>% empleo local / FTE creados</td><td class='lcsa-unit'>% / FTE</td><td>—</td><td class='lcsa-note'>Contribución socioeconómica local.</td></tr>
+                            <tr><td>Quejas de comunidad</td><td class='lcsa-unit'>nº / mes</td><td>—</td><td class='lcsa-note'>Ruido, polvo, accesos durante obra.</td></tr>
+                            <tr><td>Proximidad receptores sensibles <300 m</td><td class='lcsa-unit'>nº</td><td>—</td><td class='lcsa-note'>Escuelas, hospitales; medidas mitigadoras.</td></tr>
+                            <tr><td>Accesibilidad afectada (hogares/servicios)</td><td class='lcsa-unit'>nº / días</td><td>—</td><td class='lcsa-note'>Impacto temporal por desvíos/cortes.</td></tr>
+                            <tr><td>Compras locales</td><td class='lcsa-unit'>% del gasto</td><td>—</td><td class='lcsa-note'>Peso de proveedores locales/regionales.</td></tr>
+                            <tr><td>Seguridad vial (accidentes por 100 M veh-km)</td><td class='lcsa-unit'>nº / 100 M veh-km</td><td>—</td><td class='lcsa-note'>Antes/después en relación con el estado superficial.</td></tr>
+                            <tr><td>Demoras por obra</td><td class='lcsa-unit'>h·veh</td><td>—</td><td class='lcsa-note'>Horas de retraso acumuladas.</td></tr>
+                            <tr><td>Variación tiempo medio de viaje</td><td class='lcsa-unit'>% / min</td><td>—</td><td class='lcsa-note'>Cambio tras la intervención (estado superficial).</td></tr>
+                            <tr><td>Ruido de rodadura</td><td class='lcsa-unit'>Δ dB(A)</td><td>—</td><td class='lcsa-note'>Cambio respecto a referencia a velocidad estándar.</td></tr>
+                            <tr><td>Proveedores auditados/conformes</td><td class='lcsa-unit'>%</td><td>—</td><td class='lcsa-note'>Trazabilidad y cumplimiento social.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                    <div class="lcsa-tabs-panel" id="panel-res"><p class="lcsa-kicker">Cuadro resumen: valores clave por alternativa.</p><table class="lcsa-table"><thead><tr><th>Dimensión</th><th>Indicador</th><th>Unidad</th><th>Alternativa A</th><th>Alternativa B</th><th>Alternativa C</th><th>Alternativa D</th></tr></thead><tbody><tr><td>Ambiental</td><td>GWP</td><td>kg CO₂e</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>Económico</td><td>NPV (agencia)</td><td>€/km·carril·año</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>Social</td><td>LTIFR</td><td>nº/10⁶ h</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-ia" class="module-content hidden p-6 bg-white rounded-lg shadow">
+                 <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"><i data-lucide="brain-circuit" class="w-7 h-7 text-orange-600"></i>Extracción Automatizada (IA)</h3>
+
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Asistente de Documentos PDF</h4>
+                        <p class="text-gray-600 text-sm mb-4">Cargue sus proyectos, informes de auscultación o catas en formato PDF y nuestro sistema de IA extraerá automáticamente la información relevante.</p>
+                        <button class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 text-sm">Cargar PDF</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-lg text-gray-800 mb-3">Procesamiento de Imágenes (Visión Artificial)</h4>
+                        <p class="text-gray-600 text-sm mb-4">Analice imágenes de firmes para detectar y clasificar automáticamente fisuras, baches y otros deterioros superficiales, generando nuevos índices de estado.</p>
+                        <button class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 text-sm">Analizar Imágenes</button>
+                    </div>
+                 </div>
+
+                 <div class="bg-white p-6 rounded-lg shadow border border-gray-100">
+                    <h4 class="font-semibold text-lg text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-blue-600"></i>Validación y Carga de Datos</h4>
+                    <p class="text-gray-600 text-sm mb-4">Revise y valide los datos extraídos por la IA antes de incorporarlos al inventario del SAGF. El sistema resalta posibles inconsistencias.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="document-select" class="block text-sm font-medium text-gray-700 mb-2">Documento Pendiente de Revisión:</label>
+                            <select id="document-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option>Informe Auscultación A-601 (2023).pdf</option>
+                                <option>Proyecto Refuerzo N-620 (2018).pdf</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end gap-2">
+                             <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4"></i> Revisar Extracción</button>
+                             <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> Cargar Datos</button>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-md text-sm flex items-start gap-2">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                        <p>Se han detectado 3 posibles inconsistencias en el "Informe Auscultación A-601 (2023).pdf". Por favor, revise los valores de deflexión.</p>
+                    </div>
+                 </div>
+            </div>
+
+            <div id="content-indices" class="module-content hidden p-6 bg-white rounded-lg shadow">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"><i data-lucide="gauge" class="w-7 h-7 text-cyan-600"></i>Índices inteligentes de estado del firme</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-lg border border-blue-200 shadow-sm">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-blue-900 text-lg">IRP</h4>
+                                <p class="text-xs text-blue-700">Índice de Rugosidad Percibida</p>
+                            </div>
+                            <div class="bg-blue-500 p-2 rounded-lg"><i data-lucide="activity" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-blue-800 mb-2">Confort de rodadura continuo mediante Floating Car Data y análisis de vibraciones vehiculares.</p>
+                        <div class="flex items-center gap-2 text-xs text-blue-700"><i data-lucide="radio" class="w-3 h-3"></i><span>Fuente: Sensores embarcados</span></div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-5 rounded-lg border border-orange-200 shadow-sm">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-orange-900 text-lg">IAD</h4>
+                                <p class="text-xs text-orange-700">Índice de Adhesión Dinámica</p>
+                            </div>
+                            <div class="bg-orange-500 p-2 rounded-lg"><i data-lucide="shield-alert" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-orange-800 mb-2">Estimación del rozamiento mediante eventos de frenado ABS/ESP y datos meteorológicos en tiempo real.</p>
+                        <div class="flex items-center gap-2 text-xs text-orange-700"><i data-lucide="zap" class="w-3 h-3"></i><span>Fuente: Sistemas de seguridad vehicular</span></div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-lg border border-purple-200 shadow-sm">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-purple-900 text-lg">IFA</h4>
+                                <p class="text-xs text-purple-700">Índice de Fisuración Automatizado</p>
+                            </div>
+                            <div class="bg-purple-500 p-2 rounded-lg"><i data-lucide="scan-line" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-purple-800 mb-2">Cuantificación automática de densidad, longitud y severidad de fisuras por tipología mediante CNN.</p>
+                        <div class="flex items-center gap-2 text-xs text-purple-700"><i data-lucide="camera" class="w-3 h-3"></i><span>Fuente: Visión artificial</span></div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-lg border border-green-200 shadow-sm">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-green-900 text-lg">IDSG</h4>
+                                <p class="text-xs text-green-700">Índice de Deterioro Superficial Global</p>
+                            </div>
+                            <div class="bg-green-500 p-2 rounded-lg"><i data-lucide="layers" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-green-800 mb-2">Métrica compuesta que integra múltiples deterioros ponderados por impacto en seguridad y funcionalidad.</p>
+                        <div class="flex items-center gap-2 text-xs text-green-700"><i data-lucide="image" class="w-3 h-3"></i><span>Fuente: Deep learning multi-clase</span></div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 p-5 rounded-lg border border-red-200 shadow-sm">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-red-900 text-lg">IED</h4>
+                                <p class="text-xs text-red-700">Índice de Evolución de Deterioros</p>
+                            </div>
+                            <div class="bg-red-500 p-2 rounded-lg"><i data-lucide="trending-up" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-red-800 mb-2">Seguimiento temporal de la progresión de deterioros específicos mediante análisis comparativo histórico.</p>
+                        <div class="flex items-center gap-2 text-xs text-red-700"><i data-lucide="calendar" class="w-3 h-3"></i><span>Fuente: Series temporales de imágenes</span></div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-5 rounded-lg border border-indigo-200 shadow-sm">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-indigo-900 text-lg">IESI</h4>
+                                <p class="text-xs text-indigo-700">Índice de Estado Estructural Indirecto</p>
+                            </div>
+                            <div class="bg-indigo-500 p-2 rounded-lg"><i data-lucide="construction" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-indigo-800 mb-2">Detección de debilitamiento estructural mediante análisis de deflexiones FWD y machine learning.</p>
+                        <div class="flex items-center gap-2 text-xs text-indigo-700"><i data-lucide="cpu" class="w-3 h-3"></i><span>Fuente: ML sobre datos FWD</span></div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-teal-50 to-teal-100 p-5 rounded-lg border border-teal-200 shadow-sm">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-teal-900 text-lg">IVC</h4>
+                                <p class="text-xs text-teal-700">Índice de Vulnerabilidad Climática</p>
+                            </div>
+                            <div class="bg-teal-500 p-2 rounded-lg"><i data-lucide="cloud-rain" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-teal-800 mb-2">Susceptibilidad al deterioro acelerado por factores meteorológicos y ciclos climáticos adversos.</p>
+                        <div class="flex items-center gap-2 text-xs text-teal-700"><i data-lucide="thermometer" class="w-3 h-3"></i><span>Fuente: Datos climáticos históricos</span></div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-cyan-50 to-cyan-100 p-5 rounded-lg border border-cyan-200 shadow-sm lg:col-span-2">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-cyan-900 text-lg">IGSF</h4>
+                                <p class="text-xs text-cyan-700">Índice Global de Salud del Firme</p>
+                            </div>
+                            <div class="bg-cyan-500 p-2 rounded-lg"><i data-lucide="target" class="w-5 h-5 text-white"></i></div>
+                        </div>
+                        <p class="text-sm text-cyan-800 mb-2">Indicador sintético multidimensional que fusiona todos los índices tradicionales y nuevos mediante técnicas avanzadas de data fusion y aprendizaje automático, ofreciendo la visión más completa del estado funcional y estructural del firme.</p>
+                        <div class="flex items-center gap-2 text-xs text-cyan-700"><i data-lucide="git-merge" class="w-3 h-3"></i><span>Fuente: Fusión inteligente de datos multi-fuente</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-8">
+                    <h4 class="font-semibold text-lg text-gray-900 mb-4 flex items-center gap-2"><i data-lucide="workflow" class="w-5 h-5 text-cyan-600"></i>Arquitectura del Sistema de Índices Inteligentes</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h5 class="font-semibold text-blue-900 mb-2 flex items-center gap-2"><i data-lucide="database" class="w-4 h-4"></i>Fuentes de Datos</h5>
+                            <ul class="text-sm text-blue-800 space-y-1">
+                                <li>• Floating Car Data (FCD)</li>
+                                <li>• Imágenes alta resolución</li>
+                                <li>• Deflexiones FWD</li>
+                                <li>• Datos meteorológicos</li>
+                                <li>• Índices tradicionales (IRI, CRT)</li>
+                                <li>• Historial de actuaciones</li>
+                            </ul>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h5 class="font-semibold text-purple-900 mb-2 flex items-center gap-2"><i data-lucide="brain" class="w-4 h-4"></i>Procesamiento IA</h5>
+                            <ul class="text-sm text-purple-800 space-y-1">
+                                <li>• Análisis wavelet y FFT</li>
+                                <li>• CNN (EfficientDet, Faster R-CNN)</li>
+                                <li>• GANs para super-resolución</li>
+                                <li>• Machine Learning estructural</li>
+                                <li>• Data fusion inteligente</li>
+                                <li>• Análisis series temporales</li>
+                            </ul>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h5 class="font-semibold text-green-900 mb-2 flex items-center gap-2"><i data-lucide="bar-chart-4" class="w-4 h-4"></i>Salidas del Sistema</h5>
+                            <ul class="text-sm text-green-800 space-y-1">
+                                <li>• Índices georreferenciados</li>
+                                <li>• Dashboards interactivos</li>
+                                <li>• Alertas automáticas</li>
+                                <li>• Nivel de confianza estadística</li>
+                                <li>• Metadatos de calidad</li>
+                                <li>• Visualización temporal/espacial</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <div id="content-notificaciones" class="module-content hidden p-6 bg-white rounded-lg shadow">
+                 <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"><i data-lucide="bell" class="w-7 h-7 text-gray-600"></i>Notificaciones</h3>
+                 
+                 <div class="space-y-4">
+                    <div class="flex items-start gap-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <i data-lucide="info" class="w-6 h-6 text-blue-600 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <p class="font-semibold text-blue-800">Actualización del Modelo de Prognosis</p>
+                            <p class="text-sm text-blue-700">El modelo predictivo para el IRI ha sido reentrenado con los datos de auscultación de 2023. Mejora del 5% en la precisión.</p>
+                            <p class="text-xs text-blue-600 mt-1">Hace 2 horas</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <i data-lucide="alert-triangle" class="w-6 h-6 text-yellow-600 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <p class="font-semibold text-yellow-800">Alerta de Umbral Crítico: N-620</p>
+                            <p class="text-sm text-yellow-700">El tramo N-620, P.K. 78+000 a 81+100, ha superado el umbral crítico de CRT. Se recomienda evaluar una intervención.</p>
+                            <p class="text-xs text-yellow-600 mt-1">Ayer a las 14:30</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 bg-green-50 p-4 rounded-lg border border-green-200">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <p class="font-semibold text-green-800">Carga de Datos Completada</p>
+                            <p class="text-sm text-green-700">El fichero "Inventario_2024_Q1.xlsx" ha sido cargado y procesado correctamente. 120 nuevos tramos actualizados.</p>
+                            <p class="text-xs text-green-600 mt-1">Hace 3 días</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 bg-red-50 p-4 rounded-lg border border-red-200">
+                        <i data-lucide="circle-x" class="w-6 h-6 text-red-600 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <p class="font-semibold text-red-800">Error en Procesamiento de Visión Artificial</p>
+                            <p class="text-sm text-red-700">Se produjo un error al procesar las imágenes del tramo A-601, P.K. 15+200. Ficheros corruptos. Por favor, reintente la carga.</p>
+                            <p class="text-xs text-red-600 mt-1">La semana pasada</p>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+    // --- NAVEGACIÓN PRINCIPAL (SIDEBAR) ---
+    const navLinks = document.querySelectorAll('.nav-link');
+    const moduleContents = document.querySelectorAll('.module-content');
+    const moduleTitle = document.getElementById('module-title');
+
+    function showModule(moduleId) {
+        // Ocultar todos los contenidos
+        moduleContents.forEach(content => content.classList.add('hidden'));
+        
+        // Desactivar todos los links
+        navLinks.forEach(link => link.classList.remove('active-nav', 'bg-slate-700', 'text-white'));
+        
+        // Activar el link y mostrar el contenido seleccionado
+        const activeLink = document.querySelector(`a[onclick="showModule('${moduleId}')"]`);
+        const activeContent = document.getElementById(`content-${moduleId}`);
+        
+        activeLink.classList.add('active-nav', 'bg-slate-700', 'text-white');
+        activeContent.classList.remove('hidden');
+        
+        // Actualizar título del header
+        moduleTitle.textContent = activeLink.querySelector('span').textContent;
+
+        // Re-inicializar iconos por si acaso
+        lucide.createIcons();
+    }
+
+    // --- NAVEGACIÓN INTERNA DEL MÓDULO ACV ---
+    function changeACVTab(tabName) {
+        document.querySelectorAll('.acv-content-panel').forEach(panel => panel.classList.add('hidden'));
+        document.querySelectorAll('.acv-tab-btn').forEach(btn => {
+            btn.classList.remove('border-blue-600', 'text-blue-600', 'font-medium');
+            btn.classList.add('border-transparent', 'text-gray-500');
+        });
+
+        document.getElementById('content-' + tabName).classList.remove('hidden');
+        const activeBtn = document.getElementById('tab-' + tabName);
+        activeBtn.classList.remove('border-transparent', 'text-gray-500');
+        activeBtn.classList.add('border-blue-600', 'text-blue-600', 'font-medium');
+        lucide.createIcons();
+    }
+
+    // --- NAVEGACIÓN INTERNA DE LOS INDICADORES LCSA (DENTRO DE ACV) ---
+    function changeLCSATab(tabName) {
+        document.querySelectorAll('.lcsa-tabs-panel').forEach(panel => panel.classList.remove('active'));
+        document.querySelectorAll('.lcsa-tabs-header button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('panel-' + tabName).classList.add('active');
+        document.getElementById('lcsa-' + tabName).classList.add('active');
+    }
+
+    // --- INICIALIZACIÓN DE GRÁFICOS ---
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+
+        // Gráfico del Dashboard de Inicio
+        const ctxDashboard = document.getElementById('dashboard-chart')?.getContext('2d');
+        if (ctxDashboard) {
+            new Chart(ctxDashboard, {
+                type: 'line',
+                data: {
+                    labels: ['Ene', 'Mar', 'May', 'Jul', 'Sep', 'Nov'],
+                    datasets: [
+                        { label: 'IRI (mm/m)', data: [1.95, 1.92, 1.90, 1.88, 1.86, 1.85], borderColor: '#3b82f6', tension: 0.3, pointBackgroundColor: '#3b82f6' },
+                        { label: 'CRT', data: [92, 91, 91, 89, 88, 89], borderColor: '#f59e0b', tension: 0.3, pointBackgroundColor: '#f59e0b' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: {size: 10}} } }, scales: { y: { beginAtZero: false, ticks:{font:{size:9}}}, x:{ticks:{font:{size:9}}} } }
+            });
+        }
+        
+        // Gráficos del Módulo ACV - Resumen Gráfico
+        const ctx1 = document.getElementById('chart1')?.getContext('2d');
+        if(ctx1) new Chart(ctx1, { type: 'bar', data: { labels: ['Extracción', 'Fabricación', 'Transporte', 'Construcción', 'Uso', 'Manten.', 'Fin vida'], datasets: [{ label: 'CO₂ (ton)', data: [245, 580, 120, 350, 890, 420, 180], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } } } });
+        const ctx2 = document.getElementById('chart2')?.getContext('2d');
+        if(ctx2) new Chart(ctx2, { type: 'doughnut', data: { labels: ['CO₂', 'Energía', 'Agua', 'Residuos'], datasets: [{ data: [45, 30, 15, 10], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } } });
+        const ctx3 = document.getElementById('chart3')?.getContext('2d');
+        if(ctx3) new Chart(ctx3, { type: 'bar', data: { labels: ['A: Convencional', 'B: Hormigón', 'C: Reciclada', 'D: Sostenible'], datasets: [ { label: 'Impacto', data: [100, 75, 55, 40], backgroundColor: '#8b5cf6', borderRadius: 4 }, { label: 'Coste', data: [85, 78, 72, 80], backgroundColor: '#10b981', borderRadius: 4 } ] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 9 } } } }, scales: { x: { ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 9 } } } } } });
+        const ctx4 = document.getElementById('chart4')?.getContext('2d');
+        if(ctx4) new Chart(ctx4, { type: 'line', data: { labels: ['2020', '2021', '2022', '2023', '2024', '2025'], datasets: [ { label: 'Real', data: [2850, 2680, 2420, 2180, 1950, 1720], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.4 }, { label: 'Objetivo', data: [2800, 2600, 2400, 2200, 2000, 1800], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { font: { size: 9 } } } }, scales: { y: { ticks: { font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } } } });
+
+        // Gráficos del Módulo ACV - Análisis Detallado
+        const ctxBar = document.getElementById('acvBarChart')?.getContext('2d');
+        if(ctxBar) new Chart(ctxBar, { type: 'bar', data: { labels: ['Alt. A: Convencional', 'Alt. B: Hormigón', 'Alt. C: Reciclada', 'Alt. D: Sostenible'], datasets: [ { label: 'Extracción y Fabricación', data: [120, 150, 80, 70], backgroundColor: '#38bdf8', }, { label: 'Transporte y Construcción', data: [50, 40, 60, 40], backgroundColor: '#fbbf24', }, { label: 'Uso y Mantenimiento', data: [200, 150, 180, 140], backgroundColor: '#f87171', }, { label: 'Fin de Vida', data: [30, 25, 50, 40], backgroundColor: '#a78bfa', } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { mode: 'index', intersect: false } }, scales: { x: { stacked: true, ticks:{font:{size:9}} }, y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Impacto (kg CO₂-eq)' } } } } });
+        
+        const ctxRadar = document.getElementById('sustainabilityRadarChart')?.getContext('2d');
+        if(ctxRadar) {
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['Huella carbono', 'Coste', 'Durabilidad', 'Circularidad', 'Uso de Agua', 'Energia'],
+                    datasets: [
+                        {
+                            label: 'Alt. A',
+                            data: [4, 6, 7, 5, 6, 7],
+                            fill: true,
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            borderColor: 'rgb(239, 68, 68)',
+                            pointBackgroundColor: 'rgb(239, 68, 68)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(239, 68, 68)'
+                        },
+                        {
+                            label: 'Alt. B',
+                            data: [5, 5, 9, 4, 3, 5],
+                            fill: true,
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            pointBackgroundColor: 'rgb(59, 130, 246)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(59, 130, 246)'
+                        },
+                        {
+                            label: 'Alt. C',
+                            data: [8, 5, 6, 9, 7, 6],
+                            fill: true,
+                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                            borderColor: 'rgb(34, 197, 94)',
+                            pointBackgroundColor: 'rgb(34, 197, 94)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(34, 197, 94)'
+                        },
+                        {
+                            label: 'Alt. D',
+                            data: [9, 7, 8, 8, 8, 9],
+                            fill: true,
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderColor: 'rgb(245, 158, 11)',
+                            pointBackgroundColor: 'rgb(245, 158, 11)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgb(245, 158, 11)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            borderWidth: 2
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2,
+                                font: {
+                                    size: 9
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        const ctxDoughnut = document.getElementById('materialsDoughnutChart')?.getContext('2d');
+        if(ctxDoughnut) new Chart(ctxDoughnut, { type: 'doughnut', data: { labels: ['Áridos', 'Ligante Asfáltico', 'Cemento', 'Aditivos', 'Acero'], datasets: [{ label: 'Contribución a Huella', data: [45, 30, 15, 5, 5], backgroundColor: ['#64748b', '#1e293b', '#94a3b8', '#a78bfa', '#e2e8f0'], hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', } } } });
+    });
+
+    // Mostrar el módulo de Inicio al cargar la página
+    showModule('inicio');
+</script>
+
+
+<!-- CRONOGRAMA (Gantt) integration start -->
+<script>
+
+        // Datos de las actuaciones
+        const tasks = [
+            { id: 1, name: 'Bacheo A-601', road: 'A-601', pk: '15+200 - 18+500', type: 'conservacion', start: '2025-01-15', end: '2025-02-28', status: 'completada', budget: '45.000 €', company: 'Construvial SA', priority: 'Media' },
+            { id: 2, name: 'Reconstrucción N-620', road: 'N-620', pk: '78+000 - 81+100', type: 'reconstruccion', start: '2025-02-01', end: '2025-05-15', status: 'en-curso', budget: '850.000 €', company: 'Ferrovial', priority: 'Alta' },
+            { id: 3, name: 'Sellado Fisuras BU-411', road: 'BU-411', pk: '5+000 - 12+300', type: 'conservacion', start: '2025-02-15', end: '2025-03-20', status: 'en-curso', budget: '28.500 €', company: 'Copcisa', priority: 'Baja' },
+            { id: 4, name: 'Refuerzo BU-V-8012', road: 'BU-V-8012', pk: '0+000 - 4+200', type: 'rehabilitacion', start: '2025-03-01', end: '2025-04-30', status: 'planificada', budget: '320.000 €', company: 'OHL', priority: 'Alta' },
+            { id: 5, name: 'Reciclado A-231', road: 'A-231', pk: '22+000 - 28+500', type: 'rehabilitacion', start: '2025-03-15', end: '2025-05-30', status: 'planificada', budget: '580.000 €', company: 'Acciona', priority: 'Alta' },
+            { id: 6, name: 'Microaglomerado N-234', road: 'N-234', pk: '45+000 - 55+800', type: 'conservacion', start: '2025-04-01', end: '2025-05-15', status: 'planificada', budget: '125.000 €', company: 'FCC', priority: 'Media' },
+            { id: 7, name: 'Reparación Juntas A-1', road: 'A-1', pk: '185+200 - 188+900', type: 'conservacion', start: '2025-01-08', end: '2025-02-10', status: 'completada', budget: '62.000 €', company: 'Dragados', priority: 'Alta' },
+            { id: 8, name: 'Fresado y Reposición BU-627', road: 'BU-627', pk: '8+500 - 15+200', type: 'rehabilitacion', start: '2025-04-15', end: '2025-06-30', status: 'planificada', budget: '425.000 €', company: 'Sacyr', priority: 'Media' },
+            { id: 9, name: 'Emergencia Baches N-I', road: 'N-I', pk: '250+100 - 250+800', type: 'emergencia', start: '2025-01-20', end: '2025-01-25', status: 'completada', budget: '15.000 €', company: 'Urgencias Viales', priority: 'Crítica' },
+            { id: 10, name: 'Tratamiento Superficial BU-P-4021', road: 'BU-P-4021', pk: '0+000 - 8+600', type: 'conservacion', start: '2025-05-01', end: '2025-06-15', status: 'planificada', budget: '95.000 €', company: 'Vías y Construcciones', priority: 'Baja' },
+            { id: 11, name: 'Reconstrucción A-62', road: 'A-62', pk: '102+000 - 108+500', type: 'reconstruccion', start: '2025-05-15', end: '2025-09-30', status: 'planificada', budget: '1.250.000 €', company: 'ACS', priority: 'Alta' },
+            { id: 12, name: 'Sellado Grietas N-627', road: 'N-627', pk: '12+000 - 18+400', type: 'conservacion', start: '2025-06-01', end: '2025-06-30', status: 'planificada', budget: '38.000 €', company: 'Copcisa', priority: 'Media' },
+            { id: 13, name: 'Renovación Capa Rodadura BU-550', road: 'BU-550', pk: '25+000 - 32+800', type: 'rehabilitacion', start: '2025-06-15', end: '2025-08-31', status: 'planificada', budget: '485.000 €', company: 'Ferrovial', priority: 'Alta' },
+            { id: 14, name: 'Bacheo Menor BU-V-5042', road: 'BU-V-5042', pk: '3+200 - 5+800', type: 'conservacion', start: '2025-07-01', end: '2025-07-20', status: 'planificada', budget: '22.000 €', company: 'Local Works', priority: 'Baja' },
+            { id: 15, name: 'Reciclado in situ N-120', road: 'N-120', pk: '88+000 - 95+500', type: 'rehabilitacion', start: '2025-07-15', end: '2025-09-30', status: 'planificada', budget: '620.000 €', company: 'Acciona', priority: 'Alta' },
+            { id: 16, name: 'Reparación Drenaje A-231', road: 'A-231', pk: '45+000 - 48+200', type: 'conservacion', start: '2025-08-01', end: '2025-09-15', status: 'planificada', budget: '78.000 €', company: 'Obras Públicas SA', priority: 'Media' },
+            { id: 17, name: 'Reconstrucción Completa BU-405', road: 'BU-405', pk: '0+000 - 6+200', type: 'reconstruccion', start: '2025-08-15', end: '2025-12-20', status: 'planificada', budget: '980.000 €', company: 'OHL', priority: 'Alta' },
+            { id: 18, name: 'Microaglomerado BU-P-8032', road: 'BU-P-8032', pk: '2+000 - 8+500', type: 'conservacion', start: '2025-09-01', end: '2025-10-15', status: 'planificada', budget: '68.000 €', company: 'FCC', priority: 'Media' },
+            { id: 19, name: 'Refuerzo Estructural N-234', road: 'N-234', pk: '120+000 - 128+800', type: 'rehabilitacion', start: '2025-09-15', end: '2025-11-30', status: 'planificada', budget: '725.000 €', company: 'Sacyr', priority: 'Alta' },
+            { id: 20, name: 'Sellado Masivo A-1', road: 'A-1', pk: '200+000 - 215+500', type: 'conservacion', start: '2025-10-01', end: '2025-11-15', status: 'planificada', budget: '145.000 €', company: 'Dragados', priority: 'Media' },
+            { id: 21, name: 'Renovación BU-V-7023', road: 'BU-V-7023', pk: '0+000 - 3+800', type: 'rehabilitacion', start: '2025-10-15', end: '2025-12-10', status: 'planificada', budget: '285.000 €', company: 'Construvial SA', priority: 'Media' },
+            { id: 22, name: 'Bacheo Preventivo N-623', road: 'N-623', pk: '35+000 - 42+200', type: 'conservacion', start: '2025-11-01', end: '2025-11-30', status: 'planificada', budget: '52.000 €', company: 'Copcisa', priority: 'Baja' },
+            { id: 23, name: 'Reconstrucción Total A-601', road: 'A-601', pk: '55+000 - 62+500', type: 'reconstruccion', start: '2025-11-15', end: '2026-03-31', status: 'planificada', budget: '1.450.000 €', company: 'ACS', priority: 'Alta' },
+            { id: 24, name: 'Tratamiento Superficial BU-550', road: 'BU-550', pk: '8+000 - 15+600', type: 'conservacion', start: '2025-12-01', end: '2025-12-20', status: 'planificada', budget: '72.000 €', company: 'FCC', priority: 'Media' }
+        ];
+
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        let weekWidth = 60;
+        let currentFilter = { type: 'all', status: 'all' };
+
+        function generateGanttChart() {
+            generateHeader();
+            generateTaskList();
+            generateRows();
+            positionTodayLine();
+            generateGridLines();
+        }
+
+        function generateHeader() {
+            const header = document.getElementById('gantt-header');
+            header.innerHTML = '';
+            
+            for (let m = 0; m < 12; m++) {
+                const monthDiv = document.createElement('div');
+                monthDiv.style.minWidth = `${weekWidth * 4}px`;
+                monthDiv.style.maxWidth = `${weekWidth * 4}px`;
+                
+                const monthName = document.createElement('div');
+                monthName.className = 'gantt-month';
+                monthName.textContent = months[m].toUpperCase() + ' 2025';
+                
+                const weeksDiv = document.createElement('div');
+                weeksDiv.className = 'gantt-weeks';
+                
+                for (let w = 1; w <= 4; w++) {
+                    const weekDiv = document.createElement('div');
+                    weekDiv.className = 'gantt-week';
+                    weekDiv.style.width = `${weekWidth}px`;
+                    weekDiv.textContent = `S${w}`;
+                    weeksDiv.appendChild(weekDiv);
+                }
+                
+                monthDiv.appendChild(monthName);
+                monthDiv.appendChild(weeksDiv);
+                header.appendChild(monthDiv);
+            }
+        }
+
+        function generateTaskList() {
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = '';
+            
+            const filteredTasks = getFilteredTasks();
+            
+            filteredTasks.forEach(task => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-info';
+                taskDiv.innerHTML = `
+                    <div class="task-name">${task.name}</div>
+                    <div class="task-details">${task.road} | PK ${task.pk}</div>
+                `;
+                taskList.appendChild(taskDiv);
+            });
+        }
+
+        function generateRows() {
+            const rowsContainer = document.getElementById('gantt-rows');
+            rowsContainer.innerHTML = '';
+            
+            const filteredTasks = getFilteredTasks();
+            
+            filteredTasks.forEach(task => {
+                const row = document.createElement('div');
+                row.className = 'gantt-row';
+                row.style.width = `${weekWidth * 48}px`;
+                
+                const bar = createTaskBar(task);
+                row.appendChild(bar);
+                
+                rowsContainer.appendChild(row);
+            });
+        }
+
+        function createTaskBar(task) {
+            const bar = document.createElement('div');
+            bar.className = `task-bar ${task.type} ${task.status}`;
+            
+            const startDate = new Date(task.start);
+            const endDate = new Date(task.end);
+            const duration = (endDate - startDate) / (1000 * 60 * 60 * 24);
+            
+            const startOffset = getDateOffset(startDate);
+            const width = (duration / 7) * weekWidth;
+            
+            bar.style.left = `${startOffset}px`;
+            bar.style.width = `${width}px`;
+            bar.textContent = task.name;
+            
+            bar.addEventListener('mouseenter', (e) => showTooltip(e, task));
+            bar.addEventListener('mouseleave', hideTooltip);
+            bar.addEventListener('mousemove', (e) => moveTooltip(e));
+            
+            return bar;
+        }
+
+        function getDateOffset(date) {
+            const yearStart = new Date(2025, 0, 1);
+            const daysDiff = (date - yearStart) / (1000 * 60 * 60 * 24);
+            return (daysDiff / 7) * weekWidth;
+        }
+
+        function positionTodayLine() {
+            const today = new Date();
+            if (today.getFullYear() === 2025) {
+                const offset = getDateOffset(today);
+                document.getElementById('today-line').style.left = `${offset}px`;
+            }
+        }
+
+        function generateGridLines() {
+            const gridContainer = document.getElementById('grid-lines');
+            gridContainer.innerHTML = '';
+            
+            for (let i = 0; i <= 48; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line';
+                line.style.left = `${i * weekWidth}px`;
+                gridContainer.appendChild(line);
+            }
+        }
+
+        function showTooltip(e, task) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.className = 'tooltip show';
+            tooltip.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px;">${task.name}</div>
+                <div style="display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 11px;">
+                    <span style="color: #94a3b8;">Carretera:</span><span>${task.road}</span>
+                    <span style="color: #94a3b8;">PK:</span><span>${task.pk}</span>
+                    <span style="color: #94a3b8;">Tipo:</span><span>${task.type.charAt(0).toUpperCase() + task.type.slice(1)}</span>
+                    <span style="color: #94a3b8;">Estado:</span><span>${task.status.charAt(0).toUpperCase() + task.status.slice(1)}</span>
+                    <span style="color: #94a3b8;">Inicio:</span><span>${formatDate(task.start)}</span>
+                    <span style="color: #94a3b8;">Fin:</span><span>${formatDate(task.end)}</span>
+                    <span style="color: #94a3b8;">Presupuesto:</span><span style="font-weight: 600; color: #10b981;">${task.budget}</span>
+                    <span style="color: #94a3b8;">Empresa:</span><span>${task.company}</span>
+                    <span style="color: #94a3b8;">Prioridad:</span><span style="font-weight: 600; color: ${getPriorityColor(task.priority)};">${task.priority}</span>
+                </div>
+            `;
+            moveTooltip(e);
+        }
+
+        function moveTooltip(e) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.left = `${e.pageX + 15}px`;
+            tooltip.style.top = `${e.pageY + 15}px`;
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').className = 'tooltip';
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                'Crítica': '#dc2626',
+                'Alta': '#f59e0b',
+                'Media': '#3b82f6',
+                'Baja': '#10b981'
+            };
+            return colors[priority] || '#64748b';
+        }
+
+        function getFilteredTasks() {
+            return tasks.filter(task => {
+                const typeMatch = currentFilter.type === 'all' || task.type === currentFilter.type;
+                const statusMatch = currentFilter.status === 'all' || task.status === currentFilter.status;
+                return typeMatch && statusMatch;
+            });
+        }
+
+        function filterTasks(type) {
+            currentFilter.type = type;
+            updateFilterButtons();
+            generateTaskList();
+            generateRows();
+            updateTaskCount();
+        }
+
+        function filterStatus(status) {
+            currentFilter.status = status;
+            updateFilterButtons();
+            generateTaskList();
+            generateRows();
+            updateTaskCount();
+        }
+
+        function updateFilterButtons() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+        }
+
+        function updateTaskCount() {
+            const count = getFilteredTasks().length;
+            document.getElementById('task-count').textContent = `${count} actuaciones programadas`;
+        }
+
+        function zoomIn() {
+            if (weekWidth < 100) {
+                weekWidth += 10;
+                generateGanttChart();
+            }
+        }
+
+        function zoomOut() {
+            if (weekWidth > 40) {
+                weekWidth -= 10;
+                generateGanttChart();
+            }
+        }
+
+        function centerToday() {
+            const today = new Date();
+            if (today.getFullYear() === 2025) {
+                const offset = getDateOffset(today);
+                const chartContainer = document.querySelector('.gantt-chart');
+                chartContainer.scrollLeft = offset - chartContainer.clientWidth / 2;
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            generateGanttChart();
+            
+            // Auto-actualizar la línea de hoy cada minuto
+            setInterval(positionTodayLine, 60000);
+        });
+    
+</script>
+<!-- CRONOGRAMA (Gantt) integration end -->
+
+
+<!-- PATCH: Initialize Gantt when the 'programacion' module is shown -->
+<script>
+(function(){
+  let todayLineIntervalSet = false;
+  function initGanttWhenVisible() {
+    const container = document.querySelector('.gantt-container');
+    if (!container) return;
+    const visible = !!(container.offsetParent !== null) && container.clientWidth > 0;
+    if (visible) {
+      try {
+        if (window.lucide && window.lucide.createIcons) { window.lucide.createIcons(); }
+        if (typeof generateGanttChart === 'function') {
+          generateGanttChart();
+        }
+        if (!todayLineIntervalSet && typeof positionTodayLine === 'function') {
+          todayLineIntervalSet = true;
+          setInterval(positionTodayLine, 60000);
+        }
+      } catch (e) {
+        console.error('Error initializing Gantt:', e);
+      }
+    } else {
+      setTimeout(initGanttWhenVisible, 250);
+    }
+  }
+
+  const originalShow = window.showModule;
+  window.showModule = function(moduleId) {
+    const result = originalShow ? originalShow.apply(this, arguments) : undefined;
+    if (moduleId === 'programacion') {
+      setTimeout(initGanttWhenVisible, 50);
+    }
+    return result;
+  };
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const defaultActive = document.querySelector('#programacion');
+    if (defaultActive && defaultActive.offsetParent !== null) {
+      setTimeout(initGanttWhenVisible, 50);
+    }
+  });
+})();
+</script>
+
+
+<!-- PATCH: Re-render Gantt on resize/visibility changes -->
+<script>
+(function(){
+  // Simple debounce
+  function debounce(fn, wait) {
+    let t; 
+    return function(){
+      clearTimeout(t);
+      const args = arguments, ctx = this;
+      t = setTimeout(function(){ fn.apply(ctx, args); }, wait);
+    };
+  }
+
+  // Safe re-render
+  function rerenderGantt(){
+    try {
+      if (typeof generateGanttChart === 'function') {
+        generateGanttChart();
+      }
+      if (typeof positionTodayLine === 'function') {
+        positionTodayLine();
+      }
+    } catch(e){
+      console.warn('Gantt re-render failed:', e);
+    }
+  }
+
+  // Re-render when window resizes
+  window.addEventListener('resize', debounce(rerenderGantt, 150));
+
+  // Re-render when tab visibility changes (e.g., returning to the tab)
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden) {
+      setTimeout(rerenderGantt, 50);
+    }
+  });
+
+  // Observe container size changes (e.g., sidebars toggled, fonts/zoom adjustments triggering reflow)
+  const ro = new ResizeObserver(debounce((entries)=>{
+    // If the gantt container has a non-zero width/height, re-render
+    const el = document.querySelector('.gantt-container');
+    if (el && el.clientWidth > 0 && el.clientHeight > 0) {
+      rerenderGantt();
+    }
+  }, 120));
+  window.addEventListener('DOMContentLoaded', function(){
+    const container = document.querySelector('.gantt-container');
+    if (container) { ro.observe(container); }
+  });
+})();
+</script>
+
+</body>
+</html>
+
