@@ -240,13 +240,6 @@ const NavbarLateral = () => {
                   {dropdownGISOpen && (
                     <div className="ml-4 mt-1 space-y-1">
                       <Link
-                        to="/dashboard-firmes"
-                        onClick={(e) => handleLinkClick(e, true)}
-                        className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
-                      >
-                        Dashboard Firmes
-                      </Link>
-                      <Link
                         to="/indicadores"
                         onClick={(e) => handleLinkClick(e, true)}
                         className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
@@ -270,6 +263,15 @@ const NavbarLateral = () => {
                     </div>
                   )}
                 </div>
+                
+                {/* Dashboard Firmes - mismo nivel que GIS */}
+                <Link
+                  to="/dashboard-firmes"
+                  onClick={(e) => handleLinkClick(e, true)}
+                  className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
+                >
+                  Dashboard Firmes
+                </Link>
               </div>
             )}
           </div>

@@ -1,45 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch, FaArrowLeft, FaFilter, FaDownload, FaEye, FaChevronLeft, FaChevronRight, FaCheckCircle, FaExclamationTriangle, FaExclamationCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import carreterasData from '../../public/catalogo_carreteras/carreteras_tablas.json';
 
 function Consultas() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCarretera, setFilterCarretera] = useState('');
   const [filterProvincia, setFilterProvincia] = useState('');
+  const [filterCCAA, setFilterCCAA] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
-  // Datos sintéticos de inventario (expandidos para paginación)
-  const inventarioData = [
-    { id: 1, carretera: 'A-1', pk: '12+500', provincia: 'Madrid', tipo: 'Flexible', estado: 'Bueno', año: 2020, espesor: '25 cm' },
-    { id: 2, carretera: 'A-2', pk: '45+200', provincia: 'Zaragoza', tipo: 'Rígido', estado: 'Regular', año: 2018, espesor: '30 cm' },
-    { id: 3, carretera: 'A-3', pk: '78+800', provincia: 'Valencia', tipo: 'Flexible', estado: 'Excelente', año: 2022, espesor: '22 cm' },
-    { id: 4, carretera: 'A-4', pk: '34+150', provincia: 'Sevilla', tipo: 'Semirígido', estado: 'Bueno', año: 2019, espesor: '28 cm' },
-    { id: 5, carretera: 'A-5', pk: '56+900', provincia: 'Badajoz', tipo: 'Flexible', estado: 'Regular', año: 2017, espesor: '24 cm' },
-    { id: 6, carretera: 'A-6', pk: '23+400', provincia: 'León', tipo: 'Rígido', estado: 'Bueno', año: 2021, espesor: '32 cm' },
-    { id: 7, carretera: 'A-7', pk: '67+300', provincia: 'Murcia', tipo: 'Flexible', estado: 'Excelente', año: 2023, espesor: '26 cm' },
-    { id: 8, carretera: 'A-8', pk: '89+600', provincia: 'Vizcaya', tipo: 'Semirígido', estado: 'Regular', año: 2016, espesor: '27 cm' },
-    { id: 9, carretera: 'A-1', pk: '102+200', provincia: 'Burgos', tipo: 'Flexible', estado: 'Bueno', año: 2020, espesor: '25 cm' },
-    { id: 10, carretera: 'A-2', pk: '134+700', provincia: 'Barcelona', tipo: 'Rígido', estado: 'Excelente', año: 2022, espesor: '30 cm' },
-    { id: 11, carretera: 'A-3', pk: '89+400', provincia: 'Cuenca', tipo: 'Flexible', estado: 'Bueno', año: 2019, espesor: '24 cm' },
-    { id: 12, carretera: 'A-4', pk: '156+800', provincia: 'Córdoba', tipo: 'Rígido', estado: 'Regular', año: 2018, espesor: '29 cm' },
-    { id: 13, carretera: 'A-5', pk: '78+300', provincia: 'Cáceres', tipo: 'Flexible', estado: 'Excelente', año: 2023, espesor: '26 cm' },
-    { id: 14, carretera: 'A-6', pk: '145+600', provincia: 'Lugo', tipo: 'Semirígido', estado: 'Bueno', año: 2021, espesor: '27 cm' },
-    { id: 15, carretera: 'A-7', pk: '234+200', provincia: 'Almería', tipo: 'Flexible', estado: 'Regular', año: 2017, espesor: '23 cm' },
-    { id: 16, carretera: 'A-8', pk: '67+100', provincia: 'Cantabria', tipo: 'Rígido', estado: 'Excelente', año: 2022, espesor: '31 cm' },
-    { id: 17, carretera: 'A-1', pk: '178+900', provincia: 'Valladolid', tipo: 'Flexible', estado: 'Bueno', año: 2020, espesor: '25 cm' },
-    { id: 18, carretera: 'A-2', pk: '267+400', provincia: 'Lleida', tipo: 'Semirígido', estado: 'Regular', año: 2019, espesor: '28 cm' },
-  ];
+  // Cargar datos del JSON y agregar estados aleatorios para simular
+  const [inventarioData, setInventarioData] = useState([]);
+
+  useEffect(() => {
+    // Obtener registros de la hoja "Auxiliar"
+    const auxiliarSheet = carreterasData.tables.find(table => table.sheet === 'Auxiliar');
+    
+    if (auxiliarSheet && auxiliarSheet.records) {
+      // Agregar ID y estados aleatorios a cada registro
+      const estados = ['Excelente', 'Bueno', 'Regular'];
+      const dataWithState = auxiliarSheet.records.map((record, index) => ({
+        id: index + 1,
+        carretera: record.Via || 'N/A',
+        ccaa: record.CCAA || 'N/A',
+        provincia: record.Provincia || 'N/A',
+        pkInicio: record['P.K. inicio'] || 'N/A',
+        pkFin: record['P.K. fin'] || 'N/A',
+        longitud: record['Longitud (km)'] || 'N/A',
+        inicio: record.Inicio || 'N/A',
+        fin: record.Fin || 'N/A',
+        tipo: record['Tipo de vía'] || 'N/A',
+        estado: estados[Math.floor(Math.random() * estados.length)]
+      }));
+      setInventarioData(dataWithState);
+    }
+  }, []);
 
   // Filtrado de datos
   const filteredData = inventarioData.filter(item => {
     const matchSearch = item.carretera.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       item.pk.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       item.provincia.toLowerCase().includes(searchTerm.toLowerCase());
+                       item.provincia.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       item.ccaa.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       item.inicio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       item.fin.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCarretera = filterCarretera === '' || item.carretera === filterCarretera;
     const matchProvincia = filterProvincia === '' || item.provincia === filterProvincia;
+    const matchCCAA = filterCCAA === '' || item.ccaa === filterCCAA;
     
-    return matchSearch && matchCarretera && matchProvincia;
+    return matchSearch && matchCarretera && matchProvincia && matchCCAA;
   });
 
   // Paginación
@@ -51,11 +61,12 @@ function Consultas() {
   // Reset page cuando cambian los filtros
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterCarretera, filterProvincia]);
+  }, [searchTerm, filterCarretera, filterProvincia, filterCCAA]);
 
   // Obtener opciones únicas para filtros
   const carreteras = [...new Set(inventarioData.map(item => item.carretera))].sort();
   const provincias = [...new Set(inventarioData.map(item => item.provincia))].sort();
+  const ccaas = [...new Set(inventarioData.map(item => item.ccaa))].sort();
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -145,7 +156,7 @@ function Consultas() {
         
         {/* Barra de búsqueda y filtros */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             
             {/* Búsqueda */}
             <div className="md:col-span-2">
@@ -155,7 +166,7 @@ function Consultas() {
               </label>
               <input
                 type="text"
-                placeholder="Buscar por carretera, PK o provincia..."
+                placeholder="Buscar por carretera, provincia, CCAA..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
@@ -175,6 +186,24 @@ function Consultas() {
               >
                 <option value="">Todas</option>
                 {carreteras.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filtro CCAA */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-2">
+                <FaFilter className="inline mr-2" />
+                CCAA
+              </label>
+              <select
+                value={filterCCAA}
+                onChange={(e) => setFilterCCAA(e.target.value)}
+                className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-sky-500"
+              >
+                <option value="">Todas</option>
+                {ccaas.map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
@@ -217,14 +246,15 @@ function Consultas() {
             <table className="w-full">
               <thead className="bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Carretera</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">PK</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Provincia</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tipo Firme</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Estado</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Año</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Espesor</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Acciones</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Vía</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">CCAA</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Provincia</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Longitud (km)</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Inicio</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Fin</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Tipo de vía</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Estado</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -232,8 +262,11 @@ function Consultas() {
                   currentData.map((item, index) => (
                     <tr key={item.id} className={`hover:bg-sky-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.carretera}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{item.pk}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{item.ccaa}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{item.provincia}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{item.longitud}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{item.inicio}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{item.fin}</td>
                       <td className="px-4 py-3 text-sm text-gray-700">{item.tipo}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
@@ -243,8 +276,6 @@ function Consultas() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{item.año}</td>
-                      <td className="px-4 py-3 text-sm text-gray-700">{item.espesor}</td>
                       <td className="px-4 py-3 text-center">
                         <button 
                           className="inline-flex items-center gap-1 px-3 py-1 text-xs text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded transition-colors"
@@ -258,7 +289,7 @@ function Consultas() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan="9" className="px-4 py-8 text-center text-gray-500">
                       No se encontraron resultados
                     </td>
                   </tr>
