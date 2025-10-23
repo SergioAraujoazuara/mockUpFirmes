@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import HeaderPage from '../Components/HeaderPage';
+import ViewerComponent from './BIM/ViewerComponent';
+import BimLoadingBar from '../Components/BimLoadingBar';
+import ActuacionesTable from '../Components/ActuacionesTable';
+import P2RMTable from '../Components/P2RMTable';
 import { 
   FaFile, 
   FaDatabase, 
@@ -14,7 +18,9 @@ import {
   FaTable,
   FaCloud,
   FaServer,
-  FaClipboardList
+  FaClipboardList,
+  FaEye,
+  FaTimes
 } from 'react-icons/fa';
 
 const Actuaciones = () => {
@@ -22,6 +28,31 @@ const Actuaciones = () => {
   const [uploadStatus, setUploadStatus] = useState({});
   const [uploadProgress, setUploadProgress] = useState({});
   const [tempFiles, setTempFiles] = useState({});
+  const [showViewer, setShowViewer] = useState(false);
+  const [selectedGlobalId, setSelectedGlobalId] = useState(null);
+  const [selectedNameBim, setSelectedNameBim] = useState(null);
+  const [isBimLoading, setIsBimLoading] = useState(false);
+  const [showActuacionesTable, setShowActuacionesTable] = useState(false);
+  const [selectedFileName, setSelectedFileName] = useState('');
+
+  // Función para limpiar el visor BIM al cambiar de pestaña
+  const handleTabChange = (tabId) => {
+    // Si estamos saliendo de la pestaña IFC, limpiar el visor
+    if (activeTab === 'ifc' && tabId !== 'ifc') {
+      setShowViewer(false);
+      setSelectedGlobalId(null);
+      setSelectedNameBim(null);
+      setIsBimLoading(false);
+    }
+    
+    // Si estamos saliendo de la pestaña Microsoft 365, limpiar el visualizador
+    if (activeTab === 'microsoft365' && tabId !== 'microsoft365') {
+      setShowActuacionesTable(false);
+      setSelectedFileName('');
+    }
+    
+    setActiveTab(tabId);
+  };
 
   // Datos mock para el historial
   const mockHistory = {
@@ -59,6 +90,34 @@ const Actuaciones = () => {
     { id: 'informes', name: 'Documentación técnica', icon: FaFileAlt, description: 'Informes, planos y memorias técnicas' },
   //   { id: 'plantilla', name: 'Plantilla de carga de datos', icon: FaClipboardList, description: 'Configurar plantillas y subir informes personalizados' }
  ];
+
+  const handleBimLoadingChange = (loading) => {
+    setIsBimLoading(loading);
+  };
+
+  const loadActuacionesData = (fileName = '') => {
+    // Simular carga de datos de actuaciones
+    setTimeout(() => {
+      setSelectedFileName(fileName);
+      setShowActuacionesTable(true);
+    }, 500);
+  };
+
+  // Función para determinar qué tabla mostrar según el nombre del archivo
+  const getTableComponent = () => {
+    if (!selectedFileName) return null;
+    
+    const fileName = selectedFileName.toLowerCase();
+    
+    if (fileName.includes('p-2_rm') || fileName.includes('p2_rm')) {
+      return <P2RMTable fileName={selectedFileName} />;
+    } else if (fileName.includes('a-1_rm') || fileName.includes('a1_rm')) {
+      return <ActuacionesTable fileName={selectedFileName} />;
+    } else {
+      // Por defecto mostrar la tabla A-1 RM
+      return <ActuacionesTable fileName={selectedFileName} />;
+    }
+  };
 
   const handleFileSelect = (tabId) => {
     const input = document.createElement('input');
@@ -121,6 +180,24 @@ const Actuaciones = () => {
           }));
           
           setUploadStatus({ ...uploadStatus, [tabId]: 'success' });
+          
+          // Si es la pestaña IFC, mostrar el viewer después de un delay
+          if (tabId === 'ifc') {
+            setTimeout(() => {
+              setIsBimLoading(true);
+              setShowViewer(true);
+            }, 1500);
+          }
+          
+          // Si es la pestaña Microsoft 365, cargar datos de actuaciones
+          if (tabId === 'microsoft365') {
+            setTimeout(() => {
+              // Obtener el nombre del primer archivo cargado
+              const fileName = files.length > 0 ? files[0].name : '';
+              loadActuacionesData(fileName);
+            }, 1500);
+          }
+          
           setTimeout(() => {
             setUploadStatus(prev => ({ ...prev, [tabId]: null }));
             setUploadProgress(prev => ({ ...prev, [tabId]: 0 }));
@@ -161,6 +238,9 @@ const Actuaciones = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Barra de progreso para carga de modelos BIM */}
+      <BimLoadingBar isLoading={isBimLoading} />
+      
       {/* Header usando componente reutilizable */}
       <HeaderPage 
         title="Carga de datos"
@@ -178,7 +258,7 @@ const Actuaciones = () => {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={`flex items-center gap-3 px-6 py-4 text-sm font-medium transition-all duration-200 ${
                     activeTab === tab.id
                       ? 'text-sky-600 border-b-2 border-sky-600 bg-sky-50'
@@ -205,7 +285,141 @@ const Actuaciones = () => {
 
               return (
                 <div key={tab.id} className={isActive ? 'block' : 'hidden'}>
-                  {/* Upload Area */}
+                  {/* Layout vertical para pestaña IFC */}
+                  {tab.id === 'ifc' ? (
+                    <div className="space-y-6 mb-8">
+                      {/* Área de carga */}
+                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-sky-400 transition-colors duration-200">
+                        <div className="flex flex-col items-center">
+                          <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mb-4">
+                            <Icon className="text-2xl text-sky-600" />
+                          </div>
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Visualizador BIM
+                          </h3>
+                          <p className="text-gray-600 mb-6 max-w-md">
+                            Selecciona un archivo IFC para visualizar el modelo 3D
+                          </p>
+                          
+                          {isUploading ? (
+                            <div className="w-full max-w-md">
+                              <div className="flex items-center justify-center gap-3 text-sky-600 mb-3">
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-600"></div>
+                                <span>Subiendo archivos...</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-sky-600 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${uploadProgress[tab.id] || 0}%` }}
+                                ></div>
+                              </div>
+                              <div className="text-sm text-gray-600 mt-2 text-center">
+                                {Math.round(uploadProgress[tab.id] || 0)}% completado
+                              </div>
+                            </div>
+                          ) : isSuccess ? (
+                            <div className="flex items-center gap-3 text-green-600">
+                              <FaCheckCircle className="text-xl" />
+                              <span>¡Archivo cargado correctamente!</span>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => handleFileSelect(tab.id)}
+                              className="inline-flex items-center gap-2 px-6 py-3 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200"
+                            >
+                              <FaUpload />
+                              Seleccionar archivo IFC
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Visualizador */}
+                      {showViewer && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-6">
+                          <div className="flex items-center gap-3 mb-4">
+                            <FaEye className="text-sky-600" />
+                            <h3 className="text-lg font-semibold text-gray-800">Modelo 3D</h3>
+                          </div>
+                          
+                          <div className="bg-gray-50 rounded-lg p-4 h-[500px]">
+                            <ViewerComponent 
+                              setSelectedGlobalId={setSelectedGlobalId}
+                              setSelectedNameBim={setSelectedNameBim}
+                              onLoadingChange={handleBimLoadingChange}
+                            />
+                          </div>
+                          
+                          {(selectedGlobalId || selectedNameBim) && (
+                            <div className="mt-4 p-4 bg-sky-50 border border-sky-200 rounded-lg">
+                              <h4 className="font-medium text-sky-800 mb-2">Elemento seleccionado:</h4>
+                              <div className="text-sm text-sky-700">
+                                {selectedNameBim && <p><strong>Nombre:</strong> {selectedNameBim}</p>}
+                                {selectedGlobalId && <p><strong>Global ID:</strong> {selectedGlobalId}</p>}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : tab.id === 'microsoft365' ? (
+                    /* Layout vertical para pestaña Microsoft 365 */
+                    <div className="space-y-6 mb-8">
+                      {/* Área de carga */}
+                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-sky-400 transition-colors duration-200">
+                        <div className="flex flex-col items-center">
+                          <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center mb-4">
+                            <Icon className="text-2xl text-sky-600" />
+                          </div>
+                          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                            Visualizador de Datos
+                          </h3>
+                          <p className="text-gray-600 mb-6 max-w-md">
+                            Selecciona un archivo Excel para visualizar datos de inspección
+                          </p>
+                          
+                          {isUploading ? (
+                            <div className="w-full max-w-md">
+                              <div className="flex items-center justify-center gap-3 text-sky-600 mb-3">
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-600"></div>
+                                <span>Subiendo archivos...</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-sky-600 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${uploadProgress[tab.id] || 0}%` }}
+                                ></div>
+                              </div>
+                              <div className="text-sm text-gray-600 mt-2 text-center">
+                                {Math.round(uploadProgress[tab.id] || 0)}% completado
+                              </div>
+                            </div>
+                          ) : isSuccess ? (
+                            <div className="flex items-center gap-3 text-green-600">
+                              <FaCheckCircle className="text-xl" />
+                              <span>¡Archivo cargado correctamente!</span>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => handleFileSelect(tab.id)}
+                              className="inline-flex items-center gap-2 px-6 py-3 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors duration-200"
+                            >
+                              <FaUpload />
+                              Seleccionar archivo Excel
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Visualizador de datos */}
+                      {showActuacionesTable && (
+                        <div className="bg-white rounded-xl border border-gray-200 p-6">
+                          {getTableComponent()}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Layout original para otras pestañas */
                   <div className="mb-8">
                     <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-sky-400 transition-colors duration-200">
                       <div className="flex flex-col items-center">
@@ -252,6 +466,7 @@ const Actuaciones = () => {
                       </div>
                     </div>
                   </div>
+                  )}
 
                   {/* Plantilla Configuration Section - Solo para la pestaña plantilla */}
                   {tab.id === 'plantilla' && (
@@ -331,6 +546,7 @@ const Actuaciones = () => {
                     </div>
                   )}
 
+
                   {/* History Section */}
                   <div>
                     <div className="flex items-center gap-3 mb-6">
@@ -362,9 +578,21 @@ const Actuaciones = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-700 rounded-full"></div>
-                            <span className="text-xs text-gray-600">Completado</span>
+                          <div className="flex items-center gap-3">
+                            {/* Botón de visualizar solo para archivos IFC */}
+                            {tab.id === 'ifc' && (
+                              <button
+                                onClick={() => setShowViewer(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-xs text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded-lg transition-colors"
+                              >
+                                <FaEye />
+                                Visualizar
+                              </button>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-green-700 rounded-full"></div>
+                              <span className="text-xs text-gray-600">Completado</span>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -386,11 +614,23 @@ const Actuaciones = () => {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${getStatusIconColor(file.status)}`}></div>
-                            <span className={`text-xs ${getStatusColor(file.status)}`}>
-                              Completado
-                            </span>
+                          <div className="flex items-center gap-3">
+                            {/* Botón de visualizar solo para archivos IFC */}
+                            {tab.id === 'ifc' && (
+                              <button
+                                onClick={() => setShowViewer(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-xs text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded-lg transition-colors"
+                              >
+                                <FaEye />
+                                Visualizar
+                              </button>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${getStatusIconColor(file.status)}`}></div>
+                              <span className={`text-xs ${getStatusColor(file.status)}`}>
+                                Completado
+                              </span>
+                            </div>
                           </div>
                         </div>
                       ))}

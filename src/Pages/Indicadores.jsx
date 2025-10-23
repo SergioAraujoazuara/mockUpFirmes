@@ -12,7 +12,10 @@ function Indicadores() {
     'Índice General',
     'Índice Seguridad', 
     'Índice Confort',
-    'Índice Estructural'
+    'Índice Estructural',
+    'Índice Nuevo 1',
+    'Índice Nuevo 2',
+    'Índice Nuevo 3'
   ];
 
   const provinces = [

@@ -21,14 +21,17 @@ import * as OBC from "openbim-components";
 import * as THREE from "three";
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import { auth } from '../../../firebase_config';
+import BimLoadingBar from '../../Components/BimLoadingBar';
 
-const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim }) => {
+const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, onLoadingChange }) => {
     const [modelCount, setModelCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Styles for the viewer container
     const viewerContainerStyle = {
         width: "100%",
-        height: "500px",
+        height: "100%",
+        minHeight: "50",
         position: "relative",
         gridArea: "viewer",
     };
@@ -99,6 +102,8 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim })
         async function loadIfcFromFirebase(storagePath) {
             try {
                 console.log(`🔄 Intentando cargar desde Firebase Storage: ${storagePath}`);
+                setIsLoading(true);
+                if (onLoadingChange) onLoadingChange(true);
                 
                 // Obtener la URL de descarga desde Firebase Storage
                 const storage = getStorage();
@@ -136,13 +141,24 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim })
                     if (cameraComponent.fit) {
                         cameraComponent.fit([model]);
                     } else {
-                        // Fallback manual
+                        // Fallback manual con rotación de 45 grados a la izquierda
                         const camera = cameraComponent.activeCamera;
-                        camera.position.set(
-                            center.x + distance,
-                            center.y + distance,
-                            center.z + distance
-                        );
+                        
+                        // Calcular posición con rotación de 45 grados (π/4 radianes)
+                        const angle = Math.PI / 4; // 45 grados
+                        const cos = Math.cos(angle);
+                        const sin = Math.sin(angle);
+                        
+                        // Posición inicial
+                        const x = center.x + distance;
+                        const y = center.y + distance;
+                        const z = center.z + distance;
+                        
+                        // Aplicar rotación de 45 grados alrededor del eje Y
+                        const rotatedX = x * cos - z * sin;
+                        const rotatedZ = x * sin + z * cos;
+                        
+                        camera.position.set(rotatedX, y, rotatedZ);
                         camera.lookAt(center);
                         camera.updateProjectionMatrix();
                         
@@ -154,9 +170,16 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim })
                     }
                     
                     console.log(`📷 Cámara ajustada al modelo - Centro:`, center, `Tamaño:`, size);
+                    
+                    // Finalizar la carga
+                    setIsLoading(false);
+                    if (onLoadingChange) onLoadingChange(false);
                 }, 100); // Pequeño delay para asegurar que el modelo esté renderizado
             } catch (error) {
                 console.error(`❌ Error al cargar desde Firebase:`, error);
+                setIsLoading(false);
+                if (onLoadingChange) onLoadingChange(false);
+                
                 if (error.message && error.message.includes('IFC4X3_ADD2')) {
                     alert(`⚠️ ERROR: El modelo usa el esquema IFC4X3_ADD2 que no está soportado.\n\nSolución: Convierte el archivo a IFC4 o IFC2X3.`);
                 } else if (error.code === 'storage/object-not-found') {
@@ -241,7 +264,12 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim })
         };
     }, [setSelectedGlobalId, setSelectedNameBim]);
 
-    return <div className='container' id="viewerContainer" style={viewerContainerStyle}></div>;
+    return (
+        <>
+            <BimLoadingBar isLoading={isLoading} />
+            <div className='container' id="viewerContainer" style={viewerContainerStyle}></div>
+        </>
+    );
 });
 
 export default ViewerComponent;

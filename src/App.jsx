@@ -43,6 +43,7 @@ import BOE from './Pages/BOE.jsx';
 import OrdenesEstudio from './Pages/OrdenesEstudio.jsx';
 import AcvAnalisisCicloVida from './Pages/AcvAnalisisCicloVida.jsx';
 import AcvCronograma from './Pages/AcvCronograma.jsx';
+import GestionUsuarios from './Pages/GestionUsuarios.jsx';
 
 // App.js
 // This is the main entry point for the application. It defines the routing structure
@@ -68,7 +69,8 @@ function App() {
     { path: '/acv/analisis-ciclo-vida', element: <AcvAnalisisCicloVida /> },
     { path: '/acv/cronograma', element: <AcvCronograma /> },
     { path: '/boe', element: <BOE /> },
-    { path: '/ordenes-estudio', element: <OrdenesEstudio /> }
+    { path: '/ordenes-estudio', element: <OrdenesEstudio /> },
+    { path: '/gestion-usuarios', element: <GestionUsuarios /> }
   ];
   // adminRoutes
   // Routes restricted to admin users (and optionally general users).

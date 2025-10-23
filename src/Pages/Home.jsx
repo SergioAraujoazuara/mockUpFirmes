@@ -1,5 +1,6 @@
 import React from 'react';
 import ImagenHome from '../../public/fondoHome.jpeg';
+import { FaShieldAlt, FaUserCheck } from 'react-icons/fa';
 
 function Home() {
   localStorage.setItem('idProyecto', 'i8l2VQeDIIB7fs3kUQxA');
@@ -8,8 +9,17 @@ function Home() {
   localStorage.setItem('tramo', 'Mondragón-Elorrio-Bergara');
   localStorage.setItem('obra', 'Linea de alta velocidad Vitoria-Bilbao-San Sebastián');
 
+  // Datos del usuario actual (mock)
+  const currentUser = {
+    name: 'Juan Pérez',
+    email: 'juan.perez@empresa.com',
+    role: 'Administrador',
+    status: 'Activo',
+    avatar: 'https://via.placeholder.com/80x80/3B82F6/FFFFFF?text=JP'
+  };
+
   return (
-    <div className="h-screen w-full">
+    <div className="h-screen w-full relative">
       {/* Imagen de fondo ocupando toda la pantalla */}
       <div
         className="relative h-full w-full bg-cover bg-center flex items-center justify-center"
@@ -17,6 +27,31 @@ function Home() {
       >
         {/* Overlay simple */}
         <div className="absolute inset-0 bg-black/70"></div>
+        
+        {/* Panel de Bienvenida (Lado Izquierdo) */}
+        <div className="absolute left-8 top-8 z-20">
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-6 max-w-sm">
+            <div className="text-center">
+              <img 
+                src={currentUser.avatar} 
+                alt="Avatar" 
+                className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-blue-100"
+              />
+              <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                ¡Bienvenido, {currentUser.name.split(' ')[0]}!
+              </h2>
+              <p className="text-gray-600 mb-2">{currentUser.email}</p>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <FaShieldAlt className="text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">Rol: {currentUser.role}</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <FaUserCheck className="text-green-500" />
+                <span className="text-sm text-gray-600">Estado: {currentUser.status}</span>
+              </div>
+            </div>
+          </div>
+        </div>
         
         {/* Contenido centrado sobre la imagen */}
         <div className="relative text-center text-white px-6 flex flex-col items-center z-10">

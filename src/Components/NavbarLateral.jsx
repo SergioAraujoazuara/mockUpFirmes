@@ -20,7 +20,9 @@ import {
   FaFileAlt,
   FaExternalLinkAlt,
   FaGlobe,
-  FaDollarSign
+  FaDollarSign,
+  FaSearch,
+  FaUserCog
 } from "react-icons/fa";
 
 const NavbarLateral = () => {
@@ -92,9 +94,14 @@ const NavbarLateral = () => {
   return (
     <aside className="w-64 bg-slate-800 text-white flex flex-col flex-shrink-0 h-screen">
       {/* Logo */}
-      <div className="h-20 flex flex-col items-center justify-center border-b border-slate-700 px-4">
-        <h1 className="text-2xl font-bold text-white">SAGF</h1>
-        <p className="text-xs text-slate-300 text-center mt-1 leading-tight">
+      <div className="flex flex-col items-center justify-center border-b border-slate-700 px-4 py-4">
+        <img 
+          src="/logo_blanco.png" 
+          alt="Logo SAGF" 
+          className="w-18 h-16 object-contain mb-2 pr-8"
+        />
+        <h1 className="text-2xl font-bold text-white mb-1">SAGF</h1>
+        <p className="text-xs text-slate-300 text-center leading-tight">
           Sistema Avanzado de Gestión de Firmes
         </p>
       </div>
@@ -198,7 +205,7 @@ const NavbarLateral = () => {
               className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300"
             >
               <div className="flex items-center text-left gap-3">
-                <FaChartBar className="w-5 h-5" />
+                <FaSearch className="w-5 h-5" />
                 <span className="text-sm font-medium">Campañas de auscultación</span>
               </div>
               <FaCaretDown className={`w-3 h-3 transition-transform ${dropdownCampañasOpen ? 'rotate-180' : ''}`} />
@@ -289,6 +296,7 @@ const NavbarLateral = () => {
             <FaDollarSign className="w-5 h-5" />
             <span className="text-sm font-medium">Presupuesto conservación</span>
           </Link>
+
 
         {/* ACV */}
         <div>
@@ -398,26 +406,20 @@ const NavbarLateral = () => {
             <FaCaretDown className={`w-3 h-3 transition-transform ${dropdownUserOpen ? 'rotate-180' : ''}`} />
           </button>
           
-          {dropdownUserOpen && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 bg-slate-700 rounded-lg shadow-lg border border-slate-600">
-              <button
-                onClick={() => {
-                  setShowLogoutConfirmation(true);
-                  setDropdownUserOpen(false);
-                }}
-                className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-300 hover:bg-slate-600 hover:text-white rounded-lg transition-colors"
+          <Link
+                to="/gestion-usuarios"
+                onClick={() => setDropdownUserOpen(false)}
+                className="flex items-center gap-3 w-full px-3 py-2 mt-2 text-xs text-slate-400 hover:bg-slate-700 hover:text-slate-200 rounded-lg transition-colors"
               >
-                <FaDoorOpen className="w-4 h-4" />
-                Cerrar sesión
-              </button>
-            </div>
-          )}
+                <FaUserCog className="text-xl" />
+                Gestión de usuarios
+              </Link>
         </div>
         
         {/* TPF Logo */}
         <div className="mt-4 pt-4 border-t border-slate-600">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
+            <div className="w- h-8 bg-white rounded flex items-center justify-center">
               <span className="text-slate-800 font-bold text-xs">TPF</span>
             </div>
             <div>
