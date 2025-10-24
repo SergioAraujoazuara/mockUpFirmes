@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaArrowLeft, FaFilter, FaDownload, FaEye, FaChevronLeft, FaChevronRight, FaCheckCircle, FaExclamationTriangle, FaExclamationCircle } from 'react-icons/fa';
+import { FaSearch, FaArrowLeft, FaFilter, FaDownload, FaEye, FaChevronLeft, FaChevronRight, FaCheckCircle, FaExclamationTriangle, FaExclamationCircle, FaChartBar, FaChartPie, FaTable } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import carreterasData from '../../public/catalogo_carreteras/carreteras_tablas.json';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 function Consultas() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,6 +11,7 @@ function Consultas() {
   const [filterCCAA, setFilterCCAA] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [activeTab, setActiveTab] = useState('tabla');
 
   // Cargar datos del JSON y agregar estados aleatorios para simular
   const [inventarioData, setInventarioData] = useState([]);
@@ -92,11 +94,43 @@ function Consultas() {
     }
   };
 
+  // Colores para las gráficas
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+
+  // Datos para gráfica de estados
+  const getEstadosData = () => {
+    const estados = ['Excelente', 'Bueno', 'Regular', 'Malo'];
+    return estados.map(estado => ({
+      name: estado,
+      value: filteredData.filter(item => item.estado === estado).length,
+      color: estado === 'Excelente' ? '#10B981' : 
+             estado === 'Bueno' ? '#3B82F6' : 
+             estado === 'Regular' ? '#F59E0B' : '#EF4444'
+    }));
+  };
+
+  // Datos para gráfica de CCAA
+  const getCCAAData = () => {
+    const ccaaCounts = {};
+    filteredData.forEach(item => {
+      ccaaCounts[item.ccaa] = (ccaaCounts[item.ccaa] || 0) + 1;
+    });
+    
+    return Object.entries(ccaaCounts)
+      .map(([ccaa, count], index) => ({
+        name: ccaa,
+        value: count,
+        color: COLORS[index % COLORS.length]
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10); // Top 10 CCAA
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 py-4">
+        <div className=" py-6 px-14">
           <div className="flex items-center justify-between pb-4 border-b-2 border-gray-300">
             <div className="flex items-center gap-3">
               <div className="w-1 h-6 bg-gradient-to-b from-sky-500 to-sky-600 rounded-full"></div>
@@ -114,7 +148,7 @@ function Consultas() {
       </div>
 
       {/* Contenido */}
-      <div className="max-w-7xl mx-auto px-6 md:px-8 py-6">
+      <div className="py-6 px-14">
         
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -151,6 +185,34 @@ function Consultas() {
             <div className="text-2xl font-bold text-gray-600">
               {inventarioData.filter(i => i.estado === 'Regular').length}
             </div>
+          </div>
+        </div>
+        
+        {/* Pestañas */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('tabla')}
+              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors ${
+                activeTab === 'tabla'
+                  ? 'text-sky-600 border-b-2 border-sky-600 bg-sky-50'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+              }`}
+            >
+              <FaTable />
+              Tabla
+            </button>
+            <button
+              onClick={() => setActiveTab('graficas')}
+              className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors ${
+                activeTab === 'graficas'
+                  ? 'text-sky-600 border-b-2 border-sky-600 bg-sky-50'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+              }`}
+            >
+              <FaChartBar />
+              Gráficas
+            </button>
           </div>
         </div>
         
@@ -240,8 +302,11 @@ function Consultas() {
           </div>
         </div>
 
-        {/* Tabla de resultados */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {/* Contenido según pestaña activa */}
+        {activeTab === 'tabla' && (
+          <>
+            {/* Tabla de resultados */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-sky-50 to-sky-100 border-b border-sky-200">
@@ -369,6 +434,83 @@ function Consultas() {
             </div>
           )}
         </div>
+          </>
+        )}
+
+        {/* Sección de Gráficas */}
+        {activeTab === 'graficas' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Gráfica de Estados */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <FaChartPie className="text-gray-600" />
+                Estados de las Vías
+              </h3>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={getEstadosData()}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {getEstadosData().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <style jsx>{`
+                  .recharts-pie-label-text {
+                    fill: #6B7280 !important;
+                    font-size: 12px !important;
+                  }
+                `}</style>
+              </div>
+            </div>
+
+            {/* Gráfica de CCAA */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <FaChartBar className="text-gray-600" />
+                Distribución por CCAA
+              </h3>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={getCCAAData()}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="name" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      fontSize={12}
+                    />
+                    <YAxis />
+                    <Bar dataKey="value" fill="#3B82F6">
+                      {getCCAAData().map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <style jsx>{`
+                  .recharts-text {
+                    fill: #6B7280 !important;
+                  }
+                  .recharts-cartesian-axis-tick-value {
+                    fill: #6B7280 !important;
+                  }
+                `}</style>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

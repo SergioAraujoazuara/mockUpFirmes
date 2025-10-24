@@ -18,6 +18,7 @@ import {
   Legend
 } from 'recharts';
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet';
+import HeaderPage from '../Components/HeaderPage';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -375,25 +376,16 @@ const DashboardFirmes = () => {
   return (
     <div className="min-h-screen ">
       {/* Header moderno */}
-      <div className="bg-white sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 py-4">
-          <div className="flex items-center justify-between pb-4 border-b-2 border-gray-300">
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-6 bg-gradient-to-b from-sky-600 to-sky-700 rounded-full"></div>
-              <h1 className="text-base font-semibold text-gray-600">Dashboard</h1>
-            </div>
-            <Link 
-              to="/" 
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-all duration-200"
-            >
-              <FaArrowLeft className="text-xs" />
-              <span>Volver</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+     {/* Header usando componente reutilizable */}
+     <HeaderPage
 
-      <div className="max-w-7xl mx-auto px-6 md:px-8 py-6">
+        title="Dashboard de Firmes"
+        showBackButton={true}
+        backPath="/"
+        backText="Volver"
+      />
+
+      <div className="px-14 py-6">
         {/* Filtros */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 mb-8">
           <div className="flex items-center gap-2 mb-4">
@@ -1017,8 +1009,8 @@ const DashboardFirmes = () => {
                   {/* Gráfico de Evolución Temporal - Ancho completo */}
                   <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="p-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg">
-                        <TrendingUp className="h-5 w-5 text-purple-600" />
+                      <div className="p-2 bg-gradient-to-br from-sky-100 to-blue-100 rounded-lg">
+                        <TrendingUp className="h-5 w-5 text-sky-600" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-slate-800">Evolución temporal de índices</h3>

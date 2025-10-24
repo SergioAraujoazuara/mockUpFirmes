@@ -478,7 +478,7 @@ const IndicadoresIframe = () => {
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => setShowDebugPanel(!showDebugPanel)}
-                  className="text-purple-600 hover:text-purple-800 font-medium flex items-center gap-2"
+                  className="text-sky-600 hover:text-sky-800 font-medium flex items-center gap-2"
                 >
                   <FaCog />
                   {showDebugPanel ? 'Ocultar' : 'Mostrar'} Panel de Debug
@@ -495,8 +495,8 @@ const IndicadoresIframe = () => {
 
           {/* Panel de Debug (colapsable) */}
           {showDebugPanel && (
-            <div className="mt-4 p-6 bg-purple-50 rounded-lg border border-purple-200">
-              <h4 className="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
+            <div className="mt-4 p-6 bg-sky-50 rounded-lg border border-sky-200">
+              <h4 className="text-lg font-semibold text-sky-800 mb-4 flex items-center gap-2">
                 <FaCog />
                 Panel de Debugging - Simulación de Clics
               </h4>
@@ -504,7 +504,7 @@ const IndicadoresIframe = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Controles de coordenadas */}
                 <div className="space-y-4">
-                  <h5 className="font-medium text-purple-700">Coordenadas de Prueba</h5>
+                  <h5 className="font-medium text-sky-700">Coordenadas de Prueba</h5>
                   
                   <div className="space-y-2">
                     <label className="text-sm text-gray-700">Coordenada X:</label>
@@ -528,7 +528,7 @@ const IndicadoresIframe = () => {
                   
                   <button
                     onClick={() => simulateClickInIframe(debugCoords.x, debugCoords.y, 'prueba manual')}
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-2 px-4 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800"
+                    className="w-full bg-gradient-to-r from-sky-600 to-sky-700 text-white py-2 px-4 rounded-lg font-medium hover:from-sky-700 hover:to-sky-800"
                   >
                     🖱️ Probar Clic en ({debugCoords.x}, {debugCoords.y})
                   </button>
@@ -543,19 +543,19 @@ const IndicadoresIframe = () => {
                 
                 {/* Coordenadas configuradas */}
                 <div className="space-y-4">
-                  <h5 className="font-medium text-purple-700">Coordenadas Actuales</h5>
+                  <h5 className="font-medium text-sky-700">Coordenadas Actuales</h5>
                   
                   <div className="space-y-2 text-sm">
-                    <div className="p-3 bg-white rounded border border-purple-100">
+                    <div className="p-3 bg-white rounded border border-sky-100">
                       <strong>Dropdown Indicador:</strong> ({iframeControlCoordinates.indicatorDropdown.x}, {iframeControlCoordinates.indicatorDropdown.y})
                     </div>
-                    <div className="p-3 bg-white rounded border border-purple-100">
+                    <div className="p-3 bg-white rounded border border-sky-100">
                       <strong>Botón Indicador:</strong> ({iframeControlCoordinates.indicatorButton.x}, {iframeControlCoordinates.indicatorButton.y})
                     </div>
-                    <div className="p-3 bg-white rounded border border-purple-100">
+                    <div className="p-3 bg-white rounded border border-sky-100">
                       <strong>Dropdown Provincia:</strong> ({iframeControlCoordinates.provinceDropdown.x}, {iframeControlCoordinates.provinceDropdown.y})
                     </div>
-                    <div className="p-3 bg-white rounded border border-purple-100">
+                    <div className="p-3 bg-white rounded border border-sky-100">
                       <strong>Botón Provincia:</strong> ({iframeControlCoordinates.provinceButton.x}, {iframeControlCoordinates.provinceButton.y})
                     </div>
                   </div>
@@ -611,7 +611,7 @@ const IndicadoresIframe = () => {
                 </ol>
               </div>
               
-              <div className="mt-4 p-4 bg-purple-100 rounded text-sm text-purple-800">
+              <div className="mt-4 p-4 bg-sky-100 rounded text-sm text-sky-800">
                 <strong>🛠️ Instrucciones de Debug:</strong>
                 <ul className="list-disc list-inside mt-2 space-y-1">
                   <li>Abre las DevTools del navegador (F12)</li>

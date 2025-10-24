@@ -119,13 +119,13 @@ function GestionUsuarios() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
                   <FaUsers className="text-sky-600" />
                   Lista de Usuarios
                 </h3>
                 <button 
                   onClick={openAddUserModal}
-                  className="flex items-center gap-2 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors text-xs"
                 >
                   <FaUserPlus />
                   Agregar Usuario
@@ -137,7 +137,7 @@ function GestionUsuarios() {
                 <select 
                   value={statusFilter} 
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-xs"
                 >
                   <option value="Todos">Todos los estados</option>
                   <option value="Activo">Activos</option>
@@ -148,7 +148,7 @@ function GestionUsuarios() {
                 <select 
                   value={roleFilter} 
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-xs"
                 >
                   <option value="Todos">Todos los roles</option>
                   <option value="Administrador">Administradores</option>
@@ -167,8 +167,8 @@ function GestionUsuarios() {
                         <FaUser className="text-sky-600" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-800">{user.name}</h4>
-                        <p className="text-sm text-gray-600">{user.email}</p>
+                        <h4 className="font-medium text-gray-800 text-sm">{user.name}</h4>
+                        <p className="text-xs text-gray-600">{user.email}</p>
                       </div>
                     </div>
                     
@@ -218,7 +218,7 @@ function GestionUsuarios() {
           {/* Panel de Roles y Permisos */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <FaShieldAlt className="text-sky-600" />
                 Roles y Permisos
               </h3>
@@ -226,13 +226,13 @@ function GestionUsuarios() {
               <div className="space-y-4">
                 {Object.entries(roles).map(([role, permissions]) => (
                   <div key={role} className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2 text-sm">
                       <FaShieldAlt className="text-sky-600" />
                       {role}
                     </h4>
                     <ul className="space-y-1">
                       {permissions.map((permission, index) => (
-                        <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
+                        <li key={index} className="text-xs text-gray-600 flex items-center gap-2">
                           <span className="w-1.5 h-1.5 bg-sky-500 rounded-full"></span>
                           {permission}
                         </li>
@@ -251,7 +251,7 @@ function GestionUsuarios() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-sm font-semibold text-gray-800">
                 Cambiar Rol de Usuario
               </h3>
               <button
@@ -266,22 +266,22 @@ function GestionUsuarios() {
             </div>
             
             <div className="mb-4">
-              <p className="text-gray-600 mb-2">
+              <p className="text-gray-600 mb-2 text-xs">
                 <strong>Usuario:</strong> {editingUser.name}
               </p>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-4 text-xs">
                 <strong>Email:</strong> {editingUser.email}
               </p>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-4 text-xs">
                 <strong>Rol actual:</strong> 
-                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                   {editingUser.role}
                 </span>
               </p>
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-2">
                 Seleccionar nuevo rol:
               </label>
               <div className="space-y-2">
@@ -295,8 +295,8 @@ function GestionUsuarios() {
                       className="mr-3 text-sky-600 focus:ring-sky-500"
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-gray-800">{role}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="font-medium text-gray-800 text-sm">{role}</div>
+                      <div className="text-xs text-gray-600">
                         {roles[role].slice(0, 2).join(', ')}
                         {roles[role].length > 2 && '...'}
                       </div>
@@ -312,7 +312,7 @@ function GestionUsuarios() {
                   setShowRoleModal(false);
                   setEditingUser(null);
                 }}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs"
               >
                 Cancelar
               </button>
@@ -326,7 +326,7 @@ function GestionUsuarios() {
                     setEditingUser(null);
                   }
                 }}
-                className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors"
+                className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors text-xs"
               >
                 Cambiar Rol
               </button>
@@ -340,7 +340,7 @@ function GestionUsuarios() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-sm font-semibold text-gray-800">
                 Agregar Nuevo Usuario
               </h3>
               <button
@@ -356,39 +356,39 @@ function GestionUsuarios() {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Nombre completo *
                 </label>
                 <input
                   type="text"
                   value={newUser.name}
                   onChange={(e) => setNewUser({...newUser, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-xs"
                   placeholder="Ej: María García"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Email *
                 </label>
                 <input
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-xs"
                   placeholder="Ej: maria.garcia@empresa.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Rol
                 </label>
                 <select
                   value={newUser.role}
                   onChange={(e) => setNewUser({...newUser, role: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-xs"
                 >
                   {Object.keys(roles).map(role => (
                     <option key={role} value={role}>{role}</option>
@@ -397,13 +397,13 @@ function GestionUsuarios() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Estado
                 </label>
                 <select
                   value={newUser.status}
                   onChange={(e) => setNewUser({...newUser, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent text-xs"
                 >
                   <option value="Activo">Activo</option>
                   <option value="Inactivo">Inactivo</option>
@@ -413,10 +413,10 @@ function GestionUsuarios() {
 
               {/* Vista previa de permisos del rol seleccionado */}
               <div className="bg-gray-50 rounded-lg p-3">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                <h4 className="text-xs font-medium text-gray-700 mb-2">
                   Permisos del rol "{newUser.role}":
                 </h4>
-                <ul className="text-sm text-gray-600 space-y-1">
+                <ul className="text-xs text-gray-600 space-y-1">
                   {roles[newUser.role]?.map((permission, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 bg-sky-500 rounded-full"></span>
@@ -433,14 +433,14 @@ function GestionUsuarios() {
                   setShowAddUserModal(false);
                   setNewUser({ name: '', email: '', role: 'Visualizador', status: 'Activo' });
                 }}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs"
               >
                 Cancelar
               </button>
               <button
                 onClick={addNewUser}
                 disabled={!newUser.name.trim() || !newUser.email.trim()}
-                className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
               >
                 Agregar Usuario
               </button>

@@ -249,7 +249,7 @@ const Actuaciones = () => {
         backText="Volver"
       />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-8 py-6">
+      <div className="px-14 py-6">
         {/* Tabs Navigation */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
           <div className="flex flex-wrap border-b border-gray-200">

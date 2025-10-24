@@ -32,7 +32,7 @@ function PrognosisEvolucion() {
           <div className="flex items-center justify-between pb-4 border-b-2 border-gray-300">
             <div className="flex items-center gap-3">
               <div className="w-1 h-6 bg-gradient-to-b from-sky-500 to-sky-600 rounded-full"></div>
-              <h1 className="text-base font-semibold text-gray-800">Prognosis de Evolución</h1>
+              <h1 className="text-base font-semibold text-gray-800">Previsión de estado de las carreteras (Prognosis evolución)</h1>
             </div>
             <Link 
               to="/" 
@@ -161,7 +161,7 @@ function PrognosisEvolucion() {
           <div className="relative" style={{ height: '600px' }}>
             {import.meta.env.DEV ? (
               <iframe
-                src="http://212.128.194.13/gestionfirmes/evolucion/"
+                src="http://212.128.194.13/sagf/evolucion/"
                 title="Prognosis de Evolución"
                 className="w-full h-full border-0"
                 style={{
@@ -173,7 +173,7 @@ function PrognosisEvolucion() {
               <div className="p-8">
                 <ProductionMessage 
                   title="Prognosis de Evolución"
-                  directUrl="http://212.128.194.13/gestionfirmes/evolucion/"
+                  directUrl="http://212.128.194.13/sagf/evolucion/"
                 />
               </div>
             )}

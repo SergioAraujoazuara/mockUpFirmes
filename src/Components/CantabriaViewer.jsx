@@ -182,8 +182,8 @@ const CantabriaViewer = ({ data }) => {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
           <div className="p-4 border-b border-slate-200">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
+              <div className="p-2 bg-gradient-to-br from-sky-100 to-blue-100 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-sky-600" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-slate-800">Evolución temporal de índices</h3>

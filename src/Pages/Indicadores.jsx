@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaChartBar, FaArrowLeft, FaChevronDown, FaMapMarkerAlt, FaRoad } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import ProductionMessage from '../Components/ProductionMessage';
-
+import HeaderPage from '../Components/HeaderPage';
 function Indicadores() {
   const [selectedIndicator, setSelectedIndicator] = useState('Índice General');
   const [selectedProvince, setSelectedProvince] = useState('Todas las provincias');
@@ -38,26 +38,16 @@ function Indicadores() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header moderno */}
-      <div className="bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 py-4">
-          <div className="flex items-center justify-between pb-4 border-b-2 border-gray-300">
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-6 bg-gradient-to-b from-sky-500 to-sky-600 rounded-full"></div>
-              <h1 className="text-base font-semibold text-gray-800">Indicadores - Estado de la red</h1>
-            </div>
-            <Link 
-              to="/" 
-              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-all duration-200"
-            >
-              <FaArrowLeft className="text-xs" />
-              <span>Volver</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <HeaderPage
+
+        title="Indicadores - Estado de la red"
+        showBackButton={true}
+        backPath="/"
+        backText="Volver"
+      />
 
       {/* Filtros Externos */}
-      <div className="max-w-7xl mx-auto px-6 md:px-8 py-4">
+      <div className="px-14 py-8">
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 mb-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             
@@ -143,7 +133,7 @@ function Indicadores() {
           <div className="relative" style={{ height: '600px' }}>
             {import.meta.env.DEV ? (
               <iframe
-                src="http://212.128.194.13/gestionfirmes/indicadores/"
+                src="http://212.128.194.13/sagf/indicadores/"
                 title="Indicadores de Estado de la Red"
                 className="w-full h-full border-0"
                 style={{
@@ -155,7 +145,7 @@ function Indicadores() {
               <div className="p-8">
                 <ProductionMessage 
                   title="Indicadores - Estado de la red"
-                  directUrl="http://212.128.194.13/gestionfirmes/indicadores/"
+                  directUrl="http://212.128.194.13/sagf/indicadores/"
                 />
               </div>
             )}

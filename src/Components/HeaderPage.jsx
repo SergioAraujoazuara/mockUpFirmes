@@ -12,7 +12,7 @@ const HeaderPage = ({
 }) => {
   return (
     <div className={`bg-white/80 backdrop-blur-md sticky top-0 z-10 ${className}`}>
-      <div className="py-4 container mx-auto px-40">
+      <div className="pt-6 px-14">
         <div className="flex items-center justify-between pb-4 border-b-2 border-gray-300">
           <div className="flex items-center gap-3">
             <div className="w-1 h-6 bg-gradient-to-b from-sky-600 to-sky-700 rounded-full"></div>

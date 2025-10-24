@@ -3,7 +3,7 @@ import HeaderPage from '../Components/HeaderPage';
 
 const AcvAnalisisCicloVida = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen">
       {/* Header usando componente reutilizable */}
       <HeaderPage 
         title="Análisis ciclo de vida"
@@ -13,7 +13,7 @@ const AcvAnalisisCicloVida = () => {
       />
 
       {/* Main Content */}
-      <div className="container mx-auto px-40 py-8">
+      <div className="px-14 py-8">
         {/* Información del Proyecto A-67 */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">

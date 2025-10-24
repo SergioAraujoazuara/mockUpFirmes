@@ -30,7 +30,7 @@ const NavbarLateral = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
-  const [userNombre, setUserNombre] = useState('');
+  const [userNombre, setUserNombre] = useState('Rodrigo López');
   const [userRol, setUserRol] = useState('');
   const [dropdownUserOpen, setDropdownUserOpen] = useState(false);
   const [dropdownDatosGeneralesOpen, setDropdownDatosGeneralesOpen] = useState(false);
@@ -48,19 +48,9 @@ const NavbarLateral = () => {
   const userRef = useRef(null);
 
   useEffect(() => {
-    if (user) {
-      const userDocRef = doc(db, 'usuarios', user.uid);
-      getDoc(userDocRef).then(docSnap => {
-        if (docSnap.exists()) {
-          setUserNombre(docSnap.data().nombre || 'Usuario');
-          setUserRol(docSnap.data().rol || 'usuario');
-        }
-      });
-    } else {
-      // Si no hay usuario autenticado, mostrar como usuario por defecto
-      setUserNombre('Sergio Araujo');
-      setUserRol('usuario');
-    }
+    // Siempre mostrar Rodrigo López independientemente del usuario autenticado
+    setUserNombre('Rodrigo López');
+    setUserRol('Administrador');
   }, [user]);
 
   const closeAllDropdowns = () => {
@@ -98,7 +88,7 @@ const NavbarLateral = () => {
         <img 
           src="/logo_blanco.png" 
           alt="Logo SAGF" 
-          className="w-18 h-16 object-contain mb-2 pr-8"
+          className="w-18 h-14 object-contain mb-2 pr-8"
         />
         <h1 className="text-2xl font-bold text-white mb-1">SAGF</h1>
         <p className="text-xs text-slate-300 text-center leading-tight">
@@ -144,13 +134,14 @@ const NavbarLateral = () => {
                 <div className="block px-4 py-2 rounded-lg text-sm text-slate-400 cursor-pointer hover:bg-slate-700 hover:text-white transition-colors">
                   AEMET
                 </div>
-                <Link
-                  to="/boe"
-                  onClick={(e) => handleLinkClick(e, true)}
+                <a
+                  href="https://iris.tpf.be/siteAssist"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                 >
                   BOE
-                </Link>
+                </a>
               </div>
             )}
           </div>
@@ -177,6 +168,13 @@ const NavbarLateral = () => {
                   className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                 >
                   Consultas
+                </Link>
+                <Link
+                  to="/prognosis-evolucion"
+                  onClick={(e) => handleLinkClick(e, true)}
+                  className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
+                >
+                  Previsión del estado de las carreteras
                 </Link>
               </div>
             )}
@@ -212,9 +210,13 @@ const NavbarLateral = () => {
             </button>
             {dropdownCampañasOpen && (
               <div className="ml-8 mt-1 space-y-1">
-                <div className="block px-4 py-2 rounded-lg text-sm text-slate-400 cursor-pointer hover:bg-slate-700 hover:text-white transition-colors">
-                  Verificar campañas cargadas
-                </div>
+                <Link
+                  to="/tablaPpi"
+                  onClick={(e) => handleLinkClick(e, true)}
+                  className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
+                >
+                  Carretera A-67
+                </Link>
               </div>
             )}
           </div>
@@ -367,14 +369,14 @@ const NavbarLateral = () => {
                         Llacuna
                       </Link>
                       <Link
-                        to="/auscultacion/glorias"
+                        to="/auscultacion/llacuna"
                         onClick={(e) => handleLinkClick(e, true)}
                         className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                       >
                         Glorias
                       </Link>
                       <Link
-                        to="/auscultacion/horta"
+                        to="/auscultacion/llacuna"
                         onClick={(e) => handleLinkClick(e, true)}
                         className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                       >

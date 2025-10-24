@@ -26,6 +26,85 @@ import BimLoadingBar from '../../Components/BimLoadingBar';
 const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, onLoadingChange }) => {
     const [modelCount, setModelCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [showInspectionModal, setShowInspectionModal] = useState(false);
+    const [selectedElementData, setSelectedElementData] = useState(null);
+    const [inspectionData, setInspectionData] = useState({
+        resultado: '',
+        observaciones: '',
+        imagen: null,
+        imagen2: null,
+        firma: null
+    });
+    const [firmaCapturada, setFirmaCapturada] = useState(false);
+    const [firmaData, setFirmaData] = useState('');
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [canvasRef, setCanvasRef] = useState(null);
+
+    // Funciones para manejar la firma digital
+    const handleStartDrawing = (e) => {
+        if (!canvasRef) return;
+        setIsDrawing(true);
+        const canvas = canvasRef;
+        const rect = canvas.getBoundingClientRect();
+        const ctx = canvas.getContext('2d');
+        
+        // Configurar el contexto del canvas
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    };
+
+    const handleDraw = (e) => {
+        if (!isDrawing || !canvasRef) return;
+        const canvas = canvasRef;
+        const rect = canvas.getBoundingClientRect();
+        const ctx = canvas.getContext('2d');
+        
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke();
+    };
+
+    const handleStopDrawing = () => {
+        setIsDrawing(false);
+    };
+
+    const handleCapturarFirma = () => {
+        const canvas = canvasRef;
+        const dataURL = canvas.toDataURL();
+        setFirmaData(dataURL);
+        setFirmaCapturada(true);
+        setInspectionData({...inspectionData, firma: dataURL});
+    };
+
+    const handleLimpiarFirma = () => {
+        if (!canvasRef) return;
+        const canvas = canvasRef;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        setFirmaData('');
+        setFirmaCapturada(false);
+        setInspectionData({...inspectionData, firma: null});
+    };
+
+    // Configurar el canvas cuando se monta
+    useEffect(() => {
+        if (canvasRef) {
+            const canvas = canvasRef;
+            const ctx = canvas.getContext('2d');
+            
+            // Configurar el contexto del canvas
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    }, [canvasRef]);
 
     // Styles for the viewer container
     const viewerContainerStyle = {
@@ -84,6 +163,59 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
             // IFC Loader to load IFC models as fragments
             const highlighter = new OBC.FragmentHighlighter(viewer);
             highlighter.setup();
+            
+            // Crear nuestro propio sistema de iluminación
+            let selectedElement = null;
+            let originalMaterial = null;
+            const highlightMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffffff, // Blanco brillante
+                transparent: true,
+                opacity: 0.9,
+                side: THREE.DoubleSide,
+                emissive: 0xffffff, // Emisión blanca para mayor brillo
+                emissiveIntensity: 0.5
+            });
+            
+            const hoverMaterial = new THREE.MeshBasicMaterial({
+                color: 0xffffff, // Blanco brillante
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide,
+                emissive: 0xffffff, // Emisión blanca para mayor brillo
+                emissiveIntensity: 0.3
+            });
+            
+            // Configurar el highlighter para que funcione correctamente
+            try {
+                // Habilitar hover y selección usando la API correcta
+                if (highlighter.config) {
+                    highlighter.config.hoverEnabled = true;
+                    highlighter.config.selectEnabled = true;
+                    console.log('✅ Highlighter habilitado');
+                }
+                
+                // Configuración adicional para asegurar que funcione
+                try {
+                    // Intentar configurar materiales directamente
+                    if (highlighter.hoverMaterial) {
+                        highlighter.hoverMaterial.color.setHex(0xffffff);
+                        highlighter.hoverMaterial.opacity = 0.9;
+                        highlighter.hoverMaterial.transparent = true;
+                        console.log('✅ Material de hover configurado inicialmente');
+                    }
+                    
+                    if (highlighter.selectMaterial) {
+                        highlighter.selectMaterial.color.setHex(0xffffff);
+                        highlighter.selectMaterial.opacity = 1.0;
+                        highlighter.selectMaterial.transparent = true;
+                        console.log('✅ Material de selección configurado inicialmente');
+                    }
+                } catch (materialError) {
+                    console.log('ℹ️ Materiales no disponibles inicialmente:', materialError.message);
+                }
+            } catch (error) {
+                console.warn('⚠️ Error configurando highlighter:', error);
+            }
         /**
                  * @function loadIfcAsFragments
                  * Loads an IFC model from a given path, converts it into fragments,
@@ -201,10 +333,242 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
             setSelectedGlobalId(null);
             setSelectedNameBim(null) // Callback to clear the selected global ID
         });
+        
+        // Event: Hover over elements (highlight on mouse over)
+        try {
+            if (highlighter.events && highlighter.events.highlight) {
+                highlighter.events.highlight.onHighlight.add((selection) => {
+                    console.log('🟢 Elemento en hover:', selection);
+                });
+                
+                highlighter.events.highlight.onClear.add(() => {
+                    console.log('🟢 Hover limpiado');
+                });
+                console.log('✅ Eventos de hover configurados');
+            }
+        } catch (error) {
+            console.warn('⚠️ Error configurando eventos de hover:', error);
+        }
+        
+        // Event: Element selected
+        try {
+            if (highlighter.events && highlighter.events.select) {
+                highlighter.events.select.onHighlight.add((selection) => {
+                    console.log('🎯 Elemento seleccionado:', selection);
+                });
+                
+                highlighter.events.select.onClear.add(() => {
+                    console.log('🎯 Selección limpiada');
+                });
+                console.log('✅ Eventos de selección configurados');
+            }
+        } catch (error) {
+            console.warn('⚠️ Error configurando eventos de selección:', error);
+        }
         // When IFC is loaded successfully:
         ifcLoader.onIfcLoaded.add(model => {
             setModelCount(fragmentManager.groups.length);
             propertiesProcessor.process(model);
+            
+            // Configurar colores del highlighter después de cargar el modelo
+            try {
+                // Configurar materiales del highlighter de forma más robusta
+                if (highlighter.config) {
+                    // Intentar configurar materiales si existen
+                    try {
+                        if (highlighter.config.hoverMaterial) {
+                            highlighter.config.hoverMaterial.color.setHex(0xffffff); // Blanco brillante
+                            highlighter.config.hoverMaterial.opacity = 0.9;
+                            highlighter.config.hoverMaterial.transparent = true;
+                            if (highlighter.config.hoverMaterial.emissive) {
+                                highlighter.config.hoverMaterial.emissive.setHex(0xffffff);
+                                highlighter.config.hoverMaterial.emissiveIntensity = 0.5;
+                            }
+                            console.log('✅ Material de hover configurado (blanco brillante)');
+                        }
+                    } catch (hoverError) {
+                        console.log('ℹ️ Material de hover no disponible:', hoverError.message);
+                    }
+                    
+                    try {
+                        if (highlighter.config.selectMaterial) {
+                            highlighter.config.selectMaterial.color.setHex(0xffffff); // Blanco brillante
+                            highlighter.config.selectMaterial.opacity = 1.0;
+                            highlighter.config.selectMaterial.transparent = true;
+                            if (highlighter.config.selectMaterial.emissive) {
+                                highlighter.config.selectMaterial.emissive.setHex(0xffffff);
+                                highlighter.config.selectMaterial.emissiveIntensity = 0.8;
+                            }
+                            console.log('✅ Material de selección configurado (blanco muy brillante)');
+                        }
+                    } catch (selectError) {
+                        console.log('ℹ️ Material de selección no disponible:', selectError.message);
+                    }
+                    
+                    // Asegurar que el highlighter esté habilitado
+                    highlighter.config.hoverEnabled = true;
+                    highlighter.config.selectEnabled = true;
+                    
+                    // Configuración adicional para asegurar que funcione
+                    try {
+                        if (highlighter.config.hover) {
+                            highlighter.config.hover.enabled = true;
+                        }
+                        if (highlighter.config.select) {
+                            highlighter.config.select.enabled = true;
+                        }
+                        console.log('✅ Highlighter configurado con API adicional');
+                    } catch (apiError) {
+                        console.log('ℹ️ API adicional no disponible, usando configuración básica');
+                    }
+                    
+                    // Forzar la configuración del highlighter para que sea visible
+                    try {
+                        // Configurar colores directamente en el highlighter con colores más contrastantes
+                        if (highlighter.hoverMaterial) {
+                            highlighter.hoverMaterial.color.setHex(0xff0000); // Rojo brillante para hover
+                            highlighter.hoverMaterial.opacity = 0.8;
+                            highlighter.hoverMaterial.transparent = true;
+                            console.log('✅ Material de hover directo configurado (rojo)');
+                        }
+                        
+                        if (highlighter.selectMaterial) {
+                            highlighter.selectMaterial.color.setHex(0x00ff00); // Verde brillante para selección
+                            highlighter.selectMaterial.opacity = 0.9;
+                            highlighter.selectMaterial.transparent = true;
+                            console.log('✅ Material de selección directo configurado (verde)');
+                        }
+                        
+                        // Intentar configurar también en config
+                        if (highlighter.config) {
+                            if (highlighter.config.hoverMaterial) {
+                                highlighter.config.hoverMaterial.color.setHex(0xff0000);
+                                highlighter.config.hoverMaterial.opacity = 0.8;
+                                console.log('✅ Config hover material configurado (rojo)');
+                            }
+                            
+                            if (highlighter.config.selectMaterial) {
+                                highlighter.config.selectMaterial.color.setHex(0x00ff00);
+                                highlighter.config.selectMaterial.opacity = 0.9;
+                                console.log('✅ Config select material configurado (verde)');
+                            }
+                        }
+                        
+                        // Forzar la actualización del highlighter
+                        try {
+                            if (typeof highlighter.update === 'function') {
+                                highlighter.update();
+                                console.log('✅ Highlighter actualizado forzadamente');
+                            } else {
+                                // Intentar otros métodos de actualización
+                                if (highlighter.refresh) {
+                                    highlighter.refresh();
+                                    console.log('✅ Highlighter refrescado');
+                                } else if (highlighter.render) {
+                                    highlighter.render();
+                                    console.log('✅ Highlighter renderizado');
+                                } else {
+                                    console.log('ℹ️ No se encontró método de actualización del highlighter');
+                                }
+                            }
+                        } catch (updateError) {
+                            console.log('ℹ️ Error actualizando highlighter:', updateError.message);
+                        }
+                        
+                        // Forzar la aplicación de materiales
+                        try {
+                            // Intentar aplicar materiales directamente
+                            if (highlighter.materials) {
+                                highlighter.materials.hover = highlighter.hoverMaterial;
+                                highlighter.materials.select = highlighter.selectMaterial;
+                                console.log('✅ Materiales aplicados directamente');
+                            }
+                            
+                            // Intentar forzar la renderización
+                            if (viewer.renderer && viewer.renderer.render) {
+                                viewer.renderer.render();
+                                console.log('✅ Renderer forzado a renderizar');
+                            }
+                        } catch (forceError) {
+                            console.log('ℹ️ Error forzando aplicación de materiales:', forceError.message);
+                        }
+                    } catch (directError) {
+                        console.log('ℹ️ Configuración directa no disponible:', directError.message);
+                    }
+                    
+                    console.log('✅ Highlighter re-habilitado después de cargar modelo');
+                }
+            } catch (error) {
+                console.warn('⚠️ No se pudieron configurar los colores del highlighter:', error);
+            }
+            
+            // Sistema de selección personalizado con raycasting
+            const handleClick = (event) => {
+                const rect = viewerContainer.getBoundingClientRect();
+                const mouse = new THREE.Vector2();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                // Crear raycaster
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(mouse, cameraComponent.activeCamera);
+                
+                // Obtener todos los objetos del modelo
+                const objects = [];
+                scene.traverse((child) => {
+                    if (child.isMesh) {
+                        objects.push(child);
+                    }
+                });
+                
+                // Realizar intersección
+                const intersects = raycaster.intersectObjects(objects);
+                
+                if (intersects.length > 0) {
+                    const intersected = intersects[0].object;
+                    
+                    // Restaurar material anterior si existe
+                    if (selectedElement && originalMaterial) {
+                        selectedElement.material = originalMaterial;
+                    }
+                    
+                    // Guardar material original y aplicar nuevo
+                    originalMaterial = intersected.material;
+                    selectedElement = intersected;
+                    intersected.material = highlightMaterial;
+                    
+                    // Simular datos de elemento seleccionado
+                    const mockGlobalId = `GID_${Math.random().toString(36).substr(2, 9)}`;
+                    const mockName = `Elemento_${Math.floor(Math.random() * 1000)}`;
+                    
+                    // Datos del elemento seleccionado
+                    const elementData = {
+                        globalId: mockGlobalId,
+                        name: mockName,
+                        type: 'Pared',
+                        material: 'Hormigón',
+                        dimensions: '3.5m x 2.8m x 0.2m'
+                    };
+                    
+                    setSelectedElementData(elementData);
+                    setSelectedGlobalId(mockGlobalId);
+                    setSelectedNameBim(mockName);
+                    
+                    // Esperar 1 segundo para ver la iluminación, luego abrir el modal
+                    setTimeout(() => {
+                        setShowInspectionModal(true);
+                    }, 1000);
+                    
+                    console.log('🎯 Elemento seleccionado con raycasting personalizado:', { 
+                        mockGlobalId, 
+                        mockName,
+                        object: intersected
+                    });
+                }
+            };
+            
+            // Agregar event listener para clicks
+            viewerContainer.addEventListener('click', handleClick);
             /**
              * @event onHighlight
              * Triggered when the user selects (highlights) an element in the 3D scene.
@@ -215,27 +579,54 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
              * - Calls the provided callback functions to update selectedGlobalId and selectedNameBim states in the parent.
              */
             highlighter.events.select.onHighlight.add((selection) => {
-                const fragmentID = Object.keys(selection)[0];
-                const expressID = Number([...selection[fragmentID]][0]);
-                const properties = propertiesProcessor.getProperties(model, expressID.toString());
-                console.log(properties, '******** properties'); // Esto debería mostrarte todas las propiedades del objeto seleccionado.
+                try {
+                    console.log('🎯 Elemento seleccionado:', selection);
+                    
+                    const fragmentID = Object.keys(selection)[0];
+                    const expressID = Number([...selection[fragmentID]][0]);
+                    const properties = propertiesProcessor.getProperties(model, expressID.toString());
+                    console.log(properties, '******** properties'); // Esto debería mostrarte todas las propiedades del objeto seleccionado.
 
-                if (properties) {
-                    // Attempt to find GlobalId property
-                    const globalIdProperty = properties.find(prop => prop.Name === 'GlobalId' || (prop.GlobalId && prop.GlobalId.value));
-                    // Attempt to find Name property
-                    const nameProperty = properties.find(prop => prop.Name === 'Name' || (prop.Name && prop.Name.value));
-                    const globalId = globalIdProperty ? globalIdProperty.GlobalId.value : 'No disponible';
-                    const name = nameProperty ? nameProperty.Name.value : 'No disponible';
+                    if (properties) {
+                        // Convert properties to array if it's not already
+                        const propertiesArray = Array.isArray(properties) ? properties : Object.values(properties);
+                        
+                        // Attempt to find GlobalId property
+                        const globalIdProperty = propertiesArray.find(prop => 
+                            prop && (prop.Name === 'GlobalId' || (prop.GlobalId && prop.GlobalId.value))
+                        );
+                        // Attempt to find Name property
+                        const nameProperty = propertiesArray.find(prop => 
+                            prop && (prop.Name === 'Name' || (prop.Name && prop.Name.value))
+                        );
+                        
+                        const globalId = globalIdProperty ? 
+                            (globalIdProperty.GlobalId?.value || globalIdProperty.value || 'No disponible') : 
+                            'No disponible';
+                        const name = nameProperty ? 
+                            (nameProperty.Name?.value || nameProperty.value || 'No disponible') : 
+                            'No disponible';
 
+                        console.log('🔍 Global ID:', globalId);
+                        console.log('📝 Nombre:', name);
 
-
-                    console.log(globalId, 'global id');
-                    console.log(name);
-
-                    // Update parent states with the selected element's globalId and name
-                    setSelectedGlobalId(globalId);
-                    setSelectedNameBim(name)
+                        // Update parent states with the selected element's globalId and name
+                        setSelectedGlobalId(globalId);
+                        setSelectedNameBim(name);
+                        
+                        // Feedback visual adicional
+                        console.log('✅ Elemento iluminado y seleccionado correctamente');
+                    } else {
+                        // If no properties found, set default values
+                        console.log('⚠️ No se encontraron propiedades, usando valores por defecto');
+                        setSelectedGlobalId('No disponible');
+                        setSelectedNameBim('Elemento seleccionado');
+                    }
+                } catch (error) {
+                    console.error('❌ Error processing element selection:', error);
+                    // Set default values on error
+                    setSelectedGlobalId('Error al obtener datos');
+                    setSelectedNameBim('Elemento seleccionado');
                 }
             });
         });
@@ -268,6 +659,214 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
         <>
             <BimLoadingBar isLoading={isLoading} />
             <div className='container' id="viewerContainer" style={viewerContainerStyle}></div>
+            
+            {/* Modal de inspección completo */}
+            {showInspectionModal && selectedElementData && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden">
+                        {/* Header del modal con gradiente */}
+                        <div className="bg-gradient-to-r from-sky-600 to-sky-700 text-white p-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold">Inspección BIM</h3>
+                                        <p className="text-sky-100 text-sm">Elemento: {selectedElementData.name}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowInspectionModal(false)}
+                                    className="w-8 h-8 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg flex items-center justify-center transition-all duration-200"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {/* Contenido del modal */}
+                        <div className="p-6 max-h-[70vh] overflow-y-auto">
+                        
+                            {/* Información del elemento */}
+                            <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                                <h4 className="text-sm font-semibold text-gray-900 mb-4">
+                                    Información del Elemento
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">ID Global</label>
+                                        <p className="text-sm text-gray-900 bg-white p-2 rounded-lg border">{selectedElementData.globalId}</p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                        <p className="text-sm text-gray-900 bg-white p-2 rounded-lg border">{selectedElementData.name}</p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                                        <p className="text-sm text-gray-900 bg-white p-2 rounded-lg border">{selectedElementData.type}</p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+                                        <p className="text-sm text-gray-900 bg-white p-2 rounded-lg border">{selectedElementData.material}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            {/* Formulario de inspección */}
+                            <form className="space-y-6">
+                                {/* Resultado de inspección */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-4">
+                                        Resultado de la inspección:
+                                    </label>
+                                    <div className="flex space-x-6">
+                                        <label className="flex items-center cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="resultado"
+                                                value="apto"
+                                                checked={inspectionData.resultado === 'apto'}
+                                                onChange={(e) => setInspectionData({...inspectionData, resultado: e.target.value})}
+                                                className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                            />
+                                            <span className="ml-2 text-green-600 font-semibold text-sm">Apto</span>
+                                        </label>
+                                        <label className="flex items-center cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="resultado"
+                                                value="no_apto"
+                                                checked={inspectionData.resultado === 'no_apto'}
+                                                onChange={(e) => setInspectionData({...inspectionData, resultado: e.target.value})}
+                                                className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                                            />
+                                            <span className="ml-2 text-red-600 font-semibold text-sm">No Apto</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            
+                                {/* Observaciones */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-4">
+                                        Observaciones:
+                                    </label>
+                                    <textarea
+                                        value={inspectionData.observaciones}
+                                        onChange={(e) => setInspectionData({...inspectionData, observaciones: e.target.value})}
+                                        rows={4}
+                                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                        placeholder="Describe las observaciones de la inspección..."
+                                    />
+                                </div>
+                                
+                                {/* Subida de imágenes */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-4">
+                                        Imágenes:
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-700 mb-2">Imagen 1</label>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => setInspectionData({...inspectionData, imagen: e.target.files[0]})}
+                                                className="w-full text-xs text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-700 mb-2">Imagen 2</label>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => setInspectionData({...inspectionData, imagen2: e.target.files[0]})}
+                                                className="w-full text-xs text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Firma digital */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-900 mb-4">
+                                        Firma Digital:
+                                    </label>
+                                    {firmaCapturada ? (
+                                        <div className="border-2 border-gray-300 rounded-xl p-4 bg-gray-50">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm font-medium text-gray-700">Firma capturada</span>
+                                                <button
+                                                    onClick={handleLimpiarFirma}
+                                                    className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                                                >
+                                                    Limpiar
+                                                </button>
+                                            </div>
+                                            <img src={firmaData} alt="Firma digital" className="w-full h-32 object-contain bg-white rounded border" />
+                                        </div>
+                                    ) : (
+                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-50">
+                                            <canvas
+                                                ref={setCanvasRef}
+                                                width={400}
+                                                height={150}
+                                                className="w-full h-32 bg-white rounded border cursor-crosshair"
+                                                onMouseDown={handleStartDrawing}
+                                                onMouseMove={handleDraw}
+                                                onMouseUp={handleStopDrawing}
+                                                onMouseLeave={handleStopDrawing}
+                                                style={{ touchAction: 'none' }}
+                                            />
+                                            <div className="mt-4 flex justify-center">
+                                                <button
+                                                    onClick={handleCapturarFirma}
+                                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                                                >
+                                                    Capturar Firma
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </form>
+                        </div>
+                        
+                        {/* Footer del modal */}
+                        <div className="bg-white px-6 py-4 border-t border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <div className="text-sm text-gray-600">
+                                    <span className="font-medium">Carretera A-67</span> • Campaña de Auscultación BIM
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <button
+                                        onClick={() => setShowInspectionModal(false)}
+                                        className="px-6 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-xl transition-all duration-200 font-medium"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            console.log('💾 Guardando inspección:', {
+                                                elemento: selectedElementData,
+                                                inspeccion: inspectionData
+                                            });
+                                            setShowInspectionModal(false);
+                                        }}
+                                        className="px-6 py-2 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-all duration-200 font-medium"
+                                    >
+                                        Guardar Inspección
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 });
