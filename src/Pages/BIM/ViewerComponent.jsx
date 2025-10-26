@@ -19,8 +19,6 @@
 import React, { useEffect, useState } from 'react';
 import * as OBC from "openbim-components";
 import * as THREE from "three";
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { auth } from '../../../firebase_config';
 import BimLoadingBar from '../../Components/BimLoadingBar';
 
 const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, onLoadingChange }) => {
@@ -227,30 +225,27 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                  * - Adds these fragments (representing IFC elements) to the Three.js scene.
                  */
         /**
-         * @function loadIfcFromFirebase
-         * Carga un modelo IFC desde Firebase Storage
-         * @param {string} storagePath - Ruta del archivo en Firebase Storage (ej: 'modelos/Polanco.ifc')
+         * @function loadIfcFromLocal
+         * Carga un modelo IFC desde la carpeta public local
+         * @param {string} localPath - Ruta del archivo en la carpeta public (ej: '/modelos/Polanco.ifc')
          */
-        async function loadIfcFromFirebase(storagePath) {
+        async function loadIfcFromLocal(localPath) {
             try {
-                console.log(`🔄 Intentando cargar desde Firebase Storage: ${storagePath}`);
+                console.log(`🔄 Intentando cargar desde carpeta local: ${localPath}`);
                 setIsLoading(true);
                 if (onLoadingChange) onLoadingChange(true);
                 
-                // Obtener la URL de descarga desde Firebase Storage
-                const storage = getStorage();
-                const storageRef = ref(storage, storagePath);
-                const downloadURL = await getDownloadURL(storageRef);
+                // Descargar el archivo desde la carpeta public
+                const file = await fetch(localPath);
+                if (!file.ok) {
+                    throw new Error(`No se pudo cargar el archivo: ${file.status} ${file.statusText}`);
+                }
                 
-                console.log(`🔗 URL obtenida de Firebase: ${downloadURL}`);
-                
-                // Descargar el archivo desde la URL
-                const file = await fetch(downloadURL);
                 const data = await file.arrayBuffer();
                 const buffer = new Uint8Array(data);
                 const model = await ifcLoader.load(buffer, "example");
                 scene.add(model);
-                console.log(`✅ Modelo cargado exitosamente desde Firebase Storage`);
+                console.log(`✅ Modelo cargado exitosamente desde carpeta local`);
                 
                 // Ajustar la cámara para enfocar el modelo usando el método de openbim-components
                 setTimeout(() => {
@@ -308,23 +303,22 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                     if (onLoadingChange) onLoadingChange(false);
                 }, 100); // Pequeño delay para asegurar que el modelo esté renderizado
             } catch (error) {
-                console.error(`❌ Error al cargar desde Firebase:`, error);
+                console.error(`❌ Error al cargar desde carpeta local:`, error);
                 setIsLoading(false);
                 if (onLoadingChange) onLoadingChange(false);
                 
                 if (error.message && error.message.includes('IFC4X3_ADD2')) {
                     alert(`⚠️ ERROR: El modelo usa el esquema IFC4X3_ADD2 que no está soportado.\n\nSolución: Convierte el archivo a IFC4 o IFC2X3.`);
-                } else if (error.code === 'storage/object-not-found') {
-                    alert(`❌ ERROR: No se encontró el archivo en Firebase Storage.\n\nVerifica que la ruta sea correcta: ${storagePath}`);
+                } else if (error.message.includes('404')) {
+                    alert(`❌ ERROR: No se encontró el archivo en la carpeta local.\n\nVerifica que el archivo exista en: ${localPath}`);
                 } else {
-                    alert(`Error al cargar el modelo desde Firebase: ${error.message}`);
+                    alert(`Error al cargar el modelo desde carpeta local: ${error.message}`);
                 }
             }
         }
         
-        // Cargar el modelo desde Firebase Storage
-        // Cambia 'modelos/Polanco.ifc' por la ruta donde subiste el archivo en Firebase Storage
-        loadIfcFromFirebase('/modelos/Polanco.ifc');
+        // Cargar el modelo desde la carpeta local public/modelos
+        loadIfcFromLocal('/modelos/Polanco.ifc');
         // IfcPropertiesProcessor extracts IFC properties from selected elements
         const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer);
         // Event: Clear selection (no element highlighted)
