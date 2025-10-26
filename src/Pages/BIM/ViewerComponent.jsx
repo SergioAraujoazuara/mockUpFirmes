@@ -225,34 +225,43 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                  * - Adds these fragments (representing IFC elements) to the Three.js scene.
                  */
         /**
-         * @function loadIfcFromLocal
-         * Carga un modelo IFC desde la carpeta public local
-         * @param {string} localPath - Ruta del archivo en la carpeta public (ej: '/modelos/Polanco.ifc')
+         * @function loadIfcFromFirebase
+         * Carga un modelo IFC desde Firebase Storage
          */
-        async function loadIfcFromLocal(localPath) {
+        async function loadIfcFromFirebase() {
             try {
-                console.log(`🔄 Intentando cargar desde carpeta local: ${localPath}`);
+                console.log(`🔄 Intentando cargar desde Firebase Storage`);
                 setIsLoading(true);
                 if (onLoadingChange) onLoadingChange(true);
                 
-                // Construir la URL completa para producción
-                const baseUrl = window.location.origin;
-                const fullUrl = `${baseUrl}${localPath}`;
-                console.log(`🔗 URL completa: ${fullUrl}`);
+                // Importar Firebase dinámicamente
+                const { getStorage, ref, getDownloadURL } = await import('firebase/storage');
+                const { getApp } = await import('firebase/app');
                 
-                // Descargar el archivo desde la carpeta public
-                const file = await fetch(fullUrl);
-                if (!file.ok) {
-                    throw new Error(`No se pudo cargar el archivo: ${file.status} ${file.statusText}`);
+                // Obtener la instancia de Firebase
+                const app = getApp();
+                const storage = getStorage(app);
+                
+                // Referencia al archivo en Firebase Storage
+                const fileRef = ref(storage, 'modelos/Polanco.ifc');
+                
+                // Obtener la URL de descarga
+                const downloadURL = await getDownloadURL(fileRef);
+                console.log(`🔗 URL de Firebase: ${downloadURL}`);
+                
+                // Descargar el archivo desde Firebase
+                const response = await fetch(downloadURL);
+                if (!response.ok) {
+                    throw new Error(`No se pudo cargar el archivo desde Firebase: ${response.status} ${response.statusText}`);
                 }
                 
-                const data = await file.arrayBuffer();
+                const data = await response.arrayBuffer();
                 const buffer = new Uint8Array(data);
-                const model = await ifcLoader.load(buffer, "example");
+                const model = await ifcLoader.load(buffer, "Polanco");
                 scene.add(model);
-                console.log(`✅ Modelo cargado exitosamente desde carpeta local`);
+                console.log(`✅ Modelo cargado exitosamente desde Firebase`);
                 
-                // Ajustar la cámara para enfocar el modelo usando el método de openbim-components
+                // Ajustar la cámara para enfocar el modelo
                 setTimeout(() => {
                     // Calcular el bounding box del modelo
                     const bbox = new THREE.Box3();
@@ -267,26 +276,22 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                     
                     // Calcular la distancia necesaria para ver todo el modelo
                     const maxDim = Math.max(size.x, size.y, size.z);
-                    const distance = maxDim * 2; // Multiplicador para dar espacio
+                    const distance = maxDim * 2;
                     
-                    // Usar el método fit de la cámara de openbim-components si existe
+                    // Usar el método fit de la cámara si existe
                     if (cameraComponent.fit) {
                         cameraComponent.fit([model]);
                     } else {
-                        // Fallback manual con rotación de 45 grados a la izquierda
+                        // Fallback manual con rotación de 45 grados
                         const camera = cameraComponent.activeCamera;
-                        
-                        // Calcular posición con rotación de 45 grados (π/4 radianes)
-                        const angle = Math.PI / 4; // 45 grados
+                        const angle = Math.PI / 4;
                         const cos = Math.cos(angle);
                         const sin = Math.sin(angle);
                         
-                        // Posición inicial
                         const x = center.x + distance;
                         const y = center.y + distance;
                         const z = center.z + distance;
                         
-                        // Aplicar rotación de 45 grados alrededor del eje Y
                         const rotatedX = x * cos - z * sin;
                         const rotatedZ = x * sin + z * cos;
                         
@@ -294,7 +299,6 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                         camera.lookAt(center);
                         camera.updateProjectionMatrix();
                         
-                        // Actualizar los controles si existen
                         if (cameraComponent.controls) {
                             cameraComponent.controls.target.copy(center);
                             cameraComponent.controls.update();
@@ -306,26 +310,22 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                     // Finalizar la carga
                     setIsLoading(false);
                     if (onLoadingChange) onLoadingChange(false);
-                }, 100); // Pequeño delay para asegurar que el modelo esté renderizado
+                }, 100);
             } catch (error) {
-                console.error(`❌ Error al cargar desde carpeta local:`, error);
+                console.error(`❌ Error al cargar desde Firebase:`, error);
                 setIsLoading(false);
                 if (onLoadingChange) onLoadingChange(false);
                 
                 if (error.message && error.message.includes('IFC4X3_ADD2')) {
                     alert(`⚠️ ERROR: El modelo usa el esquema IFC4X3_ADD2 que no está soportado.\n\nSolución: Convierte el archivo a IFC4 o IFC2X3.`);
-                } else if (error.message.includes('404') || error.message.includes('No se pudo cargar')) {
-                    const baseUrl = window.location.origin;
-                    const fullUrl = `${baseUrl}${localPath}`;
-                    alert(`❌ ERROR: No se encontró el archivo en la carpeta local.\n\nVerifica que el archivo exista en: ${localPath}\n\nURL completa: ${fullUrl}\n\nEn Vercel, asegúrate de que el archivo esté en la carpeta public/modelos/`);
                 } else {
-                    alert(`Error al cargar el modelo desde carpeta local: ${error.message}`);
+                    alert(`Error al cargar el modelo desde Firebase: ${error.message}`);
                 }
             }
         }
         
-        // Cargar el modelo desde la carpeta local public/modelos
-        loadIfcFromLocal('/modelos/Polanco.ifc');
+        // Cargar el modelo desde Firebase Storage
+        loadIfcFromFirebase();
         // IfcPropertiesProcessor extracts IFC properties from selected elements
         const propertiesProcessor = new OBC.IfcPropertiesProcessor(viewer);
         // Event: Clear selection (no element highlighted)
