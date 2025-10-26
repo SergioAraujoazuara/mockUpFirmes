@@ -308,16 +308,23 @@ const NavbarLateral = () => {
                 >
                   Análisis ciclo de vida
                 </Link>
-                <Link
-                  to="/acv/cronograma"
-                  onClick={(e) => handleLinkClick(e, true)}
-                  className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
-                >
-                  Cronograma
-                </Link>
               </div>
             )}
           </div>
+
+        {/* Cronograma */}
+        <Link
+          to="/acv/cronograma"
+          onClick={handleLinkClick}
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+            isActive('/acv/cronograma') 
+              ? 'bg-slate-700 text-white' 
+              : 'hover:bg-slate-700 text-slate-300'
+          }`}
+        >
+          <FaCalendarAlt className="w-5 h-5" />
+          <span className="text-sm font-medium">Cronograma</span>
+        </Link>
 
         {/* Otros */}
         <div>
@@ -351,21 +358,21 @@ const NavbarLateral = () => {
                         onClick={(e) => handleLinkClick(e, true)}
                         className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                       >
-                        Llacuna
+                        Santander
                       </Link>
                       <Link
                         to="/auscultacion/llacuna"
                         onClick={(e) => handleLinkClick(e, true)}
                         className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                       >
-                        Glorias
+                        A-4 Ciudad Real
                       </Link>
                       <Link
                         to="/auscultacion/llacuna"
                         onClick={(e) => handleLinkClick(e, true)}
                         className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                       >
-                        Horta
+                        A-3 Madrid
                       </Link>
                     </div>
                   )}

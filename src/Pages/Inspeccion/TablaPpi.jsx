@@ -67,10 +67,11 @@ const TablaPpi = () => {
   const { idLote, ppiNombre } = useParams();
   const [activeTab, setActiveTab] = useState('tabla');
   const [filtros, setFiltros] = useState({
-    carretera: '',
+    categoria: '',
     estado: '',
     responsable: '',
     actividad: '',
+    documento: '',
     fecha: ''
   });
   const [inspecciones, setInspecciones] = useState([]);
@@ -158,20 +159,21 @@ const TablaPpi = () => {
 
   // useEffect para obtener información del lote ahora manejado por Viewer_inspeccion
 
-  // Datos mock para las inspecciones de auscultación - Estados mixtos
+  // Datos para campañas de auscultación - Tabla documental con categorías
   const datosInspecciones = [
     {
       id: 1,
-      actividad: 'ACTIVIDADES PREVIAS',
-      subactividad: 'Inicio de tajo',
-      criterio: 'El registro de Inicio de tajo para esta actividad se encuentra cumplimentado, firmado y sin incidencias',
-      documento: 'PC',
-      tipo: 'Documental/Visual',
+      categoria: 'ACTIVIDADES PREVIAS',
+      actividad: 'Proyecto Según construido',
+      subactividad: 'Proyecto original y modificaciones durante construcción',
+      criterio: 'Documentación del proyecto original y todas las modificaciones realizadas durante la construcción',
+      documento: 'PDF',
+      tipo: 'Documental',
       punto: 'P',
-      responsable: 'Jefe de calidad',
-      nombre: 'Juan Pérez',
+      responsable: 'Jefe de proyecto',
+      nombre: 'Carlos Martínez',
       fecha: '2024-01-15',
-      comentarios: 'Inspección realizada correctamente',
+      comentarios: 'Documentación completa y actualizada',
       resultado: 'Apto',
       estado: 'Completado',
       pdf: true,
@@ -180,16 +182,17 @@ const TablaPpi = () => {
     },
     {
       id: 2,
-      actividad: 'ACTIVIDADES PREVIAS',
-      subactividad: 'Documentación actualizada y planos válidos',
-      criterio: 'Se dispone de toda la documentación y planos vigentes para realizar las inspecciones.',
-      documento: 'Planos',
+      categoria: 'ACTIVIDADES PREVIAS',
+      actividad: 'Modelado BIM',
+      subactividad: 'Modelo BIM post ejecución de obra',
+      criterio: 'Modelo BIM actualizado con el estado real de la obra ejecutada',
+      documento: 'IFC',
       tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: 'María García',
+      responsable: 'Técnico BIM',
+      nombre: 'Ana García',
       fecha: '2024-01-14',
-      comentarios: 'Documentación en orden',
+      comentarios: 'Modelo BIM actualizado correctamente',
       resultado: 'Apto',
       estado: 'Completado',
       pdf: true,
@@ -198,16 +201,17 @@ const TablaPpi = () => {
     },
     {
       id: 3,
-      actividad: 'SOSTENIMIENTO. HORMIGON PROYECTADO',
-      subactividad: 'Limpieza de la superficie',
-      criterio: 'La superficie a gunitar estará limpia y humeda, no queda material suelto en las paredes del talud',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'CAMPAÑA DE INSPECCIÓN',
+      actividad: 'Deterioros 2019',
+      subactividad: 'Campaña del Ministerio',
+      criterio: 'Documentación de deterioros identificados en la campaña de 2019',
+      documento: 'PDF',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: 'Carlos López',
-      fecha: '2024-01-13',
-      comentarios: 'Superficie preparada correctamente',
+      responsable: 'Inspector Ministerio',
+      nombre: 'Miguel López',
+      fecha: '2019-06-15',
+      comentarios: 'Campaña completada según protocolo',
       resultado: 'Apto',
       estado: 'Completado',
       pdf: true,
@@ -216,34 +220,36 @@ const TablaPpi = () => {
     },
     {
       id: 4,
-      actividad: 'SOSTENIMIENTO. HORMIGON PROYECTADO',
-      subactividad: 'Proyección del hormigón',
-      criterio: 'Se gunita perpendicularmente a la superficie y a una distancia de 1 m.',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'CAMPAÑA DE INSPECCIÓN',
+      actividad: 'Deterioros 2020',
+      subactividad: 'Campaña del Ministerio',
+      criterio: 'Documentación de deterioros identificados en la campaña de 2020',
+      documento: 'PDF',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: 'Ana Martínez',
-      fecha: '2024-01-12',
-      comentarios: 'Proyección en proceso',
-      resultado: '',
-      estado: 'En progreso',
-      pdf: false,
+      responsable: 'Inspector Ministerio',
+      nombre: 'Elena Ruiz',
+      fecha: '2020-07-20',
+      comentarios: 'Campaña completada según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
       editar: true,
       ver: true
     },
     {
       id: 5,
-      actividad: 'SOSTENIMIENTO. HORMIGON PROYECTADO',
-      subactividad: 'Espesor',
-      criterio: 'Taladros y testificación según el tipo de sostenimiento que figura en los planos',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'CAMPAÑA DE INSPECCIÓN',
+      actividad: 'Deterioros 2021',
+      subactividad: 'Campaña del Ministerio',
+      criterio: 'Documentación de deterioros identificados en la campaña de 2021',
+      documento: 'Imágenes',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: 'Pedro Rodríguez',
-      fecha: '2024-01-11',
-      comentarios: 'Espesor verificado correctamente',
+      responsable: 'Inspector Ministerio',
+      nombre: 'Roberto Sánchez',
+      fecha: '2021-08-10',
+      comentarios: 'Campaña completada según protocolo',
       resultado: 'Apto',
       estado: 'Completado',
       pdf: true,
@@ -252,106 +258,169 @@ const TablaPpi = () => {
     },
     {
       id: 6,
-      actividad: 'SOSTENIMIENTO MALLA TRIPLE TORSIÓN',
-      subactividad: 'Comprobación de colocación',
-      criterio: 'Colocación: Según se indica en los planos o si DO estima que hay que reforzar.',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'CAMPAÑA DE AUSCULTACIÓN',
+      actividad: 'Campaña 2020',
+      subactividad: 'Campaña del Ministerio',
+      criterio: 'Documentación completa de la campaña de auscultación 2020',
+      documento: 'Auscultación',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
+      responsable: 'Inspector Ministerio',
+      nombre: 'Patricia Moreno',
+      fecha: '2020-09-15',
+      comentarios: 'Campaña completada según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
     },
     {
       id: 7,
-      actividad: 'SOSTENIMIENTO MALLA TRIPLE TORSIÓN',
-      subactividad: 'Sujección',
-      criterio: 'En la parte superior se colocarán piquetas cada 2m hincadas en los suelos y en la parte inferior cada 4m, perforadas con martillo de mano.',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'CAMPAÑA DE AUSCULTACIÓN',
+      actividad: 'Campaña 2022',
+      subactividad: 'Campaña del Ministerio',
+      criterio: 'Documentación completa de la campaña de auscultación 2022',
+      documento: 'Auscultación',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: 'Miguel Torres',
-      fecha: '2024-01-09',
-      comentarios: 'Sujección en proceso',
-      resultado: '',
-      estado: 'En progreso',
-      pdf: false,
+      responsable: 'Inspector Ministerio',
+      nombre: 'Fernando Torres',
+      fecha: '2022-10-05',
+      comentarios: 'Campaña completada según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
       editar: true,
       ver: true
     },
     {
       id: 8,
-      actividad: 'SOSTENIMIENTO MALLA TRIPLE TORSIÓN',
-      subactividad: 'Aspecto final',
-      criterio: 'Se comprobará que la malla cubre toda la superficie y que está correctamente adherida a la superficie de excavación',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'CAMPAÑA DE AUSCULTACIÓN',
+      actividad: 'Campaña 2023',
+      subactividad: 'Campaña del Ministerio',
+      criterio: 'Documentación completa de la campaña de auscultación 2023',
+      documento: 'Auscultación',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Jefe de calidad',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
+      responsable: 'Inspector Ministerio',
+      nombre: 'Isabel Jiménez',
+      fecha: '2023-11-12',
+      comentarios: 'Campaña completada según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
     },
     {
       id: 9,
-      actividad: 'BULONES',
-      subactividad: 'Comprobación del replanteo',
-      criterio: 'Se colocarán según plano de trazabilidad de bulones',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'ENSAYOS IN SITU',
+      actividad: 'Toma de muestras 2019',
+      subactividad: 'Ensayos en zonas de deterioro 2019',
+      criterio: 'Documentación de ensayos realizados en zonas identificadas con deterioro',
+      documento: 'Auscultación',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Topógrafo',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
+      responsable: 'Laboratorio',
+      nombre: 'Antonio Vega',
+      fecha: '2019-12-03',
+      comentarios: 'Ensayos completados según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
     },
     {
       id: 10,
-      actividad: 'BULONES',
-      subactividad: 'Dimensiones del taladro',
-      criterio: 'Perpendicular al terreno (+/- 15º) y profundidad 8 (+/- 2) cm inferior a la longitud del bulón.',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'ENSAYOS IN SITU',
+      actividad: 'Toma de muestras 2020',
+      subactividad: 'Ensayos en zonas de deterioro 2020',
+      criterio: 'Documentación de ensayos realizados en zonas identificadas con deterioro',
+      documento: 'Auscultación',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
+      responsable: 'Laboratorio',
+      nombre: 'Carmen Díaz',
+      fecha: '2020-12-18',
+      comentarios: 'Ensayos completados según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
     },
     {
       id: 11,
-      actividad: 'BULONES',
-      subactividad: 'Introducción del bulón',
-      criterio: 'Se comprobará que el bulón entra íntegramente en la perforación',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
+      categoria: 'ENSAYOS IN SITU',
+      actividad: 'Toma de muestras 2021',
+      subactividad: 'Ensayos en zonas de deterioro 2021',
+      criterio: 'Documentación de ensayos realizados en zonas identificadas con deterioro',
+      documento: 'Auscultación',
+      tipo: 'Documental',
       punto: 'C',
-      responsable: 'Vigilante',
-      nombre: 'Francisco Jiménez',
-      fecha: '2024-01-05',
-      comentarios: 'Introducción en proceso',
+      responsable: 'Laboratorio',
+      nombre: 'Javier Martín',
+      fecha: '2021-12-08',
+      comentarios: 'Ensayos completados según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
+    },
+    {
+      id: 12,
+      categoria: 'ENSAYOS IN SITU',
+      actividad: 'Toma de muestras 2022',
+      subactividad: 'Ensayos en zonas de deterioro 2022',
+      criterio: 'Documentación de ensayos realizados en zonas identificadas con deterioro',
+      documento: 'Auscultación',
+      tipo: 'Documental',
+      punto: 'C',
+      responsable: 'Laboratorio',
+      nombre: 'Sandra Herrera',
+      fecha: '2022-12-22',
+      comentarios: 'Ensayos completados según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
+    },
+    {
+      id: 13,
+      categoria: 'ENSAYOS IN SITU',
+      actividad: 'Toma de muestras 2023',
+      subactividad: 'Ensayos en zonas de deterioro 2023',
+      criterio: 'Documentación de ensayos realizados en zonas identificadas con deterioro',
+      documento: 'Auscultación',
+      tipo: 'Documental',
+      punto: 'C',
+      responsable: 'Laboratorio',
+      nombre: 'David Ramos',
+      fecha: '2023-12-15',
+      comentarios: 'Ensayos completados según protocolo',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
+    },
+    {
+      id: 14,
+      categoria: 'ENSAYOS IN SITU',
+      actividad: 'Toma de muestras 2024',
+      subactividad: 'Ensayos en zonas de deterioro 2024',
+      criterio: 'Documentación de ensayos realizados en zonas identificadas con deterioro',
+      documento: 'Auscultación',
+      tipo: 'Documental',
+      punto: 'C',
+      responsable: 'Laboratorio',
+      nombre: 'Laura Gómez',
+      fecha: '2024-01-10',
+      comentarios: 'Ensayos en proceso',
       resultado: '',
       estado: 'En progreso',
       pdf: false,
@@ -359,76 +428,23 @@ const TablaPpi = () => {
       ver: true
     },
     {
-      id: 12,
-      actividad: 'BULONES',
-      subactividad: 'Control de la inyección',
-      criterio: 'La manguera irá hasta el fondo de perforacion para conseguir una inyeccion ascendente.',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
-      punto: 'C',
-      responsable: 'Vigilante',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
-    },
-    {
-      id: 13,
-      actividad: 'BULONES',
-      subactividad: 'Colocación de placas de reparto',
-      criterio: 'Placas correctamente colocadas, alineadas y niveladas con el dado de hormigón.',
-      documento: 'PPTP/Planos',
-      tipo: 'Visual',
-      punto: 'C',
-      responsable: 'Vigilante',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
-    },
-    {
-      id: 14,
-      actividad: 'BULONES',
-      subactividad: 'Tesado del bulón',
-      criterio: 'Se comprobará que los resultados individuales de los ensayos realizados son aptos',
-      documento: 'PPTP/Planos',
-      tipo: 'Documental',
-      punto: 'C',
-      responsable: 'Jefe de calidad',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
-    },
-    {
       id: 15,
-      actividad: 'PRUEBAS FINALES',
-      subactividad: 'Ensayos realizados',
-      criterio: 'Plan de ensayos',
-      documento: 'Plan de ensayos',
+      categoria: 'PRUEBAS EXTERNAS',
+      actividad: 'Sensores de monitorización 2024',
+      subactividad: 'Sistema de monitorización continua',
+      criterio: 'Documentación del sistema de sensores de monitorización instalado en 2024',
+      documento: 'Base de datos',
       tipo: 'Documental',
       punto: 'P',
-      responsable: 'Jefe de Calidad',
-      nombre: '',
-      fecha: '',
-      comentarios: '',
-      resultado: '',
-      estado: 'Pendiente',
-      pdf: false,
-      editar: false,
-      ver: false
+      responsable: 'Técnico Sistemas',
+      nombre: 'Ricardo Silva',
+      fecha: '2024-01-20',
+      comentarios: 'Sistema instalado y funcionando',
+      resultado: 'Apto',
+      estado: 'Completado',
+      pdf: true,
+      editar: true,
+      ver: true
     }
   ];
 
@@ -439,6 +455,12 @@ const TablaPpi = () => {
 
     useEffect(() => {
     let filtradas = inspecciones;
+
+    if (filtros.categoria) {
+      filtradas = filtradas.filter(inspeccion => 
+        inspeccion.categoria.toLowerCase().includes(filtros.categoria.toLowerCase())
+      );
+    }
 
     if (filtros.estado) {
       filtradas = filtradas.filter(inspeccion => 
@@ -455,6 +477,12 @@ const TablaPpi = () => {
     if (filtros.actividad) {
       filtradas = filtradas.filter(inspeccion => 
         inspeccion.actividad.toLowerCase().includes(filtros.actividad.toLowerCase())
+      );
+    }
+
+    if (filtros.documento) {
+      filtradas = filtradas.filter(inspeccion => 
+        inspeccion.documento.toLowerCase().includes(filtros.documento.toLowerCase())
       );
     }
 
@@ -476,9 +504,11 @@ const TablaPpi = () => {
 
   const limpiarFiltros = () => {
     setFiltros({
+      categoria: '',
       estado: '',
       responsable: '',
       actividad: '',
+      documento: '',
       fecha: ''
         });
     };
@@ -767,16 +797,20 @@ const TablaPpi = () => {
                   <FaTimes className="w-3 h-3" />
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Carretera</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Categoría</label>
                   <select
-                    value={filtros.carretera}
-                    onChange={(e) => handleFiltroChange('carretera', e.target.value)}
+                    value={filtros.categoria || ''}
+                    onChange={(e) => handleFiltroChange('categoria', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs"
                   >
-                    <option value="">Todas las carreteras</option>
-                    <option value="A-67">A-67</option>
+                    <option value="">Todas las categorías</option>
+                    <option value="ACTIVIDADES PREVIAS">ACTIVIDADES PREVIAS</option>
+                    <option value="CAMPAÑA DE INSPECCIÓN">CAMPAÑA DE INSPECCIÓN</option>
+                    <option value="CAMPAÑA DE AUSCULTACIÓN">CAMPAÑA DE AUSCULTACIÓN</option>
+                    <option value="ENSAYOS IN SITU">ENSAYOS IN SITU</option>
+                    <option value="PRUEBAS EXTERNAS">PRUEBAS EXTERNAS</option>
                   </select>
                 </div>
                 <div>
@@ -800,9 +834,11 @@ const TablaPpi = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs"
                   >
                     <option value="">Todos los responsables</option>
-                    <option value="Jefe de calidad">Jefe de calidad</option>
-                    <option value="Vigilante">Vigilante</option>
-                    <option value="Topógrafo">Topógrafo</option>
+                    <option value="Jefe de proyecto">Jefe de proyecto</option>
+                    <option value="Técnico BIM">Técnico BIM</option>
+                    <option value="Inspector Ministerio">Inspector Ministerio</option>
+                    <option value="Laboratorio">Laboratorio</option>
+                    <option value="Técnico Sistemas">Técnico Sistemas</option>
                   </select>
                 </div>
                 <div>
@@ -814,6 +850,21 @@ const TablaPpi = () => {
                     placeholder="Buscar actividad..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs"
                   />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Tipo de Documento</label>
+                  <select
+                    value={filtros.documento || ''}
+                    onChange={(e) => handleFiltroChange('documento', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-xs"
+                  >
+                    <option value="">Todos los tipos</option>
+                    <option value="PDF">PDF</option>
+                    <option value="IFC">IFC</option>
+                    <option value="Imágenes">Imágenes</option>
+                    <option value="Auscultación">Auscultación</option>
+                    <option value="Base de datos">Base de datos</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Fecha</label>
@@ -842,6 +893,7 @@ const TablaPpi = () => {
                         <span className="text-white font-bold text-sm">#{inspeccion.id}</span>
                       </div>
                       <div>
+                        <div className="text-xs font-semibold text-sky-600 uppercase tracking-wide mb-1">{inspeccion.categoria}</div>
                         <div className="text-base font-semibold text-gray-900">{inspeccion.actividad}</div>
                         <div className="text-sm text-gray-600 font-medium">{inspeccion.subactividad}</div>
                       </div>
