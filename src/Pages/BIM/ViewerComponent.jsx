@@ -151,12 +151,47 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
             // Configure IFC Loader with WASM path
             const ifcLoader = new OBC.FragmentIfcLoader(viewer);
             
-            // Set the path for web-ifc WASM files
+            // Configurar WASM files desde Firebase Storage
             await ifcLoader.setup();
-            ifcLoader.settings.wasm = {
-                path: "/", // Los archivos WASM están en la carpeta public
-                absolute: true
-            };
+            
+            // Obtener URLs de los archivos WASM desde Firebase Storage
+            const { getStorage, ref, getDownloadURL } = await import('firebase/storage');
+            const { getApp } = await import('firebase/app');
+            
+            const app = getApp();
+            const storage = getStorage(app);
+            
+            try {
+                // Obtener URLs de descarga para los archivos WASM
+                const webIfcWasmRef = ref(storage, 'web/web-ifc.wasm');
+                const webIfcMtWasmRef = ref(storage, 'web/web-ifc-mt.wasm');
+                const webIfcNodeWasmRef = ref(storage, 'web/web-ifc-node.wasm');
+                
+                const [webIfcUrl, webIfcMtUrl, webIfcNodeUrl] = await Promise.all([
+                    getDownloadURL(webIfcWasmRef),
+                    getDownloadURL(webIfcMtWasmRef),
+                    getDownloadURL(webIfcNodeWasmRef)
+                ]);
+                
+                // Configurar las URLs de los archivos WASM
+                ifcLoader.settings.wasm = {
+                    path: webIfcUrl,
+                    absolute: true
+                };
+                
+                // Configurar archivos adicionales si es necesario
+                ifcLoader.settings.wasm.mt = webIfcMtUrl;
+                ifcLoader.settings.wasm.node = webIfcNodeUrl;
+                
+                console.log('✅ Archivos WASM configurados desde Firebase Storage');
+            } catch (wasmError) {
+                console.warn('⚠️ Error configurando archivos WASM desde Firebase:', wasmError);
+                // Fallback a configuración local
+                ifcLoader.settings.wasm = {
+                    path: "/",
+                    absolute: true
+                };
+            }
             
             // IFC Loader to load IFC models as fragments
             const highlighter = new OBC.FragmentHighlighter(viewer);
