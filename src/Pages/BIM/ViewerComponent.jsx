@@ -569,6 +569,7 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
             };
             
             // Agregar event listener para clicks
+            // Agregar event listener para clicks
             viewerContainer.addEventListener('click', handleClick);
             /**
              * @event onHighlight
