@@ -36,7 +36,6 @@ const NavbarLateral = () => {
   const [dropdownDatosGeneralesOpen, setDropdownDatosGeneralesOpen] = useState(false);
   const [dropdownInventarioOpen, setDropdownInventarioOpen] = useState(false);
   const [dropdownActuacionesOpen, setDropdownActuacionesOpen] = useState(false);
-  const [dropdownCampañasOpen, setDropdownCampañasOpen] = useState(false);
   const [dropdownAnalisisOpen, setDropdownAnalisisOpen] = useState(false);
   const [dropdownGISOpen, setDropdownGISOpen] = useState(false);
   const [dropdownPresupuestoOpen, setDropdownPresupuestoOpen] = useState(false);
@@ -58,7 +57,6 @@ const NavbarLateral = () => {
     setDropdownDatosGeneralesOpen(false);
     setDropdownInventarioOpen(false);
     setDropdownActuacionesOpen(false);
-    setDropdownCampañasOpen(false);
     setDropdownAnalisisOpen(false);
     setDropdownGISOpen(false);
     setDropdownPresupuestoOpen(false);
@@ -195,31 +193,18 @@ const NavbarLateral = () => {
           </Link>
 
         {/* Campañas de auscultación */}
-        <div>
-            <button
-              onClick={() => {
-                setDropdownCampañasOpen(!dropdownCampañasOpen);
-              }}
-              className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-slate-700 text-slate-300"
-            >
-              <div className="flex items-center text-left gap-3">
-                <FaSearch className="w-5 h-5" />
-                <span className="text-sm font-medium">Campañas de auscultación</span>
-              </div>
-              <FaCaretDown className={`w-3 h-3 transition-transform ${dropdownCampañasOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {dropdownCampañasOpen && (
-              <div className="ml-8 mt-1 space-y-1">
-                <Link
-                  to="/tablaPpi"
-                  onClick={(e) => handleLinkClick(e, true)}
-                  className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
-                >
-                  Carretera A-67
-                </Link>
-              </div>
-            )}
-          </div>
+        <Link
+          to="/tablaPpi"
+          onClick={handleLinkClick}
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+            isActive('/tablaPpi') 
+              ? 'bg-slate-700 text-white' 
+              : 'hover:bg-slate-700 text-slate-300'
+          }`}
+        >
+          <FaSearch className="w-5 h-5" />
+          <span className="text-sm font-medium">Campañas de auscultación</span>
+        </Link>
 
         {/* Análisis evolutivo */}
         <div>

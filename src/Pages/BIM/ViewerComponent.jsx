@@ -235,8 +235,13 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                 setIsLoading(true);
                 if (onLoadingChange) onLoadingChange(true);
                 
+                // Construir la URL completa para producción
+                const baseUrl = window.location.origin;
+                const fullUrl = `${baseUrl}${localPath}`;
+                console.log(`🔗 URL completa: ${fullUrl}`);
+                
                 // Descargar el archivo desde la carpeta public
-                const file = await fetch(localPath);
+                const file = await fetch(fullUrl);
                 if (!file.ok) {
                     throw new Error(`No se pudo cargar el archivo: ${file.status} ${file.statusText}`);
                 }
@@ -309,8 +314,10 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                 
                 if (error.message && error.message.includes('IFC4X3_ADD2')) {
                     alert(`⚠️ ERROR: El modelo usa el esquema IFC4X3_ADD2 que no está soportado.\n\nSolución: Convierte el archivo a IFC4 o IFC2X3.`);
-                } else if (error.message.includes('404')) {
-                    alert(`❌ ERROR: No se encontró el archivo en la carpeta local.\n\nVerifica que el archivo exista en: ${localPath}`);
+                } else if (error.message.includes('404') || error.message.includes('No se pudo cargar')) {
+                    const baseUrl = window.location.origin;
+                    const fullUrl = `${baseUrl}${localPath}`;
+                    alert(`❌ ERROR: No se encontró el archivo en la carpeta local.\n\nVerifica que el archivo exista en: ${localPath}\n\nURL completa: ${fullUrl}\n\nEn Vercel, asegúrate de que el archivo esté en la carpeta public/modelos/`);
                 } else {
                     alert(`Error al cargar el modelo desde carpeta local: ${error.message}`);
                 }
