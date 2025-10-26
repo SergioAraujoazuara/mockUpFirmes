@@ -7,10 +7,10 @@ function GestionUsuarios() {
   // Lista de usuarios (mock)
   const [users, setUsers] = useState([
     { id: 1, name: 'María García', email: 'maria.garcia@empresa.com', role: 'Editor', status: 'Activo' },
-    { id: 2, name: 'Pedro López', email: 'pedro.lopez@empresa.com', role: 'Visualizador', status: 'Activo' },
-    { id: 3, name: 'Ana Martínez', email: 'ana.martinez@empresa.com', role: 'Inspector', status: 'Inactivo' },
+    { id: 2, name: 'Pedro López', email: 'pedro.lopez@empresa.com', role: 'Demarcación de carreteras', status: 'Activo' },
+    { id: 3, name: 'Ana Martínez', email: 'ana.martinez@empresa.com', role: 'Empresa conservación', status: 'Inactivo' },
     { id: 4, name: 'Carlos Ruiz', email: 'carlos.ruiz@empresa.com', role: 'Editor', status: 'Activo' },
-    { id: 5, name: 'Laura Sánchez', email: 'laura.sanchez@empresa.com', role: 'Visualizador', status: 'Pendiente' }
+    { id: 5, name: 'Laura Sánchez', email: 'laura.sanchez@empresa.com', role: 'Demarcación de carreteras', status: 'Pendiente' }
   ]);
 
   // Estados para filtros
@@ -23,7 +23,7 @@ function GestionUsuarios() {
   const [newUser, setNewUser] = useState({
     name: '',
     email: '',
-    role: 'Visualizador',
+    role: 'Demarcación de carreteras',
     status: 'Activo'
   });
 
@@ -31,8 +31,8 @@ function GestionUsuarios() {
   const roles = {
     'Administrador': ['Ver todo', 'Editar todo', 'Eliminar usuarios', 'Gestionar roles'],
     'Editor': ['Ver datos', 'Editar datos', 'Crear reportes'],
-    'Visualizador': ['Ver datos', 'Exportar reportes'],
-    'Inspector': ['Ver datos', 'Crear inspecciones', 'Editar inspecciones']
+    'Demarcación de carreteras': ['Ver datos', 'Exportar reportes'],
+    'Empresa conservación': ['Ver datos', 'Crear inspecciones', 'Editar inspecciones']
   };
 
   // Filtrar usuarios
@@ -92,7 +92,7 @@ function GestionUsuarios() {
         status: newUser.status
       };
       setUsers([...users, user]);
-      setNewUser({ name: '', email: '', role: 'Visualizador', status: 'Activo' });
+      setNewUser({ name: '', email: '', role: 'Demarcación de carreteras', status: 'Activo' });
       setShowAddUserModal(false);
     }
   };
@@ -153,8 +153,8 @@ function GestionUsuarios() {
                   <option value="Todos">Todos los roles</option>
                   <option value="Administrador">Administradores</option>
                   <option value="Editor">Editores</option>
-                  <option value="Visualizador">Visualizadores</option>
-                  <option value="Inspector">Inspectores</option>
+                  <option value="Demarcación de carreteras">Demarcación de carreteras</option>
+                  <option value="Empresa conservación">Empresa conservación</option>
                 </select>
               </div>
 
@@ -346,7 +346,7 @@ function GestionUsuarios() {
               <button
                 onClick={() => {
                   setShowAddUserModal(false);
-                  setNewUser({ name: '', email: '', role: 'Visualizador', status: 'Activo' });
+                  setNewUser({ name: '', email: '', role: 'Demarcación de carreteras', status: 'Activo' });
                 }}
                 className="text-gray-500 hover:text-gray-700 text-xl"
               >
@@ -431,7 +431,7 @@ function GestionUsuarios() {
               <button
                 onClick={() => {
                   setShowAddUserModal(false);
-                  setNewUser({ name: '', email: '', role: 'Visualizador', status: 'Activo' });
+                  setNewUser({ name: '', email: '', role: 'Demarcación de carreteras', status: 'Activo' });
                 }}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs"
               >

@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
         }
       }
     },
+    assetsInclude: ['**/*.wasm'],
     server: {
       port: 5173,
       host: true

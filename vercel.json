@@ -1,8 +1,44 @@
 {
+  "headers": [
+    {
+      "source": "/(.*\\.wasm)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/wasm"
+        },
+        {
+          "key": "Cross-Origin-Embedder-Policy",
+          "value": "require-corp"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/web-ifc-mt.wasm",
+      "destination": "/web-ifc-mt.wasm"
+    },
+    {
+      "source": "/web-ifc-node.wasm", 
+      "destination": "/web-ifc-node.wasm"
+    },
+    {
+      "source": "/web-ifc.wasm",
+      "destination": "/web-ifc.wasm"
     }
-  ]
+  ],
+  "functions": {
+    "app/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }

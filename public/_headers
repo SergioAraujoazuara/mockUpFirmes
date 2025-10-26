@@ -1,0 +1,2 @@
+# Configuración para archivos WASM
+*.wasm application/wasm

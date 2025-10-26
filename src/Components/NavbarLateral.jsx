@@ -174,7 +174,7 @@ const NavbarLateral = () => {
                   onClick={(e) => handleLinkClick(e, true)}
                   className="block px-4 py-2 rounded-lg text-sm transition-colors text-slate-300 hover:bg-slate-700 hover:text-white"
                 >
-                  Previsión del estado de las carreteras
+                  Estado del firme
                 </Link>
               </div>
             )}
