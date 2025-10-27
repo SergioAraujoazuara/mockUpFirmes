@@ -191,6 +191,13 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
 
     // Initialize the main viewer components
     useEffect(() => {
+        // Timeout de 12 segundos para ocultar el modal de carga automáticamente
+        const loadingTimeout = setTimeout(() => {
+            console.log('⏰ Timeout de 12 segundos alcanzado - ocultando modal de carga');
+            setIsLoading(false);
+            if (onLoadingChange) onLoadingChange(false);
+        }, 12000); // 12 segundos
+
         const initViewer = async () => {
             // Cargar componentes BIM dinámicamente
             const { OBC, THREE, wasmUrls } = await loadBIMComponents();
@@ -810,6 +817,8 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
             if (viewerInstance) {
                 viewerInstance.dispose();
             }
+            // Limpiar timeout si el componente se desmonta
+            clearTimeout(loadingTimeout);
         };
     }, [setSelectedGlobalId, setSelectedNameBim]);
 
