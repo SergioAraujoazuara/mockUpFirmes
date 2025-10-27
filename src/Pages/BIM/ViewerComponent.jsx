@@ -17,13 +17,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import * as OBC from "openbim-components";
-import * as THREE from "three";
 import BimLoadingBar from '../../Components/BimLoadingBar';
 
 const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, onLoadingChange }) => {
     const [modelCount, setModelCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingComponents, setIsLoadingComponents] = useState(true);
+    const [loadingError, setLoadingError] = useState(null);
     const [showInspectionModal, setShowInspectionModal] = useState(false);
     const [selectedElementData, setSelectedElementData] = useState(null);
     const [inspectionData, setInspectionData] = useState({
@@ -104,6 +104,31 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
         }
     }, [canvasRef]);
 
+    // Función para cargar componentes BIM dinámicamente
+    const loadBIMComponents = async () => {
+        try {
+            console.log('🔄 Cargando componentes BIM dinámicamente...');
+            setIsLoadingComponents(true);
+            setLoadingError(null);
+            
+            // Cargar openbim-components y three.js dinámicamente
+            const [OBC, THREE] = await Promise.all([
+                import("openbim-components"),
+                import("three")
+            ]);
+            
+            console.log('✅ Componentes BIM cargados exitosamente');
+            setIsLoadingComponents(false);
+            
+            return { OBC: OBC.default || OBC, THREE: THREE.default || THREE };
+        } catch (error) {
+            console.error('❌ Error cargando componentes BIM:', error);
+            setLoadingError('Error al cargar los componentes BIM. Por favor, recarga la página.');
+            setIsLoadingComponents(false);
+            throw error;
+        }
+    };
+
     // Styles for the viewer container
     const viewerContainerStyle = {
         width: "100%",
@@ -116,6 +141,9 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
     // Initialize the main viewer components
     useEffect(() => {
         const initViewer = async () => {
+            // Cargar componentes BIM dinámicamente
+            const { OBC, THREE } = await loadBIMComponents();
+            
             const viewer = new OBC.Components();
             const viewerContainer = document.getElementById("viewerContainer");
 
@@ -694,8 +722,39 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
 
     return (
         <>
-            <BimLoadingBar isLoading={isLoading} />
-            <div className='container' id="viewerContainer" style={viewerContainerStyle}></div>
+            <BimLoadingBar isLoading={isLoading || isLoadingComponents} />
+            
+            {/* Mostrar error si hay problema cargando componentes */}
+            {loadingError && (
+                <div className="flex items-center justify-center h-64 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="text-center">
+                        <div className="text-red-600 text-lg font-semibold mb-2">Error de Carga</div>
+                        <div className="text-red-500 text-sm mb-4">{loadingError}</div>
+                        <button 
+                            onClick={() => window.location.reload()} 
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        >
+                            Recargar Página
+                        </button>
+                    </div>
+                </div>
+            )}
+            
+            {/* Mostrar mensaje de carga de componentes */}
+            {isLoadingComponents && !loadingError && (
+                <div className="flex items-center justify-center h-64 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <div className="text-blue-600 text-lg font-semibold mb-2">Cargando Visor BIM</div>
+                        <div className="text-blue-500 text-sm">Descargando componentes necesarios...</div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Contenedor del visor - solo visible cuando no hay errores */}
+            {!loadingError && (
+                <div className='container' id="viewerContainer" style={viewerContainerStyle}></div>
+            )}
             
             {/* Modal de inspección completo */}
             {showInspectionModal && selectedElementData && (
