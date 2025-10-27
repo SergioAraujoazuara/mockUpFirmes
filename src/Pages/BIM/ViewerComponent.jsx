@@ -104,6 +104,48 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
         }
     }, [canvasRef]);
 
+    // Cache para archivos WASM precargados
+    const [wasmCache, setWasmCache] = useState({
+        webIfcUrl: null,
+        webIfcMtUrl: null,
+        webIfcNodeUrl: null,
+        loaded: false
+    });
+
+    // Función para precargar archivos WASM
+    const preloadWasmFiles = async () => {
+        try {
+            console.log('🔄 Precargando archivos WASM...');
+            
+            const { getStorage, ref, getDownloadURL } = await import('firebase/storage');
+            const { getApp } = await import('firebase/app');
+            
+            const app = getApp();
+            const storage = getStorage(app);
+            
+            // Precargar URLs de archivos WASM en paralelo
+            const [webIfcUrl, webIfcMtUrl, webIfcNodeUrl] = await Promise.all([
+                getDownloadURL(ref(storage, 'web/web-ifc.wasm')),
+                getDownloadURL(ref(storage, 'web/web-ifc-mt.wasm')),
+                getDownloadURL(ref(storage, 'web/web-ifc-node.wasm'))
+            ]);
+            
+            // Guardar en cache
+            setWasmCache({
+                webIfcUrl,
+                webIfcMtUrl,
+                webIfcNodeUrl,
+                loaded: true
+            });
+            
+            console.log('✅ Archivos WASM precargados exitosamente');
+            return { webIfcUrl, webIfcMtUrl, webIfcNodeUrl };
+        } catch (error) {
+            console.warn('⚠️ Error precargando archivos WASM:', error);
+            return null;
+        }
+    };
+
     // Función para cargar componentes BIM dinámicamente
     const loadBIMComponents = async () => {
         try {
@@ -111,16 +153,25 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
             setIsLoadingComponents(true);
             setLoadingError(null);
             
-            // Cargar openbim-components y three.js dinámicamente
-            const [OBC, THREE] = await Promise.all([
-                import("openbim-components"),
-                import("three")
+            // Cargar componentes y precargar WASM en paralelo
+            const [componentsResult, wasmResult] = await Promise.all([
+                Promise.all([
+                    import("openbim-components"),
+                    import("three")
+                ]),
+                preloadWasmFiles()
             ]);
+            
+            const [OBC, THREE] = componentsResult;
             
             console.log('✅ Componentes BIM cargados exitosamente');
             setIsLoadingComponents(false);
             
-            return { OBC: OBC.default || OBC, THREE: THREE.default || THREE };
+            return { 
+                OBC: OBC.default || OBC, 
+                THREE: THREE.default || THREE,
+                wasmUrls: wasmResult
+            };
         } catch (error) {
             console.error('❌ Error cargando componentes BIM:', error);
             setLoadingError('Error al cargar los componentes BIM. Por favor, recarga la página.');
@@ -142,7 +193,7 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
     useEffect(() => {
         const initViewer = async () => {
             // Cargar componentes BIM dinámicamente
-            const { OBC, THREE } = await loadBIMComponents();
+            const { OBC, THREE, wasmUrls } = await loadBIMComponents();
             
             const viewer = new OBC.Components();
             const viewerContainer = document.getElementById("viewerContainer");
@@ -179,41 +230,43 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
             // Configure IFC Loader with WASM path
             const ifcLoader = new OBC.FragmentIfcLoader(viewer);
             
-            // Configurar WASM files desde Firebase Storage
+            // Configurar WASM files usando URLs precargadas
             await ifcLoader.setup();
             
-            // Obtener URLs de los archivos WASM desde Firebase Storage
-            const { getStorage, ref, getDownloadURL } = await import('firebase/storage');
-            const { getApp } = await import('firebase/app');
-            
-            const app = getApp();
-            const storage = getStorage(app);
-            
             try {
-                // Obtener URLs de descarga para los archivos WASM
-                const webIfcWasmRef = ref(storage, 'web/web-ifc.wasm');
-                const webIfcMtWasmRef = ref(storage, 'web/web-ifc-mt.wasm');
-                const webIfcNodeWasmRef = ref(storage, 'web/web-ifc-node.wasm');
-                
-                const [webIfcUrl, webIfcMtUrl, webIfcNodeUrl] = await Promise.all([
-                    getDownloadURL(webIfcWasmRef),
-                    getDownloadURL(webIfcMtWasmRef),
-                    getDownloadURL(webIfcNodeWasmRef)
-                ]);
-                
-                // Configurar las URLs de los archivos WASM
-                ifcLoader.settings.wasm = {
-                    path: webIfcUrl,
-                    absolute: true
-                };
-                
-                // Configurar archivos adicionales si es necesario
-                ifcLoader.settings.wasm.mt = webIfcMtUrl;
-                ifcLoader.settings.wasm.node = webIfcNodeUrl;
-                
-                console.log('✅ Archivos WASM configurados desde Firebase Storage');
+                if (wasmUrls && wasmUrls.webIfcUrl) {
+                    // Usar URLs precargadas para configuración rápida
+                    ifcLoader.settings.wasm = {
+                        path: wasmUrls.webIfcUrl,
+                        absolute: true,
+                        mt: wasmUrls.webIfcMtUrl,
+                        node: wasmUrls.webIfcNodeUrl
+                    };
+                    console.log('✅ Archivos WASM configurados desde cache precargado');
+                } else {
+                    // Fallback: obtener URLs dinámicamente
+                    const { getStorage, ref, getDownloadURL } = await import('firebase/storage');
+                    const { getApp } = await import('firebase/app');
+                    
+                    const app = getApp();
+                    const storage = getStorage(app);
+                    
+                    const [webIfcUrl, webIfcMtUrl, webIfcNodeUrl] = await Promise.all([
+                        getDownloadURL(ref(storage, 'web/web-ifc.wasm')),
+                        getDownloadURL(ref(storage, 'web/web-ifc-mt.wasm')),
+                        getDownloadURL(ref(storage, 'web/web-ifc-node.wasm'))
+                    ]);
+                    
+                    ifcLoader.settings.wasm = {
+                        path: webIfcUrl,
+                        absolute: true,
+                        mt: webIfcMtUrl,
+                        node: webIfcNodeUrl
+                    };
+                    console.log('✅ Archivos WASM configurados dinámicamente');
+                }
             } catch (wasmError) {
-                console.warn('⚠️ Error configurando archivos WASM desde Firebase:', wasmError);
+                console.warn('⚠️ Error configurando archivos WASM:', wasmError);
                 // Fallback a configuración local
                 ifcLoader.settings.wasm = {
                     path: "/",
@@ -289,7 +342,7 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                  */
         /**
          * @function loadIfcFromFirebase
-         * Carga un modelo IFC desde Firebase Storage
+         * Carga un modelo IFC desde Firebase Storage con streaming optimizado
          */
         async function loadIfcFromFirebase() {
             try {
@@ -312,16 +365,56 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                 const downloadURL = await getDownloadURL(fileRef);
                 console.log(`🔗 URL de Firebase: ${downloadURL}`);
                 
-                // Descargar el archivo desde Firebase
+                // Descargar el archivo con streaming para mejor rendimiento
                 const response = await fetch(downloadURL);
                 if (!response.ok) {
                     throw new Error(`No se pudo cargar el archivo desde Firebase: ${response.status} ${response.statusText}`);
                 }
                 
-                const data = await response.arrayBuffer();
-                const buffer = new Uint8Array(data);
-                const model = await ifcLoader.load(buffer, "Polanco");
-                scene.add(model);
+                // Verificar si el navegador soporta streaming
+                const reader = response.body?.getReader();
+                if (reader) {
+                    console.log('📡 Usando streaming para descarga optimizada');
+                    
+                    // Leer el stream en chunks
+                    const chunks = [];
+                    let receivedLength = 0;
+                    const contentLength = +response.headers.get('Content-Length');
+                    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        chunks.push(value);
+                        receivedLength += value.length;
+                        
+                        // Actualizar progreso si tenemos información del tamaño
+                        if (contentLength > 0) {
+                            const progress = (receivedLength / contentLength) * 100;
+                            console.log(`📊 Progreso de descarga: ${progress.toFixed(1)}%`);
+                        }
+                    }
+                    
+                    // Combinar chunks en un ArrayBuffer
+                    const chunksAll = new Uint8Array(receivedLength);
+                    let position = 0;
+                    for (const chunk of chunks) {
+                        chunksAll.set(chunk, position);
+                        position += chunk.length;
+                    }
+                    
+                    console.log(`✅ Descarga completada: ${receivedLength} bytes`);
+                    const model = await ifcLoader.load(chunksAll, "Polanco");
+                    scene.add(model);
+                } else {
+                    // Fallback a método tradicional
+                    console.log('📦 Usando descarga tradicional');
+                    const data = await response.arrayBuffer();
+                    const buffer = new Uint8Array(data);
+                    const model = await ifcLoader.load(buffer, "Polanco");
+                    scene.add(model);
+                }
+                
                 console.log(`✅ Modelo cargado exitosamente desde Firebase`);
                 
                 // Ajustar la cámara para enfocar el modelo
@@ -746,7 +839,8 @@ const ViewerComponent = React.memo(({ setSelectedGlobalId, setSelectedNameBim, o
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
                         <div className="text-blue-600 text-lg font-semibold mb-2">Cargando Visor BIM</div>
-                        <div className="text-blue-500 text-sm">Descargando componentes necesarios...</div>
+                        <div className="text-blue-500 text-sm mb-2">Descargando componentes necesarios...</div>
+                        <div className="text-blue-400 text-xs">Precargando archivos WASM para mejor rendimiento</div>
                     </div>
                 </div>
             )}
